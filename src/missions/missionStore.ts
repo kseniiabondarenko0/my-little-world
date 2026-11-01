@@ -62,6 +62,8 @@ const wordOf = (objectId: string) => getWord(getFurniture(objectId).wordId).word
 function propSpots(count: number, items: PlacedItem[], room: RoomDefinition): [number, number][] {
   const hw = room.size.width / 2 - 0.35;
   const hd = room.size.depth / 2 - 0.35;
+  // Keep props out of the front strip of the room: the mission bar covers it on small screens.
+  const maxZ = room.size.depth / 2 - 2.3;
   const blockers = items
     .filter((i) => {
       const m = getFurniture(i.objectId).mount;
@@ -70,11 +72,12 @@ function propSpots(count: number, items: PlacedItem[], room: RoomDefinition): [n
     .map((i) => itemRect(i));
   const candidates: [number, number][] = [];
   for (let x = -hw; x <= hw; x += 0.35) {
-    for (let z = -hd; z <= hd; z += 0.35) {
+    for (let z = -hd; z <= maxZ; z += 0.35) {
       const probe: PlacedItem = { uid: '__prop', objectId: 'lamp', x, y: 0, z, rot: 0 };
       if (!isPlacementValid(probe, [], room)) continue;
       const clear = blockers.every((r) => x < r.minX - 0.3 || x > r.maxX + 0.3 || z < r.minZ - 0.3 || z > r.maxZ + 0.3);
-      if (clear) candidates.push([x, z]);
+      const nearAvatar = room.avatarSpot && Math.hypot(x - room.avatarSpot[0], z - room.avatarSpot[1]) < 0.9;
+      if (clear && !nearAvatar) candidates.push([x, z]);
     }
   }
   const chosen: [number, number][] = [];
@@ -177,7 +180,7 @@ export const useMission = create<MissionState>()((set, get) => {
           if (props.every((p) => p.done)) solved('All done! Everything is in the right place.');
           else update(() => ({ message: { tone: 'good', text: `Good — ${prop.def.label} → the ${wordOf(objectId)}.` } }));
         } else {
-          wrong(`Hmm, ${prop.def.label} doesn’t go in/on the ${wordOf(objectId)}. Try somewhere else.`);
+          wrong(`Hmm, not the ${wordOf(objectId)}. Where else could ${prop.def.label.replace(/\.$/, '')} go?`);
         }
         return true;
       }
@@ -192,7 +195,7 @@ export const useMission = create<MissionState>()((set, get) => {
       const props = run.props.map((p) => (p === prop ? { ...p, opened: true } : p));
       const text = prop.opened
         ? `You picked up ${prop.def.label}. Now click where it goes.`
-        : `Inside the box: ${prop.def.label}. Where does it go? Click the furniture.`;
+        : `Inside the box: ${prop.def.label.replace(/\.$/, '')}. Where does it go? Click the furniture.`;
       update(() => ({ props, picked: propId, message: { tone: 'info', text } }));
     },
 

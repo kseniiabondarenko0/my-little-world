@@ -103,7 +103,7 @@ export function SessionRunner({ questions, eyebrow, onClose, onFinish, renderSum
                     ? missed.current.has(baseKey(question)) ? 'No star this time, but well remembered!' : '+1 ★'
                     : isMatch ? 'Some pairs were mixed up. We’ll try again later.' : <>The answer is <b>{answerShown}</b>. We’ll try again later.</>}
                 </span>
-                {!isMatch && (question.word.translations?.[language] || question.word.example) && (
+                {!isMatch && question.type !== 'builder' && (question.word.translations?.[language] || question.word.example) && (
                   <span className="feedback-extra">
                     <b>{question.word.word}</b>
                     {question.word.translations?.[language] && <> — {question.word.translations[language]}</>}

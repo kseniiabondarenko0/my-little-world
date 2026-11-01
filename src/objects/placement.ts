@@ -56,10 +56,10 @@ function doorZone(room: RoomDefinition): Rect | null {
     : { minX: door.center - half, maxX: door.center + half, minZ: -hd, maxZ: -hd + 0.9 };
 }
 
-/** Floor strip under the window, kept free of tall furniture (wardrobe, bookshelf). */
+/** Floor strip under the window, kept free of furniture taller than the windowsill (bed, wardrobe...). */
 function windowZone(room: RoomDefinition, def: FurnitureDefinition): Rect | null {
   const win = room.window;
-  if (!win || def.size[1] <= win.bottom + 0.2) return null;
+  if (!win || def.size[1] <= win.bottom) return null;
   const hw = room.size.width / 2;
   const hd = room.size.depth / 2;
   const half = win.width / 2;

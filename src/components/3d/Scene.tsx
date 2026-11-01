@@ -25,15 +25,20 @@ function ViewOffset() {
   const { width, height } = useThree((s) => s.size);
   const fitted = useRef(false);
   useEffect(() => {
-    if (!fitted.current && width > 0) {
+    if (width <= 0) return;
+    const shift = width >= 760 ? 0 : Math.round(height * 0.42);
+    if (width >= 760) camera.setViewOffset(width + 282, height, 0, 0, width, height);
+    // Phones: the bottom panel covers ~46% of the screen, so centre the room above it.
+    else camera.setViewOffset(width, height + shift, 0, shift, width, height);
+    camera.updateProjectionMatrix();
+    if (!fitted.current) {
       fitted.current = true;
-      const aspect = width / height;
-      const distance = 13.3 * Math.max(1, 1.1 / aspect);
+      // Move back far enough that the whole room (about 9 m across) fits the visible width.
+      const fullAspect = width >= 760 ? (width + 282) / height : width / (height + shift);
+      const halfFov = (camera.fov * Math.PI) / 360;
+      const distance = Math.max(13.3, 4.4 / (Math.tan(halfFov) * fullAspect));
       camera.position.sub(TARGET).setLength(distance).add(TARGET);
     }
-    if (width >= 760) camera.setViewOffset(width + 282, height, 0, 0, width, height);
-    else camera.setViewOffset(width, height + 190, 0, 190, width, height);
-    camera.updateProjectionMatrix();
   }, [camera, width, height]);
   return null;
 }
@@ -103,7 +108,7 @@ export function Scene() {
         enableDamping
         dampingFactor={0.08}
         minDistance={5}
-        maxDistance={32}
+        maxDistance={48}
         minPolarAngle={0.35}
         maxPolarAngle={1.38}
         minAzimuthAngle={-0.2}

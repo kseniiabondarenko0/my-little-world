@@ -36,19 +36,26 @@ function Prop({ prop, picked }: { prop: PropState; picked: boolean }) {
         onPointerOut={() => (document.body.style.cursor = '')}
       >
         <PropModel look={prop.def.look} color={prop.def.color} />
+        {/* Bigger invisible tap area, so small things (a mug, socks) are easy to pick. */}
+        <mesh position={[0, 0.25, 0]}>
+          <cylinderGeometry args={[0.34, 0.34, 0.5, 12]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        </mesh>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]} raycast={() => null}>
           <circleGeometry args={[0.32, 24]} />
           <meshBasicMaterial color={picked ? '#ffb35c' : '#ffffff'} transparent opacity={picked ? 0.55 : 0.3} depthWrite={false} />
         </mesh>
       </group>
       {!prop.done && prop.opened && (
-        <Html position={[0, 0.75, 0]} center distanceFactor={9} zIndexRange={[4, 0]} style={{ pointerEvents: 'none' }}>
-          <div className={`prop-label ${picked ? 'picked' : ''}`}>{prop.def.label}</div>
+        <Html position={[0, 0.75, 0]} center distanceFactor={9} zIndexRange={[4, 0]}>
+          <button className={`prop-label ${picked ? 'picked' : ''}`} onClick={() => tapProp(prop.def.id)}>
+            {prop.def.label}
+          </button>
         </Html>
       )}
       {!prop.done && !prop.opened && (
-        <Html position={[0, 0.6, 0]} center distanceFactor={9} zIndexRange={[4, 0]} style={{ pointerEvents: 'none' }}>
-          <div className="prop-label">?</div>
+        <Html position={[0, 0.6, 0]} center distanceFactor={9} zIndexRange={[4, 0]}>
+          <button className="prop-label" onClick={() => tapProp(prop.def.id)} aria-label="Open box">?</button>
         </Html>
       )}
     </group>

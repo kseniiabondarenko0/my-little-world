@@ -303,7 +303,7 @@ const final: MissionDefinition = {
         { text: 'It’s a lamp.', correct: false, feedback: 'Your friend wants to know WHERE it is.' },
         { text: 'I am a lamp.', correct: false, feedback: 'Use “It’s on/next to/under...”.' },
       ] },
-      { type: 'write', prompt: 'Write 2 sentences about your room for your friend.', minWords: 8, require: [furniture(2)], sample: 'My bed is big. The lamp is on the bedside table.' },
+      { type: 'write', prompt: 'Write 2 sentences about your room for your friend.', minWords: 8, require: [furniture(2)], sample: 'My bed is…' },
     ],
     A2: [
       { type: 'find', prompt: 'Your friend gets cold at night. Where can you find an extra blanket? Click it.', targets: ['wardrobe', 'chest'] },
@@ -320,7 +320,7 @@ const final: MissionDefinition = {
         mess('f6', 'the suitcase', 'suitcase', '#f6a6a6', ['wardrobe', 'bed', 'chest'], 'Put the suitcase next to the wardrobe or under the bed.'),
       ] },
       { type: 'write', prompt: 'Describe the room for your friend. Use at least 3 furniture words and 2 prepositions.', minWords: 15,
-        require: [furniture(3), prepositions(2)], sample: 'This is my bedroom. Your bag can go next to the wardrobe. The lamp is on the bedside table...' },
+        require: [furniture(3), prepositions(2)], sample: 'This is my bedroom. Your bag can go…' },
     ],
     B1: [
       { type: 'find', prompt: 'Your friend feels the cold easily. Where would you look for a spare blanket? Click it.', targets: ['wardrobe', 'chest'] },

@@ -207,7 +207,7 @@ function WordBookModal() {
       <Segmented value={level} options={[{ id: 'all' as const, label: 'All' }, ...LEVELS.map((l) => ({ id: l, label: l }))]} onChange={setLevel} />
       <div className="chips">
         {categories.map((c) => (
-          <button key={c} className={`chip ${category === c ? 'active' : ''}`} onClick={() => setCategory(c)}>
+          <button key={c} className={`chip chip-cap ${category === c ? 'active' : ''}`} onClick={() => setCategory(c)}>
             {c}
           </button>
         ))}

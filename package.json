@@ -1,13 +1,14 @@
 {
   "name": "my-little-world",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:logic": "esbuild scripts/logic-test.ts --bundle --platform=node --format=esm --log-level=warning --outfile=node_modules/.cache/logic-test.mjs && node --no-warnings node_modules/.cache/logic-test.mjs"
   },
   "dependencies": {
     "@react-three/drei": "9.117.3",

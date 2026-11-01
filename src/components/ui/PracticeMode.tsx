@@ -39,7 +39,7 @@ export function PracticeMode() {
 
 function Practice() {
   const close = () => useUI.getState().openModal(null);
-  const { language, level: myLevel, words, tick, currentRoomId } = useProgress();
+  const { language, level: myLevel, words, currentRoomId } = useProgress();
   const [roomId, setRoomId] = useState(currentRoomId);
   const [category, setCategory] = useState('all');
   const [level, setLevel] = useState<Level>(myLevel);
@@ -78,11 +78,15 @@ function Practice() {
         prompt: 'Choose the right preposition.', sentence: p.sentence, answer: p.answer, options: shuffle(unique([p.answer, ...p.options])), objectId: '',
       }));
     }
-    const source = mode === 'mistakes' ? mistakes : pool;
+    // Read the latest progress once: the round must not change while it is being played,
+    // even though answering updates the student's word statistics.
+    const latest = useProgress.getState();
+    const source = mode === 'mistakes'
+      ? ALL_WORDS.filter((w) => w.topic === roomId && (latest.words[w.id]?.wrong ?? 0) > 0 && masteryOf(latest.words[w.id]) !== 'mastered')
+      : wordsForRoom(roomId, level, category);
     if (!source.length) return [];
-    return buildDeck(source, formats[mode], ctx, words, tick, mode === 'mistakes' ? Math.min(12, source.length) : 10);
-    // A new round rebuilds the questions.
-  }, [mode, round, roomId, level, pool, mistakes]);
+    return buildDeck(source, formats[mode], ctx, latest.words, latest.tick, mode === 'mistakes' ? Math.min(12, source.length) : 10);
+  }, [mode, round, roomId, level, category, language]);
 
   const again = () => setRound((r) => r + 1);
   const summary = (r: SessionResult) => (
@@ -162,9 +166,9 @@ function Practice() {
 
 /** A word to attach a sentence to (for statistics): the first room word that appears in it. */
 function wordFor(text: string, roomId: string): VocabularyWord {
-  const lower = text.toLowerCase();
-  const words = ALL_WORDS.filter((w) => w.topic === roomId).sort((a, b) => b.word.length - a.word.length);
-  return words.find((w) => lower.includes(w.word.toLowerCase())) ?? words[0];
+  const lower = ` ${text.toLowerCase().replace(/[^a-z' -]/g, ' ')} `;
+  const words = ALL_WORDS.filter((w) => w.topic === roomId && w.category !== 'prepositions').sort((a, b) => b.word.length - a.word.length);
+  return words.find((w) => lower.includes(` ${w.word.toLowerCase()} `)) ?? words[0];
 }
 
 function PracticeHead({ title, onBack, onClose }: { title: string; onBack: () => void; onClose: () => void }) {
@@ -221,7 +225,7 @@ function Flashcards({ pool, onBack, onClose }: { pool: VocabularyWord[]; onBack:
                 <span className="flash-word">{card.translations?.[language] ?? '—'}</span>
                 <span className="flash-en">{card.word}</span>
                 {card.example && <em className="muted">“{card.example}”</em>}
-                <span className="chips"><span className={`level level-${card.level}`}>{card.level}</span><span className="chip">{card.category}</span></span>
+                <span className="chips"><span className={`level level-${card.level}`}>{card.level}</span><span className="chip chip-cap">{card.category}</span></span>
               </>
             )}
           </button>

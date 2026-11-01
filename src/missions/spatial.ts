@@ -80,7 +80,7 @@ export function evaluate(check: SpatialCheck, items: PlacedItem[], room: RoomDef
       const ok = a.wall === 'left'
         ? rb!.minX <= -hw + 0.7 && a.z >= rb!.minZ - 0.15 && a.z <= rb!.maxZ + 0.15
         : rb!.minZ <= -hd + 0.7 && a.x >= rb!.minX - 0.15 && a.x <= rb!.maxX + 0.15;
-      return { ok: ok && bottom >= hb - 0.15, message: `Hang ${A} on the wall right above ${B} (${B} must be against that wall).` };
+      return { ok: ok && bottom >= hb - 0.15, message: `Hang ${A} on the wall right above ${B}. ${cap(B)} must stand against that wall — if the window is in the way, move ${B} first.` };
     }
     case 'inFrontOf': {
       const [fx, fz] = front(b!);

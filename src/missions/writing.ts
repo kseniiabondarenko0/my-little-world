@@ -39,7 +39,7 @@ export function evaluateWriting(text: string, minWords: number, require: WordReq
       return occurrences(w) > covered;
     });
     checks.push({
-      label: `Use ${r.count} ${r.label}`,
+      label: `Use at least ${r.count}: ${r.label}`,
       ok: distinct.length >= r.count,
       detail: distinct.length ? `Found: ${distinct.slice(0, 6).join(', ')}` : 'None yet',
     });

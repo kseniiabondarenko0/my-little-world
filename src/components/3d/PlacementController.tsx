@@ -42,7 +42,15 @@ export function trackDrag({ camera, canvas, room, controls }: TrackOptions) {
     const drag = useUI.getState().drag;
     if (drag?.moved && drag.preview) {
       if (drag.valid) commitDrag(drag);
-      else useUI.getState().pushToast({ icon: '🚫', title: 'It doesn’t fit there', text: 'Try a free spot.', tone: 'warning' });
+      else {
+        const onWall = drag.preview.wall !== undefined;
+        useUI.getState().pushToast({
+          icon: '🚫',
+          title: 'It doesn’t fit there',
+          text: onWall ? 'Pictures and mirrors can’t cover the window or door, or hide behind tall furniture.' : 'Try a free spot.',
+          tone: 'warning',
+        });
+      }
     } else if (drag) {
       tapObject(drag.origin);
     }

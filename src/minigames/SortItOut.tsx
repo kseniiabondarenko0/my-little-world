@@ -28,7 +28,7 @@ export function SortItOut({ chapter, level, onComplete }: MiniGameProps) {
       setPlaced(next);
       setSelected(null);
       useUI.getState().cheerUp();
-      if (Object.keys(next).length === items.length) setTimeout(() => onComplete({ mistakes, detail: `${mistakes} mistakes` }), 500);
+      if (Object.keys(next).length === items.length) setTimeout(() => onComplete({ mistakes, detail: mistakes === 1 ? '1 mistake' : `${mistakes} mistakes` }), 500);
     } else {
       setMistakes((m) => m + 1);
       setWrongBin(bin);
