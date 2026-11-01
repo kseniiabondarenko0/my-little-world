@@ -1,5 +1,5 @@
 import type { ActivityDefinition, ActivityStage, ActivityType, Level, NativeLanguage, VocabularyWord } from '../types/game';
-import { ALL_WORDS, getActivitiesForWord, getFurniture, getLinkedWords, getWord, levelAtMost } from '../data/content';
+import { ALL_WORDS, getActivitiesForWord, getFurniture, getLinkedWords, getWord, isObjectWord, levelAtMost } from '../data/content';
 
 // Turns content (words + activity definitions) into ready-to-play questions.
 
@@ -17,6 +17,14 @@ export interface Question {
   native?: string;
   showModel?: boolean;
   objectId: string;
+  /** match: pairs to connect (left = English, right = translation/picture object id). */
+  pairs?: { left: string; right: string }[];
+  /** builder: words to put in order. */
+  tokens?: string[];
+  /** typing: listen and type, or translate and type. */
+  mode?: 'dictation' | 'recall';
+  /** pictureChoice: object ids shown as pictures, same order as `options`. */
+  pictures?: string[];
 }
 
 export interface SessionOptions {
@@ -33,12 +41,12 @@ export function shuffle<T>(list: T[]): T[] {
   return a;
 }
 
-const unique = (list: string[]) => [...new Set(list)];
+export const unique = (list: string[]) => [...new Set(list)];
 
 export const normalize = (s: string) => s.trim().toLowerCase().replace(/[’']/g, "'");
 
 /** Wrong answers: words from the same category that don't mean the same thing. */
-function distractors(word: VocabularyWord, count: number, opts: SessionOptions): string[] {
+export function distractors(word: VocabularyWord, count: number, opts: SessionOptions): string[] {
   const native = word.translations?.[opts.language];
   const pool = ALL_WORDS.filter(
     (w) =>
@@ -54,8 +62,8 @@ function distractors(word: VocabularyWord, count: number, opts: SessionOptions):
 }
 
 /** Wrong answers for "What is this?": names of other 3D objects, never parts of this one. */
-function objectDistractors(word: VocabularyWord, count: number): string[] {
-  return shuffle(ALL_WORDS.filter((w) => w.objectId === w.id && w.id !== word.id)).slice(0, count).map((w) => w.word);
+export function objectDistractors(word: VocabularyWord, count: number): string[] {
+  return shuffle(ALL_WORDS.filter((w) => isObjectWord(w) && w.id !== word.id)).slice(0, count).map((w) => w.word);
 }
 
 /** Default letters to hide for spelling: the vowels (at most 5). */

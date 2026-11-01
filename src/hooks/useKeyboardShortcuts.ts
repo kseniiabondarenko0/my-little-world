@@ -11,11 +11,13 @@ export function useKeyboardShortcuts() {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       if (e.key === 'Escape') {
         if (ui.activity) ui.closeActivity();
+        else if (ui.training) ui.closeTraining();
+        else if (ui.minigame) ui.closeMinigame();
         else if (ui.modal) ui.openModal(null);
         else ui.select(null);
         return;
       }
-      if (ui.activity || ui.modal || !ui.selectedUid) return;
+      if (ui.activity || ui.modal || ui.training || ui.minigame || !ui.selectedUid) return;
       if (e.key === 'r' || e.key === 'R') rotateObject(ui.selectedUid);
       if (e.key === 'Delete' || e.key === 'Backspace') removeObject(ui.selectedUid);
     };

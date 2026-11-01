@@ -3,6 +3,10 @@ import type { ActivityType } from '../types/game';
 import type { Question } from './engine';
 import { ChoiceActivity } from './components/ChoiceActivity';
 import { SpellingActivity } from './components/SpellingActivity';
+import { PictureChoiceActivity } from './components/PictureChoiceActivity';
+import { TypingActivity } from './components/TypingActivity';
+import { MatchActivity } from './components/MatchActivity';
+import { BuilderActivity } from './components/BuilderActivity';
 
 // Which screen shows which activity type.
 // A new activity type (listening, speaking, dialogue...) = a new component + one line here.
@@ -18,4 +22,11 @@ export const ACTIVITY_COMPONENTS: Record<ActivityType, ComponentType<ActivityPro
   sentence: ChoiceActivity,
   translation: ChoiceActivity,
   spelling: SpellingActivity,
+  imageChoice: ChoiceActivity,
+  reverse: ChoiceActivity,
+  listening: ChoiceActivity,
+  pictureChoice: PictureChoiceActivity,
+  typing: TypingActivity,
+  match: MatchActivity,
+  builder: BuilderActivity,
 };

@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ActivityProps } from '../registry';
 import { normalize } from '../engine';
 import { ModelPreview } from '../../components/3d/ModelPreview';
 import { SpeakButton } from '../../components/ui/SpeakButton';
+import { useUI } from '../../hooks/useUIStore';
+import { speak } from '../speech';
 
 // One component for every "pick an answer" activity:
-// vocabulary (with 3D object), multiple choice, sentence gap, translation.
+// vocabulary (with 3D object), picture → word, listening, multiple choice, sentence gap, translation.
 
 export function ChoiceActivity({ question, onAnswer }: ActivityProps) {
   const [chosen, setChosen] = useState<string | null>(null);
@@ -18,6 +20,15 @@ export function ChoiceActivity({ question, onAnswer }: ActivityProps) {
   };
 
   const [before, after] = question.sentence ? question.sentence.split('___') : ['', ''];
+  const thumbnail = useUI((s) => s.thumbnails[question.objectId]);
+  const listening = question.type === 'listening';
+
+  useEffect(() => {
+    if (listening) {
+      const t = setTimeout(() => speak(question.answer), 350);
+      return () => clearTimeout(t);
+    }
+  }, [listening, question.answer]);
 
   return (
     <div className="activity">
@@ -27,6 +38,18 @@ export function ChoiceActivity({ question, onAnswer }: ActivityProps) {
         <div className="activity-model">
           <ModelPreview objectId={question.objectId} />
         </div>
+      )}
+
+      {question.type === 'imageChoice' && (
+        <div className="activity-model">
+          {thumbnail ? <img className="activity-thumb" src={thumbnail} alt="" /> : <ModelPreview objectId={question.objectId} />}
+        </div>
+      )}
+
+      {listening && (
+        <button className="listen-big" onClick={() => speak(question.answer)} aria-label="Play the word again">
+          🔊<span>Play again</span>
+        </button>
       )}
 
       {question.type === 'translation' && (

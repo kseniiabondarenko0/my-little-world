@@ -43,3 +43,20 @@ export function getLinkedWords(objectId: string, mainWordId: string, maxLevel: L
 }
 
 export const LEVELS = LEVEL_ORDER;
+
+const objectWordIds = new Set(FURNITURE.map((f) => f.wordId));
+
+/** True for the main word of a 3D object (it has a model to show). */
+export function isObjectWord(w: VocabularyWord): boolean {
+  return objectWordIds.has(w.id);
+}
+
+/** The 3D object whose main word this is. */
+export function objectOfWord(w: VocabularyWord): string | undefined {
+  return FURNITURE.find((f) => f.wordId === w.id)?.id;
+}
+
+/** All words of a room topic up to a level. */
+export function wordsForRoom(topic: string, maxLevel: Level, category?: string): VocabularyWord[] {
+  return ALL_WORDS.filter((w) => w.topic === topic && levelAtMost(w.level, maxLevel) && (!category || category === 'all' || w.category === category));
+}

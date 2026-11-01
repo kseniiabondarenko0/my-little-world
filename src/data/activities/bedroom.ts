@@ -126,4 +126,14 @@ export const bedroomActivities: ActivityDefinition[] = [
     question: 'What does a plant need?', answer: 'water', options: ['water', 'a pillow', 'a key'] },
   { id: 'plant-grammar', wordId: 'plant', stage: 'practice', type: 'sentence',
     sentence: 'The plant ___ green leaves.', answer: 'has', options: ['has', 'have', 'is'] },
+
+  // ── Chest of drawers ─────────────────────────────
+  { id: 'chest-vocab', wordId: 'chest-of-drawers', stage: 'lesson', type: 'vocabulary' },
+  { id: 'chest-spell', wordId: 'chest-of-drawers', stage: 'lesson', type: 'spelling', hide: [2, 3, 10, 11, 13] },
+  { id: 'chest-sentence', wordId: 'chest-of-drawers', stage: 'lesson', type: 'sentence',
+    sentence: 'I keep my socks in the ___.', answer: 'chest of drawers', options: ['chest of drawers', 'mirror', 'lamp'] },
+  { id: 'chest-mc', wordId: 'chest-of-drawers', stage: 'practice', type: 'multipleChoice',
+    question: 'What has drawers?', answer: 'a chest of drawers', options: ['a chest of drawers', 'a carpet', 'a picture'] },
+  { id: 'chest-prep', wordId: 'chest-of-drawers', stage: 'practice', type: 'sentence',
+    sentence: 'My T-shirts are ___ the top drawer.', answer: 'in', options: ['in', 'on', 'at'] },
 ];

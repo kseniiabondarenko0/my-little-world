@@ -8,6 +8,9 @@ import { useUI } from '../../hooks/useUIStore';
 import { getRoom } from '../../rooms';
 import { Room } from './Room';
 import { PlacedObject } from './PlacedObject';
+import { MissionProps } from './MissionProps';
+import { AvatarFigure } from './AvatarFigure';
+import { usePlayer } from '../../player/playerStore';
 
 // The main 3D view: camera, lights, room and the objects in it.
 
@@ -40,6 +43,7 @@ export function Scene() {
   const items = useLayout((s) => s.rooms[room.id] ?? EMPTY_ITEMS);
   const dragging = useUI((s) => s.drag !== null);
   const select = useUI((s) => s.select);
+  const avatar = usePlayer((s) => s.current?.avatar);
 
   return (
     <Canvas
@@ -79,6 +83,17 @@ export function Scene() {
       {items.map((item) => (
         <PlacedObject key={item.uid} item={item} room={room} />
       ))}
+      <MissionProps />
+      {avatar && room.avatarSpot && (
+        <group
+          onClick={(e) => {
+            e.stopPropagation();
+            useUI.getState().openModal('profile');
+          }}
+        >
+          <AvatarFigure avatar={avatar} position={room.avatarSpot} />
+        </group>
+      )}
 
       <OrbitControls
         makeDefault

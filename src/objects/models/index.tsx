@@ -217,6 +217,22 @@ function Plant() {
   );
 }
 
+function Chest() {
+  return (
+    <group>
+      <Legs w={0.86} d={0.46} h={0.08} r={0.025} inset={0.06} color={WOOD_DARK} />
+      <Box size={[0.88, 0.88, 0.48]} position={[0, 0.52, 0]} color="#f7d9a8" radius={0.03} />
+      <Box size={[0.92, 0.05, 0.5]} position={[0, 0.975, 0]} color={WOOD} radius={0.02} />
+      {[0.78, 0.52, 0.26].map((y) => (
+        <group key={y}>
+          <Box size={[0.8, 0.22, 0.02]} position={[0, y, 0.245]} color="#fbe8c6" radius={0.008} />
+          <Box size={[0.16, 0.025, 0.025]} position={[0, y, 0.265]} color={GOLD} radius={0.01} />
+        </group>
+      ))}
+    </group>
+  );
+}
+
 export const MODELS: Record<string, ComponentType> = {
   bed: Bed,
   wardrobe: Wardrobe,
@@ -229,6 +245,7 @@ export const MODELS: Record<string, ComponentType> = {
   mirror: Mirror,
   nightstand: Nightstand,
   plant: Plant,
+  chest: Chest,
 };
 
 export function FurnitureModel({ model }: { model: string }) {

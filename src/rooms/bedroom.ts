@@ -18,6 +18,7 @@ export const bedroom: RoomDefinition = {
   },
   window: { wall: 'back', center: 0.6, bottom: 0.95, width: 1.5, height: 1.25 },
   door: { wall: 'left', center: 1.7, bottom: 0, width: 0.95, height: 2.15 },
-  objects: ['bed', 'lamp', 'nightstand', 'carpet', 'wardrobe', 'desk', 'chair', 'bookshelf', 'picture', 'mirror', 'plant'],
+  objects: ['bed', 'lamp', 'nightstand', 'carpet', 'wardrobe', 'desk', 'chair', 'bookshelf', 'picture', 'mirror', 'plant', 'chest'],
+  avatarSpot: [2.45, 2.45],
   nextRoom: 'kitchen',
 };

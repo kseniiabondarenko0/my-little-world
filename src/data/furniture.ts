@@ -27,4 +27,6 @@ export const FURNITURE: FurnitureDefinition[] = [
     size: [0.55, 1.1, 0.05], starsRequired: 21, icon: '🪞' },
   { id: 'plant', wordId: 'plant', name: 'Plant', model: 'plant', mount: 'small',
     size: [0.4, 0.8, 0.4], starsRequired: 24, icon: '🪴' },
+  { id: 'chest', wordId: 'chest-of-drawers', name: 'Chest of drawers', model: 'chest', mount: 'floor',
+    size: [0.9, 1.0, 0.5], surfaceHeight: 1.0, starsRequired: 27, icon: '🗃️' },
 ];

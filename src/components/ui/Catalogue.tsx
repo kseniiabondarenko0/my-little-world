@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { JourneyPanel } from './JourneyPanel';
+import { useChapterView } from '../../hooks/useChapterView';
 import { useProgress } from '../../progression/progressStore';
 import { useLayout, EMPTY_ITEMS } from '../../rooms/layoutStore';
 import { useUI } from '../../hooks/useUIStore';
@@ -20,6 +22,9 @@ export function Catalogue() {
   const items = useLayout((s) => s.rooms[room.id] ?? EMPTY_ITEMS);
   const thumbnails = useUI((s) => s.thumbnails);
   const { openActivity, select, pushToast } = useUI.getState();
+  const tab = useUI((s) => s.panelTab);
+  const setTab = useUI((s) => s.setPanelTab);
+  const { percent } = useChapterView();
   const [open, setOpen] = useState(true);
 
   const onCard = (id: string, status: ObjectStatus) => {
@@ -38,13 +43,18 @@ export function Catalogue() {
 
   return (
     <aside className={`catalogue ${open ? 'open' : 'closed'}`}>
-      <button className="catalogue-head" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
-        <span>🛋️ Furniture</span>
-        <span className="catalogue-count">
-          {room.objects.filter((id) => progress.unlocked.includes(id)).length}/{room.objects.length}
-        </span>
-        <span className="chev">{open ? '▾' : '▴'}</span>
-      </button>
+      <div className="panel-tabs" role="tablist">
+        <button role="tab" aria-selected={tab === 'journey'} className={tab === 'journey' ? 'active' : ''} onClick={() => { setTab('journey'); setOpen(true); }}>
+          🗺️ Journey <span className="catalogue-count">{percent}%</span>
+        </button>
+        <button role="tab" aria-selected={tab === 'furniture'} className={tab === 'furniture' ? 'active' : ''} onClick={() => { setTab('furniture'); setOpen(true); }}>
+          🛋️ Furniture <span className="catalogue-count">{room.objects.filter((id) => progress.unlocked.includes(id)).length}/{room.objects.length}</span>
+        </button>
+        <button className="panel-toggle" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={open ? 'Hide panel' : 'Show panel'}>
+          {open ? '▾' : '▴'}
+        </button>
+      </div>
+      {tab === 'journey' ? <JourneyPanel /> : (
       <div className="catalogue-list">
         {room.objects.map((id) => {
           const def = getFurniture(id);
@@ -67,6 +77,7 @@ export function Catalogue() {
           );
         })}
       </div>
+      )}
     </aside>
   );
 }

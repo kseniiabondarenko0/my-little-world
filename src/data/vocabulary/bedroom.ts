@@ -128,4 +128,15 @@ export const bedroomWords: VocabularyWord[] = [
     example: 'I water my plant every day.',
     translations: { uk: 'рослина', ru: 'растение' },
   },
+  {
+    id: 'chest-of-drawers',
+    objectId: 'chest',
+    word: 'chest of drawers',
+    level: 'A2',
+    topic: 'bedroom',
+    category: 'furniture',
+    definition: 'Furniture with drawers for clothes.',
+    example: 'My socks are in the top drawer of the chest of drawers.',
+    translations: { uk: 'комод', ru: 'комод' },
+  },
 ];

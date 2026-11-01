@@ -2,6 +2,8 @@ import type { PlacedItem, RoomDefinition } from '../types/game';
 import { ACHIEVEMENTS, type AchievementDefinition } from '../data/achievements';
 import { FURNITURE } from '../data/furniture';
 import type { useProgress } from './progressStore';
+import type { RoomChapter } from '../chapter/chapterStore';
+import { MASTERED_BOX } from '../learning/srs';
 
 // Progression rules: object status, room completion and achievement checks.
 
@@ -32,7 +34,13 @@ export function roomCompletion(room: RoomDefinition, progress: Progress, items: 
   return Math.round((done / total) * 100);
 }
 
-export function newlyEarnedAchievements(progress: Progress, allItems: Record<string, PlacedItem[]>): AchievementDefinition[] {
+export function newlyEarnedAchievements(
+  progress: Progress,
+  allItems: Record<string, PlacedItem[]>,
+  chapters: Record<string, RoomChapter>,
+  stagesDone: number,
+): AchievementDefinition[] {
+  const tasks = Object.values(chapters).flatMap((c) => c.done);
   const placed = Object.values(allItems).reduce((n, list) => n + list.length, 0);
   const correct = Object.values(progress.words).reduce((n, w) => n + w.correct, 0);
   const counts: Record<string, number> = {
@@ -42,6 +50,12 @@ export function newlyEarnedAchievements(progress: Progress, allItems: Record<str
     practised: progress.practised.length,
     stars: progress.stars,
     perfect: progress.perfectSessions,
+    stages: stagesDone,
+    minigames: tasks.filter((t) => t.startsWith('mini:')).length,
+    missions: tasks.filter((t) => t.startsWith('challenge:')).length,
+    mastered: Object.values(progress.words).filter((w) => (w.box ?? 0) >= MASTERED_BOX).length,
+    xp: progress.xp,
+    writings: Object.values(chapters).reduce((n, c) => n + c.writings.length, 0),
   };
   return ACHIEVEMENTS.filter((a) => {
     if (progress.achievements.includes(a.id)) return false;

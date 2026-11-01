@@ -22,7 +22,7 @@ export interface ActivityRequest {
   nonce?: number;
 }
 
-export type ModalId = 'rooms' | 'achievements' | 'menu' | 'intro' | 'words' | null;
+export type ModalId = 'rooms' | 'achievements' | 'menu' | 'words' | 'profile' | 'practice' | null;
 
 export interface Toast {
   id: number;
@@ -30,7 +30,11 @@ export interface Toast {
   title: string;
   text?: string;
   tone?: 'success' | 'info' | 'warning';
+  /** Show the player's avatar instead of the icon. */
+  avatar?: boolean;
 }
+
+export type PanelTab = 'journey' | 'furniture';
 
 interface UIState {
   selectedUid: string | null;
@@ -39,6 +43,19 @@ interface UIState {
   modal: ModalId;
   toasts: Toast[];
   thumbnails: Record<string, string>;
+  /** Increases whenever the avatar should celebrate. */
+  cheer: number;
+  panelTab: PanelTab;
+  /** A mini-game window that is open (game id + the chapter task it counts for, if any). */
+  minigame: { gameId: string; taskId: string | null; nonce: number } | null;
+  /** A vocabulary training session that is open. */
+  training: { taskId: string | null; nonce: number } | null;
+  cheerUp: () => void;
+  setPanelTab: (tab: PanelTab) => void;
+  openMinigame: (gameId: string, taskId: string | null) => void;
+  closeMinigame: () => void;
+  openTraining: (taskId: string | null) => void;
+  closeTraining: () => void;
   select: (uid: string | null) => void;
   startDrag: (drag: DragState) => void;
   updateDrag: (patch: Partial<DragState>) => void;
@@ -60,6 +77,16 @@ export const useUI = create<UIState>()((set) => ({
   modal: null,
   toasts: [],
   thumbnails: {},
+  cheer: 0,
+  panelTab: 'journey',
+  minigame: null,
+  training: null,
+  cheerUp: () => set((s) => ({ cheer: s.cheer + 1 })),
+  setPanelTab: (panelTab) => set({ panelTab }),
+  openMinigame: (gameId, taskId) => set({ minigame: { gameId, taskId, nonce: Date.now() }, selectedUid: null }),
+  closeMinigame: () => set({ minigame: null }),
+  openTraining: (taskId) => set({ training: { taskId, nonce: Date.now() } }),
+  closeTraining: () => set({ training: null }),
   select: (uid) => set({ selectedUid: uid }),
   startDrag: (drag) => set({ drag, selectedUid: drag.uid }),
   updateDrag: (patch) => set((s) => (s.drag ? { drag: { ...s.drag, ...patch } } : s)),

@@ -3,16 +3,17 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import type { Level, NativeLanguage } from '../types/game';
 import { safeStorage } from '../save/storage';
 import { DEFAULT_ROOM_ID } from '../rooms';
+import { applyAnswer, emptyWord, type WordProgress } from '../learning/srs';
 
-// The student's learning progress (saved automatically).
+// The student's learning progress (saved automatically, one save per player).
 
-export interface WordProgress {
-  correct: number;
-  attempts: number;
-}
+export type { WordProgress };
 
 interface ProgressData {
   stars: number;
+  xp: number;
+  /** Counts answers; used by spaced repetition. */
+  tick: number;
   unlocked: string[];
   practised: string[];
   words: Record<string, WordProgress>;
@@ -27,6 +28,7 @@ interface ProgressData {
 
 interface ProgressActions {
   recordAnswer: (wordId: string, correct: boolean, firstTry: boolean) => void;
+  addXp: (amount: number) => void;
   unlockObject: (id: string) => void;
   markPractised: (id: string) => void;
   addPerfectSession: () => void;
@@ -40,6 +42,8 @@ interface ProgressActions {
 
 const initial: ProgressData = {
   stars: 0,
+  xp: 0,
+  tick: 0,
   unlocked: [],
   practised: [],
   words: {},
@@ -59,13 +63,13 @@ export const useProgress = create<ProgressData & ProgressActions>()(
     (set) => ({
       ...initial,
       recordAnswer: (wordId, correct, firstTry) =>
-        set((s) => {
-          const w = s.words[wordId] ?? { correct: 0, attempts: 0 };
-          return {
-            words: { ...s.words, [wordId]: { correct: w.correct + (correct ? 1 : 0), attempts: w.attempts + 1 } },
-            stars: s.stars + (correct && firstTry ? 1 : 0),
-          };
-        }),
+        set((s) => ({
+          tick: s.tick + 1,
+          words: { ...s.words, [wordId]: applyAnswer(s.words[wordId], correct, s.tick + 1) },
+          stars: s.stars + (correct && firstTry ? 1 : 0),
+          xp: s.xp + (correct ? (firstTry ? 5 : 2) : 0),
+        })),
+      addXp: (amount) => set((s) => ({ xp: s.xp + amount })),
       unlockObject: (id) => set((s) => ({ unlocked: addUnique(s.unlocked, id) })),
       markPractised: (id) => set((s) => ({ practised: addUnique(s.practised, id) })),
       addPerfectSession: () => set((s) => ({ perfectSessions: s.perfectSessions + 1 })),
@@ -77,6 +81,26 @@ export const useProgress = create<ProgressData & ProgressActions>()(
       // Keep language and level so the teacher's setup survives a reset.
       reset: () => set((s) => ({ ...initial, language: s.language, level: s.level })),
     }),
-    { name: 'progress', version: 1, storage: createJSONStorage(() => safeStorage) },
+    {
+      name: 'progress',
+      version: 2,
+      storage: createJSONStorage(() => safeStorage),
+      // v1 (first release) → v2: add XP and spaced-repetition data, keep everything else.
+      migrate: (persisted, version) => {
+        const state = { ...initial, ...(persisted as Partial<ProgressData>) };
+        if (version < 2) {
+          const words: Record<string, WordProgress> = {};
+          for (const [id, w] of Object.entries(state.words ?? {})) {
+            const old = w as { correct?: number; attempts?: number };
+            const correct = old.correct ?? 0;
+            const attempts = old.attempts ?? 0;
+            words[id] = { ...emptyWord(), correct, attempts, wrong: attempts - correct, box: Math.min(3, correct) };
+          }
+          state.words = words;
+          state.xp = state.stars * 5;
+        }
+        return state as ProgressData & ProgressActions;
+      },
+    },
   ),
 );

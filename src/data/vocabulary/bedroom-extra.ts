@@ -137,7 +137,6 @@ export const bedroomExtraWords: VocabularyWord[] = [
   w('pillowcase', 'B1', 'advanced', 'bed', 'наволочка', 'наволочка'),
   w('built-in wardrobe', 'B1', 'advanced', 'wardrobe', 'встроенный шкаф', 'вбудована шафа'),
   w('dressing table', 'B1', 'advanced', 'mirror', 'туалетный столик', 'туалетний столик'),
-  w('chest of drawers', 'B1', 'advanced', null, 'комод', 'комод'),
   w('blinds', 'B1', 'advanced', null, 'жалюзи', 'жалюзі'),
   w('ceiling light', 'B1', 'advanced', 'lamp', 'потолочный светильник', 'стельовий світильник'),
   w('spacious', 'B1', 'advanced', null, 'просторный', 'просторий'),

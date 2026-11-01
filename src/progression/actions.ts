@@ -5,6 +5,11 @@ import { useLayout } from '../rooms/layoutStore';
 import { useProgress } from './progressStore';
 import { useUI, type DragState } from '../hooks/useUIStore';
 import { findFreeSpot, isPlacementValid, settleSmallItems, snapFloor } from '../objects/placement';
+import { useChapter } from '../chapter/chapterStore';
+import { useMission, type MissionRun } from '../missions/missionStore';
+import { getChapter } from '../data/chapters';
+import { missionForTask } from '../minigames/missions';
+import { buildStages, choosePicks, findTask, type Task } from '../chapter/stages';
 
 // Game actions that touch several stores at once (room layout + progress + screen state).
 
@@ -77,4 +82,90 @@ export function finishSession(objectId: string, stage: ActivityStage, perfect: b
   if (stage === 'lesson') progress.unlockObject(objectId);
   else progress.markPractised(objectId);
   if (perfect) progress.addPerfectSession();
+}
+
+// ── Chapter tasks ──────────────────────────────────────────────────────────
+
+/** Marks a chapter task as done and gives its reward (only the first time). */
+export function completeTask(taskId: string, title: string, xp: number) {
+  const room = currentRoom();
+  if (!useChapter.getState().complete(room.id, taskId)) return;
+  useProgress.getState().addXp(xp);
+  useUI.getState().cheerUp();
+  toast({ icon: '✅', title: `${title} — done!`, text: `+${xp} XP`, tone: 'success', avatar: true });
+}
+
+export function currentStages() {
+  const progress = useProgress.getState();
+  const room = currentRoom();
+  return buildStages({
+    chapter: getChapter(room.id),
+    room,
+    level: progress.level,
+    state: useChapter.getState().rooms[room.id] ?? { done: [], picks: [], inspected: [], writings: [] },
+    unlocked: progress.unlocked,
+    items: roomItems(room.id),
+    words: progress.words,
+  });
+}
+
+/** Makes sure the three mini-games for this playthrough are chosen. */
+export function ensurePicks() {
+  const room = currentRoom();
+  if (!(useChapter.getState().rooms[room.id]?.picks.length)) useChapter.getState().setPicks(room.id, choosePicks());
+}
+
+/** Starts whatever a Journey task needs: a mission in the room, a training session or a mini-game. */
+export function startTask(task: Task) {
+  const ui = useUI.getState();
+  ui.select(null);
+  if (task.kind === 'training') {
+    ui.openTraining(task.id);
+  } else if (task.kind === 'minigame' && task.gameId) {
+    if (task.gameId === 'hidden' || task.gameId === 'designer') startMission(task.id);
+    else ui.openMinigame(task.gameId, task.id);
+  } else if (task.kind === 'mission') {
+    startMission(task.id);
+  } else if (task.id === 'movein:unlock' || task.id === 'movein:place') {
+    ui.setPanelTab('furniture');
+  } else if (task.id === 'explore:inspect') {
+    toast({ icon: '👆', title: 'Tap the objects in your room', text: 'Each one shows its word, translation and an example.', tone: 'info' });
+  }
+}
+
+export function startMission(taskId: string) {
+  const room = currentRoom();
+  const level = useProgress.getState().level;
+  const def = missionForTask(getChapter(room.id), taskId, level);
+  if (!def) return;
+  useUI.getState().select(null);
+  useMission.getState().start(taskId, def, room, level, roomItems(room.id));
+}
+
+/** Keeps the mission store connected to rewards and the student's writing portfolio. */
+export function connectMissions() {
+  useMission.setState({
+    onFinish: (run: MissionRun) => {
+      const task = findTask(currentStages(), run.taskId);
+      completeTask(run.taskId, run.def.title, task?.xp ?? run.def.xp ?? 40);
+      if (run.taskId === 'final') useProgress.getState().completeRoom(run.roomId);
+    },
+    onWriting: (run: MissionRun, text: string) => {
+      const step = run.steps[run.index];
+      useChapter.getState().addWriting(run.roomId, {
+        id: `${run.taskId}-${run.index}`,
+        title: run.def.title,
+        prompt: 'prompt' in step ? step.prompt : '',
+        text,
+      });
+      useProgress.getState().addXp(15);
+    },
+  });
+}
+
+/** A tap (not a drag) on furniture: missions first, otherwise it counts as exploring. */
+export function tapObject(item: PlacedItem) {
+  const room = currentRoom();
+  useChapter.getState().inspect(room.id, item.objectId);
+  if (useMission.getState().tapObject(item.objectId)) useUI.getState().select(null);
 }

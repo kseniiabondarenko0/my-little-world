@@ -7,10 +7,16 @@
 //   practised       number of objects practised
 //   stars           star total
 //   perfect         lessons/practices finished with no mistakes
-//   roomComplete    a room reached 100% (needs roomId)
+//   stages          chapter stages completed (all rooms)
+//   minigames       mini-games completed
+//   missions        real-life challenges completed
+//   mastered        words mastered (spaced repetition box 3+)
+//   xp              experience points
+//   writings        written answers saved
+//   roomComplete    a room's final mission is done (needs roomId)
 
 export type AchievementCondition =
-  | { type: 'correctAnswers' | 'unlocked' | 'placed' | 'practised' | 'stars' | 'perfect'; value: number }
+  | { type: 'correctAnswers' | 'unlocked' | 'placed' | 'practised' | 'stars' | 'perfect' | 'stages' | 'minigames' | 'missions' | 'mastered' | 'xp' | 'writings'; value: number }
   | { type: 'roomComplete'; roomId: string };
 
 export interface AchievementDefinition {
@@ -36,6 +42,18 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     condition: { type: 'practised', value: 5 } },
   { id: 'stars-30', title: 'Shining Star', description: 'Collect 30 stars.', icon: '🌟',
     condition: { type: 'stars', value: 30 } },
-  { id: 'bedroom-complete', title: 'Sweet Dreams', description: 'Complete the bedroom.', icon: '🌙',
+  { id: 'explorer', title: 'Explorer', description: 'Finish the Explore stage.', icon: '🧭',
+    condition: { type: 'stages', value: 2 } },
+  { id: 'gamer', title: 'Game On', description: 'Complete 3 mini-games.', icon: '🎲',
+    condition: { type: 'minigames', value: 3 } },
+  { id: 'real-life', title: 'Real-Life Hero', description: 'Complete all 3 real-life challenges.', icon: '🦸',
+    condition: { type: 'missions', value: 3 } },
+  { id: 'word-master', title: 'Word Master', description: 'Master 25 words.', icon: '🧠',
+    condition: { type: 'mastered', value: 25 } },
+  { id: 'writer', title: 'Young Writer', description: 'Write 3 texts in English.', icon: '✍️',
+    condition: { type: 'writings', value: 3 } },
+  { id: 'xp-500', title: 'Level Up', description: 'Earn 500 XP.', icon: '⚡',
+    condition: { type: 'xp', value: 500 } },
+  { id: 'bedroom-complete', title: 'Sweet Dreams', description: 'Complete the bedroom chapter (final mission).', icon: '🌙',
     condition: { type: 'roomComplete', roomId: 'bedroom' } },
 ];

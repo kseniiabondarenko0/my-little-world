@@ -156,6 +156,18 @@ export function isPlacementValid(candidate: PlacedItem, others: PlacedItem[], ro
     const rect = wallRect(candidate, def);
     const openings = [room.window, room.door].filter((o): o is WallOpening => !!o && o.wall === wall);
     if (openings.some((o) => wallOverlaps(rect, openingRect(o)))) return false;
+    // Don't hide pictures/mirrors behind tall furniture standing against the same wall.
+    const hw = room.size.width / 2;
+    const hd = room.size.depth / 2;
+    const hidden = others.some((o) => {
+      const od = getFurniture(o.objectId);
+      if (od.mount !== 'floor' || od.size[1] <= rect.minY + 0.05) return false;
+      const r = itemRect(o, od);
+      return wall === 'back'
+        ? r.minZ <= -hd + 0.6 && r.minX < rect.maxA && r.maxX > rect.minA
+        : r.minX <= -hw + 0.6 && r.minZ < rect.maxA && r.maxZ > rect.minA;
+    });
+    if (hidden) return false;
     return !others.some((o) => {
       const od = getFurniture(o.objectId);
       return od.mount === 'wall' && (o.wall ?? 'back') === wall && wallOverlaps(rect, wallRect(o, od));
@@ -174,6 +186,10 @@ export function isPlacementValid(candidate: PlacedItem, others: PlacedItem[], ro
   if (door && overlaps(rect, door)) return false;
   const win = windowZone(room, def);
   if (win && overlaps(rect, win)) return false;
+  if (room.avatarSpot) {
+    const [ax, az] = room.avatarSpot;
+    if (overlaps(rect, { minX: ax - 0.35, maxX: ax + 0.35, minZ: az - 0.35, maxZ: az + 0.35 })) return false;
+  }
   return !others.some((o) => {
     const od = getFurniture(o.objectId);
     if (od.mount === 'rug' || od.mount === 'wall') return false;

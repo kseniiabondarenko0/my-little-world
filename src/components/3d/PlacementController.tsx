@@ -3,7 +3,7 @@ import type { RoomDefinition } from '../../types/game';
 import { useUI } from '../../hooks/useUIStore';
 import { useLayout } from '../../rooms/layoutStore';
 import { isPlacementValid, projectPointer } from '../../objects/placement';
-import { commitDrag } from '../../progression/actions';
+import { commitDrag, tapObject } from '../../progression/actions';
 
 // While an object is being dragged, follows the pointer (mouse or finger) across the room.
 // Listeners are attached right in pointerdown so even very quick drags are caught.
@@ -43,6 +43,8 @@ export function trackDrag({ camera, canvas, room, controls }: TrackOptions) {
     if (drag?.moved && drag.preview) {
       if (drag.valid) commitDrag(drag);
       else useUI.getState().pushToast({ icon: '🚫', title: 'It doesn’t fit there', text: 'Try a free spot.', tone: 'warning' });
+    } else if (drag) {
+      tapObject(drag.origin);
     }
     document.body.style.cursor = '';
     useUI.getState().endDrag();
