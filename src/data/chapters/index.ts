@@ -11,6 +11,7 @@ import { officeChapter } from './office';
 import { hospitalChapter } from './hospital';
 import { supermarketChapter } from './supermarket';
 import { restaurantChapter } from './restaurant';
+import { cityChapter } from './city';
 import { COURSE_CONTENT } from '../courses';
 import { ACTIVE_COURSE } from '../../courses/active';
 
@@ -28,6 +29,7 @@ export const CHAPTERS: Record<string, ChapterDefinition> = {
   hospital: hospitalChapter,
   supermarket: supermarketChapter,
   restaurant: restaurantChapter,
+  city: cityChapter,
 };
 
 /** German / Polish chapters replace the English one where they exist (see src/data/courses). */

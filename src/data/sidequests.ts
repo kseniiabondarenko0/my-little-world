@@ -1609,6 +1609,128 @@ const pizzaNight: MissionDefinition = {
   },
 };
 
+// ── CITY ───────────────────────────────────────────────────────────────────
+
+const CITY = ['city', 'street', 'road', 'park', 'square', 'bus', 'bench', 'bus stop', 'lamp', 'traffic light', 'post box', 'fountain', 'ice cream', 'ticket', 'skateboard', 'pigeon', 'map', 'sign'];
+const cityWordsQ = room(CITY, 'city words');
+
+const touristDay: MissionDefinition = {
+  id: 'tourist-day', title: 'A Tourist’s Day', icon: '📸', xp: 90,
+  intro: {
+    A1: 'A tourist is visiting the city. Help him!',
+    B1: 'A tourist from Japan is spending one day in your city and speaks only a little English. Show him around.',
+  },
+  steps: {
+    A1: [
+      find('He is lost. Show him the map.', ['city-map']),
+      find('He wants to see the water.', ['fountain']),
+      find('He is hot. He wants an ice cream.', ['ice-cream-cart']),
+      find('He wants to send a postcard.', ['post-box']),
+    ],
+    A2: [
+      find('First, show him where he is on the map.', ['city-map']),
+      find('Then tell him the name of the street.', ['street-sign']),
+      find('Then take a photo by the fountain.', ['fountain']),
+      { type: 'write', prompt: 'Give him directions to the fountain. Use first, then, after that.', minWords: 15,
+        require: [linkers(2), cityWordsQ(2)], sample: 'First, go straight on to the…' },
+    ],
+    B1: [
+      find('He needs a ticket for the museum bus.', ['bus-ticket']),
+      find('Show him where to catch it.', ['bus-stop']),
+      { type: 'choice', prompt: 'He asks if it is safe to cross here. The light is red. What do you say?', options: [
+        { text: 'Not yet — wait for the green light.', correct: true, feedback: 'Clear and safe.' },
+        { text: 'Yes, just run!', correct: false, feedback: 'Never cross on red.' },
+        { text: 'I don’t know.', correct: false, feedback: 'The traffic light tells you!' },
+      ] },
+      { type: 'write', prompt: 'Write a short plan for his day in the city, with times and places.', minWords: 30,
+        require: [linkers(1), cityWordsQ(2)], sample: 'At ten o’clock, we will meet at the…' },
+    ],
+    B2: [
+      find('He wants to avoid taxis. Show him the cheapest way to travel.', ['bus-stop']),
+      find('In the evening, check that the way back is well lit.', ['street-lamp']),
+      { type: 'write', prompt: 'Write a short review of your city for a travel website, mentioning its best and worst points.', minWords: 45,
+        require: [advanced(1), cityWordsQ(2)], sample: 'Although the traffic can be heavy, …' },
+    ],
+  },
+};
+
+const lostSkateboard: MissionDefinition = {
+  id: 'lost-skateboard', title: 'The Missing Skateboard', icon: '🛹', xp: 90,
+  intro: {
+    A1: 'Tom can’t find his skateboard! Help him look.',
+    B1: 'Tom’s new skateboard has disappeared from the square. Follow the clues and find it.',
+  },
+  steps: {
+    A1: [
+      find('Is it near the bench?', ['park-bench']),
+      find('No. Is it at the bus stop?', ['bus-stop']),
+      find('No. Ask the ice cream man.', ['ice-cream-cart']),
+      find('Found it! Click the skateboard.', ['skateboard']),
+    ],
+    A2: [
+      find('Tom sat on the bench first. Look there.', ['park-bench']),
+      find('Then he bought an ice cream.', ['ice-cream-cart']),
+      find('Then he fed the bird.', ['pigeon']),
+      { type: 'write', prompt: 'Write where Tom went, in order. Use first, then, after that.', minWords: 15,
+        require: [linkers(2), cityWordsQ(2)], sample: 'First, Tom sat on the…' },
+    ],
+    B1: [
+      find('A witness says it rolled down towards the water.', ['fountain']),
+      find('Ask the person waiting for the bus.', ['bus-stop']),
+      find('It was under the street lamp all the time! Click the skateboard.', ['skateboard']),
+      { type: 'write', prompt: 'Write a “Lost” notice describing the skateboard.', minWords: 30,
+        require: [linkers(1), cityWordsQ(2)], sample: 'Lost: a purple skateboard near the…' },
+    ],
+    B2: [
+      find('Be logical: check the last place Tom remembers having it — the bench.', ['park-bench']),
+      find('Rule out the post box; a skateboard won’t fit inside.', ['post-box']),
+      find('Located — next to the traffic light. Click the skateboard.', ['skateboard']),
+      { type: 'write', prompt: 'Write a short message to the council suggesting where young people could safely skateboard.', minWords: 45,
+        require: [advanced(1), cityWordsQ(2)], sample: 'Although skateboarding is popular, …' },
+    ],
+  },
+};
+
+const cleanStreet: MissionDefinition = {
+  id: 'clean-street', title: 'Clean-Up Day', icon: '🧹', xp: 100,
+  intro: {
+    A1: 'Today everyone cleans the street! Help them.',
+    B1: 'Your class is volunteering for the city’s clean-up day. Make the street tidy, safe and welcoming.',
+  },
+  steps: {
+    A1: [
+      find('Clean the bench.', ['park-bench']),
+      find('Clean the fountain.', ['fountain']),
+      find('Clean the map.', ['city-map']),
+      find('The lamp is broken. Show the worker.', ['street-lamp']),
+    ],
+    A2: [
+      find('Paint the bench.', ['park-bench']),
+      find('Clean the street sign.', ['street-sign']),
+      find('Clean the bus stop glass.', ['bus-stop']),
+      { type: 'write', prompt: 'Write a sign for clean-up day. Say when and where.', minWords: 15,
+        require: [cityWordsQ(2)], sample: 'Clean-up day on Saturday! Meet at the…' },
+    ],
+    B1: [
+      find('Someone has drawn on the map. Clean it first.', ['city-map']),
+      find('Check that the traffic light works.', ['traffic-light']),
+      { type: 'choice', prompt: 'You see someone dropping litter. What is the best thing to do?', options: [
+        { text: 'Politely ask them to use the bin.', correct: true, feedback: 'Polite and effective.' },
+        { text: 'Throw it back at them.', correct: false, feedback: 'That starts a fight.' },
+        { text: 'Pretend you didn’t see.', correct: false, feedback: 'A friendly word can help.' },
+      ] },
+      { type: 'write', prompt: 'Write a social media post about clean-up day.', minWords: 30,
+        require: [linkers(1), cityWordsQ(2)], sample: 'Today our class cleaned the…' },
+    ],
+    B2: [
+      { type: 'place', prompt: 'Improve the square after cleaning: fountain in the middle, bench next to it.',
+        checks: [{ rel: 'inMiddle', a: 'fountain' }, { rel: 'nextTo', a: 'park-bench', b: 'fountain' }] },
+      { type: 'write', prompt: 'Write a short proposal to the council for keeping the street clean all year.', minWords: 45,
+        require: [advanced(1), cityWordsQ(2)], sample: 'Although clean-up day was a success, …' },
+    ],
+  },
+};
+
 export const SIDE_QUESTS: Record<string, MissionDefinition[]> = {
   bedroom: [lostPhone, sleepover, laundryDay],
   kitchen: [midnightSnack, recipeCard, inspector],
@@ -1622,4 +1744,5 @@ export const SIDE_QUESTS: Record<string, MissionDefinition[]> = {
   hospital: [lostStethoscope, fluSeason, scaredPatient],
   supermarket: [lostChild, partyShopping, newCashier],
   restaurant: [familyDinner, wrongBill, pizzaNight],
+  city: [touristDay, lostSkateboard, cleanStreet],
 };
