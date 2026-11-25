@@ -4,7 +4,7 @@ import { useProgress } from '../../progression/progressStore';
 import { useLayout } from '../../rooms/layoutStore';
 import { useChapter } from '../../chapter/chapterStore';
 import { usePlayer } from '../../player/playerStore';
-import { LOCATIONS } from '../../rooms';
+import { LOCATIONS, isRoomOpen } from '../../rooms';
 import { ACHIEVEMENTS } from '../../data/achievements';
 import { ALL_WORDS, LEVELS } from '../../data/content';
 import { masteryOf, type Mastery } from '../../learning/srs';
@@ -18,6 +18,7 @@ import { Segmented, LANGUAGES, COURSE_OPTIONS } from './Segmented';
 import { COURSE } from '../../courses/active';
 import { checkNickname } from '../../player/playerService';
 import { TeacherOverviewModal } from './TeacherOverview';
+import { ExportSaveButton, ImportSaveButton } from './SaveFile';
 
 export function Modal({ title, children, wide }: { title: string; children: ReactNode; wide?: boolean }) {
   const close = () => useUI.getState().openModal(null);
@@ -50,21 +51,30 @@ export function xpLevel(xp: number) {
 function RoomsModal() {
   const completed = useProgress((s) => s.completedRooms);
   const currentRoomId = useProgress((s) => s.currentRoomId);
+  const setRoom = useProgress((s) => s.setRoom);
+  const openModal = useUI((s) => s.openModal);
   const { percent } = useChapterView();
   const area = (a: 'house' | 'city') => LOCATIONS.filter((l) => l.area === a);
-  const bedroomDone = completed.includes('bedroom');
 
   const tile = (l: (typeof LOCATIONS)[number]) => {
     const playable = !!l.room;
+    const open = playable && isRoomOpen(l.id, completed);
+    const before = LOCATIONS.find((b) => b.room?.nextRoom === l.id);
     const pct = l.id === currentRoomId ? percent : completed.includes(l.id) ? 100 : 0;
-    const hint = playable ? `${pct}% complete` : l.id === 'kitchen' && bedroomDone ? 'Coming in the next update!' : 'Coming soon';
+    const hint = open ? `${pct}% complete` : playable && before ? `Finish the ${before.name.toLowerCase()} first` : 'Coming soon';
+    const go = () => {
+      if (!open) return;
+      setRoom(l.id);
+      openModal(null);
+    };
     return (
-      <div key={l.id} className={`map-tile ${playable ? 'playable' : 'soon'} ${currentRoomId === l.id ? 'current' : ''}`}>
+      <button key={l.id} type="button" disabled={!open} onClick={go} aria-label={open ? `Go to ${l.name}` : `${l.name}: ${hint}`}
+        className={`map-tile ${open ? 'playable' : 'soon'} ${currentRoomId === l.id ? 'current' : ''}`}>
         <span className="map-icon">{l.icon}</span>
         <span className="map-name">{l.name}</span>
-        <span className="map-hint">{playable ? hint : <>🔒 {hint}</>}</span>
-        {playable && <div className="mini-track"><div style={{ width: `${pct}%` }} /></div>}
-      </div>
+        <span className="map-hint">{open ? hint : <>🔒 {hint}</>}</span>
+        {open && <div className="mini-track"><div style={{ width: `${pct}%` }} /></div>}
+      </button>
     );
   };
 
@@ -185,6 +195,11 @@ function MenuModal() {
       <p className="muted small">Each player has their own room and progress, saved in this browser.</p>
 
       <h3 className="section-title">Progress</h3>
+      <p className="muted small">On a shared tablet? Save your progress to a file at the end of the lesson, and load it next time.</p>
+      <div className="save-file-row">
+        <ExportSaveButton />
+        <ImportSaveButton />
+      </div>
       {confirm ? (
         <div className="confirm-row">
           <span>Delete <b>{player?.nickname ?? 'this player'}</b>’s progress?</span>

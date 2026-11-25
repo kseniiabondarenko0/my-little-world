@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react';
 import { Ball, Box, Cyl, Legs } from './parts';
+import { Bin, Calendar, Cooker, Cupboard, Dishwasher, Fridge, Kettle, KitchenTable, Microwave, Sink, Stool, Toaster } from './kitchen';
 
 // Procedural 3D models. Each model:
 //  - faces +z (its front),
@@ -246,6 +247,19 @@ export const MODELS: Record<string, ComponentType> = {
   nightstand: Nightstand,
   plant: Plant,
   chest: Chest,
+  // kitchen
+  kitchenTable: KitchenTable,
+  fridge: Fridge,
+  cooker: Cooker,
+  sink: Sink,
+  stool: Stool,
+  kettle: Kettle,
+  cupboard: Cupboard,
+  microwave: Microwave,
+  toaster: Toaster,
+  calendar: Calendar,
+  bin: Bin,
+  dishwasher: Dishwasher,
 };
 
 export function FurnitureModel({ model }: { model: string }) {
