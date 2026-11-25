@@ -128,6 +128,19 @@ It appears in the Word Book, Practice Mode and Vocabulary Training, and in pract
 
 ---
 
+### Languages: English, German, Polish
+
+Each player chooses what they learn (at sign-up, or in the Menu under "I'm learning").
+English is the full game. German and Polish are **starter courses** for the Bedroom.
+
+- `src/courses/courses.ts`: the list of languages (name, flag, voice).
+- `src/data/courses/de.ts` and `pl.ts`: the German / Polish words and Bedroom mission text.
+  Words are keyed by the **English word id** (`bed`, `chest-of-drawers`...), so 3D objects,
+  stars and missions stay linked. Ukrainian/Russian translations are reused from English unless given.
+- `src/data/courses/starterChapter.ts`: the shared mission structure; each language only gives the text.
+- Each language has its **own save** (room, stars, words). Switching language never deletes progress.
+- A room with no German/Polish content yet falls back to English, so adding a new room never breaks a course.
+
 ## 4. Publish an update
 
 The game is published by GitHub Pages from the `main` branch: **https://kseniiabondarenko0.github.io/my-little-world/**

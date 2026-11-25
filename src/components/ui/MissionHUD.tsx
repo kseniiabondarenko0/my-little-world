@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { COURSE } from '../../courses/active';
 import { useMission, type MissionRun } from '../../missions/missionStore';
 import { useProgress } from '../../progression/progressStore';
 import { useLayout, EMPTY_ITEMS } from '../../rooms/layoutStore';
@@ -148,7 +149,7 @@ function WriteStep({ step, run }: { step: Extract<MissionStep, { type: 'write' }
         onChange={(e) => setText(e.target.value)}
         rows={5}
         disabled={run.stepDone}
-        placeholder="Write in English…"
+        placeholder={`Write in ${COURSE.name}…`}
         aria-label="Your answer"
       />
       <div className="write-meta">
