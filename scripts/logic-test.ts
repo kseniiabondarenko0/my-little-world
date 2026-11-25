@@ -19,6 +19,10 @@ import { hiddenObjectsMission, interiorDesignerMission } from '../src/minigames/
 import { checkNickname } from '../src/player/playerService';
 import { summarise } from '../src/teacher/overview';
 import { isValidPin } from '../src/teacher/pin';
+import { COURSE_CONTENT, activitiesForCourse, wordsForCourse } from '../src/data/courses';
+import { ENGLISH_ACTIVITIES, ENGLISH_WORDS } from '../src/data/content';
+import { COURSES } from '../src/courses/courses';
+import { autoHide } from '../src/activities/engine';
 
 let passed = 0;
 const failures: string[] = [];
@@ -83,7 +87,9 @@ function stepObjects(step: MissionStep): string[] {
     default: return [];
   }
 }
-for (const [roomId, chapter] of Object.entries(CHAPTERS)) {
+const courseChapters = Object.entries(COURSE_CONTENT).flatMap(([c, content]) => Object.entries(content!.chapters).map(([room, ch]) => [`${c}/${room}`, ch] as const));
+for (const [roomId, chapter] of [...Object.entries(CHAPTERS), ...courseChapters]) {
+  const starter = roomId.includes('/');
   const missions: MissionDefinition[] = [...chapter.explore, ...chapter.challenges, chapter.makeover, chapter.final];
   for (const m of missions) {
     for (const level of LEVELS) {
@@ -111,7 +117,8 @@ for (const [roomId, chapter] of Object.entries(CHAPTERS)) {
   for (const h of chapter.hiddenObjects) check(`hidden object target "${h.target}" exists`, ids.has(h.target));
   for (const d of chapter.designerTasks) for (const c of d.checks) check(`designer check uses real furniture`, ids.has(c.a) && (!c.b || ids.has(c.b)));
   for (const level of LEVELS) {
-    check(`scenarios exist for ${level}`, chapter.scenarios.some((s) => s.level === level));
+    if (!starter) check(`scenarios exist for ${level}`, chapter.scenarios.some((s) => s.level === level));
+    else check(`${roomId}: scenarios exist at or below ${level}`, chapter.scenarios.some((s) => LEVELS.indexOf(s.level) <= LEVELS.indexOf(level)));
     check(`hidden objects mission builds for ${level}`, forLevel(hiddenObjectsMission(chapter, level).steps, level).length === 6);
     check(`designer mission builds for ${level}`, forLevel(interiorDesignerMission(chapter, level).steps, level).length === 3);
   }
@@ -231,10 +238,44 @@ check('Cyrillic nickname is accepted', checkNickname('Лисичка').ok);
   check('teacher: newest writing first', s.writings[0]?.text === 'second' && s.writings.length === 2);
   check('teacher PIN: 4 digits accepted', isValidPin('0427'));
   check('teacher PIN: wrong lengths and letters refused', !isValidPin('123') && !isValidPin('12345') && !isValidPin('12a4'));
+  check('teacher: profile without a course is English', s.course === 'en');
+  const de = summarise({ ...player, course: 'de' }, { progress: null, chapter: null, layout: null });
+  check('teacher: German player counts German course words', de.course === 'de' && de.totalWords > 0 && de.totalWords <= ENGLISH_WORDS.length);
   check('teacher: keeps level and XP', s.level === 'A2' && s.xp === 40);
 }
 
 void getFurniture;
+// ── 9. Starter courses (German, Polish) ────────────────────────
+{
+  const objectIds = new Set(FURNITURE.map((f) => f.wordId));
+  check('every course with content is in the course list', Object.keys(COURSE_CONTENT).every((c) => COURSES.some((x) => x.id === c)));
+  for (const [course, content] of Object.entries(COURSE_CONTENT)) {
+    const words = wordsForCourse(ENGLISH_WORDS, course as never, objectIds);
+    const english = new Map(ENGLISH_WORDS.map((w) => [w.id, w]));
+    for (const id of Object.keys(content!.words)) check(`${course}: word key "${id}" is a real English word id`, english.has(id));
+    for (const f of FURNITURE) check(`${course}: object word "${f.wordId}" is translated`, !!content!.words[f.wordId]);
+    check(`${course}: enough words to master ${10}`, words.length >= 20, `${words.length}`);
+    check(`${course}: every word has uk and ru`, words.every((w) => w.translations?.uk && w.translations?.ru));
+    check(`${course}: no word is still English`, words.every((w) => content!.words[w.id]), words.filter((w) => !content!.words[w.id]).map((w) => w.id).join(','));
+    const forms = new Set(words.map((w) => w.word.toLowerCase()));
+    check(`${course}: no two words look the same`, forms.size === words.length);
+    const acts = activitiesForCourse(ENGLISH_ACTIVITIES, course as never);
+    check(`${course}: no English-only activities`, acts.every((a) => a.type !== 'sentence' && a.type !== 'multipleChoice'));
+    for (const f of FURNITURE) check(`${course}: lesson for ${f.id} has 3 steps`, acts.filter((a) => a.wordId === f.wordId && a.stage === 'lesson').length === 3);
+    for (const w of words) {
+      const hide = autoHide(w.word);
+      check(`${course}: spelling hides 1–5 letters of "${w.word}"`, hide.length >= 1 && hide.length <= 5 && hide.every((i) => /\p{L}/u.test([...w.word][i])));
+    }
+    const ch = content!.chapters.bedroom;
+    const write = ch.final.steps.A1.find((s) => s.type === 'write');
+    if (write?.type === 'write') {
+      const sentence = course === 'de' ? 'Mein Bett steht am Fenster und die Lampe ist auf dem Nachttisch.' : 'Moje łóżko stoi przy oknie, a lampa jest na szafce nocnej.';
+      check(`${course}: a good answer passes the writing task`, evaluateWriting(sentence, write.minWords, write.require).ok, JSON.stringify(evaluateWriting(sentence, write.minWords, write.require).checks));
+    }
+  }
+  check('de: German article stays visible in spelling', autoHide('das Bett').every((i) => i > 3));
+}
+
 console.log(`\n${passed} checks passed, ${failures.length} failed`);
 if (failures.length) {
   console.log([...new Set(failures)].slice(0, 60).join('\n'));

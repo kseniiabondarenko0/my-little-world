@@ -1,4 +1,5 @@
 import type { Level, PlacedItem, RoomDefinition } from '../types/game';
+import { COURSE } from '../courses/active';
 import type { ChapterDefinition } from './types';
 import type { RoomChapter } from './chapterStore';
 import type { WordProgress } from '../learning/srs';
@@ -108,7 +109,7 @@ export function buildStages({ chapter, room, level, state, unlocked, items, word
     },
     {
       id: 'makeover', title: 'Room Makeover', icon: '🎨', minutes: 6,
-      description: 'Rearrange your room by following English instructions.',
+      description: `Rearrange your room by following ${COURSE.name} instructions.`,
       tasks: [{ id: 'makeover', title: chapter.makeover.title, icon: chapter.makeover.icon, kind: 'mission', missionId: chapter.makeover.id, done: done('makeover'), xp: chapter.makeover.xp ?? 80 }],
     },
     {

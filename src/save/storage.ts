@@ -1,7 +1,11 @@
 import type { StateStorage } from 'zustand/middleware';
+import type { Course } from '../types/game';
+import { COURSES, DEFAULT_COURSE, isCourse } from '../courses/courses';
 
 // Saved progress lives in the browser's localStorage.
 // Each player on this device has their own save: "my-little-world:p:<playerId>:<store>".
+// Each extra course (German, Polish) gets its own save next to it: "...:p:<playerId>:de:<store>",
+// so learning German starts a fresh room. English keeps the original keys (old saves still load).
 // Later this file is the one place to swap for cloud saves (student accounts).
 
 export const PREFIX = 'my-little-world:';
@@ -27,13 +31,38 @@ function write(key: string, value: string | null) {
 /** The player whose save is loaded. Fixed for the lifetime of the page (switching reloads). */
 export const ACTIVE_PLAYER_ID: string | null = read(ACTIVE_KEY);
 
-const namespace = (playerId: string | null) => (playerId ? `${PREFIX}p:${playerId}:` : PREFIX);
+function readCourse(): Course {
+  try {
+    const players = JSON.parse(read(`${PREFIX}players`) ?? '[]') as { id: string; course?: unknown }[];
+    const course = players.find((p) => p.id === ACTIVE_PLAYER_ID)?.course;
+    return isCourse(course) ? course : DEFAULT_COURSE;
+  } catch {
+    return DEFAULT_COURSE;
+  }
+}
+
+/** The language the active player is learning. Fixed for the lifetime of the page (switching reloads). */
+export const ACTIVE_COURSE: Course = readCourse();
+
+const namespace = (playerId: string | null, course: Course = ACTIVE_COURSE) =>
+  playerId ? `${PREFIX}p:${playerId}:${course === DEFAULT_COURSE ? '' : `${course}:`}` : PREFIX;
 
 export const safeStorage: StateStorage = {
   getItem: (name) => read(namespace(ACTIVE_PLAYER_ID) + name),
   setItem: (name, value) => write(namespace(ACTIVE_PLAYER_ID) + name, value),
   removeItem: (name) => write(namespace(ACTIVE_PLAYER_ID) + name, null),
 };
+
+/** True if this player has a save for that course already. */
+export function hasCourseSave(playerId: string, course: Course): boolean {
+  return read(namespace(playerId, course) + 'progress') !== null;
+}
+
+/** Starts a course save with the student's home language, so they don't have to choose it again. */
+export function seedCourseSave(playerId: string, course: Course, language: string) {
+  if (hasCourseSave(playerId, course)) return;
+  write(namespace(playerId, course) + 'progress', JSON.stringify({ state: { language, level: 'A1' }, version: 2 }));
+}
 
 export const STORE_NAMES = ['progress', 'layout', 'chapter'];
 
@@ -43,24 +72,24 @@ export function setActivePlayer(playerId: string | null) {
 }
 
 /** Moves a save made before profiles existed (v0.1) into a player's own save. */
-export function adoptLegacySave(playerId: string) {
+export function adoptLegacySave(playerId: string, course: Course = DEFAULT_COURSE) {
   for (const name of STORE_NAMES) {
     const legacy = read(PREFIX + name);
-    if (legacy !== null && read(namespace(playerId) + name) === null) {
-      write(namespace(playerId) + name, legacy);
+    if (legacy !== null && read(namespace(playerId, course) + name) === null) {
+      write(namespace(playerId, course) + name, legacy);
       write(PREFIX + name, null);
     }
   }
 }
 
 export function deletePlayerSave(playerId: string) {
-  for (const name of STORE_NAMES) write(namespace(playerId) + name, null);
+  for (const c of COURSES) for (const name of STORE_NAMES) write(namespace(playerId, c.id) + name, null);
 }
 
-/** Reads another player's saved store (zustand persist format) without loading it. */
-export function readPlayerStore<T>(playerId: string, name: string): T | null {
+/** Reads another player's saved store (zustand persist format) for a course, without loading it. */
+export function readPlayerStore<T>(playerId: string, name: string, course: Course = DEFAULT_COURSE): T | null {
   try {
-    const raw = read(namespace(playerId) + name);
+    const raw = read(namespace(playerId, course) + name);
     return raw ? ((JSON.parse(raw) as { state?: T }).state ?? null) : null;
   } catch {
     return null;

@@ -2,6 +2,7 @@ import { Fragment, useMemo, useState } from 'react';
 import { usePlayer } from '../../player/playerStore';
 import { summariseAll } from '../../teacher/overview';
 import { AvatarPortrait } from './AvatarPortrait';
+import { courseInfo } from '../../courses/courses';
 import { Modal } from './Modals';
 import { checkPin, hasPin, isValidPin, setPin } from '../../teacher/pin';
 
@@ -116,7 +117,7 @@ function TeacherTable({ onChangePin }: { onChangePin: () => void }) {
                           <span>
                             <b>{r.player.nickname}</b>
                             {r.player.id === currentId && <span className="muted small"> · playing now</span>}
-                            <span className="muted small teacher-sub">{r.level} · {r.xp} XP</span>
+                            <span className="muted small teacher-sub">{courseInfo(r.course).flag} {courseInfo(r.course).name} {r.level} · {r.xp} XP</span>
                           </span>
                         </span>
                       </td>
