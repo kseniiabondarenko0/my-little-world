@@ -1,11 +1,13 @@
 import type { ChapterDefinition } from '../../chapter/types';
 import { bedroomChapter } from './bedroom';
+import { kitchenChapter } from './kitchen';
 import { COURSE_CONTENT } from '../courses';
 import { ACTIVE_COURSE } from '../../courses/active';
 
 // One chapter per playable room. Add new rooms' chapters here.
 export const CHAPTERS: Record<string, ChapterDefinition> = {
   bedroom: bedroomChapter,
+  kitchen: kitchenChapter,
 };
 
 /** German / Polish chapters replace the English one where they exist (see src/data/courses). */

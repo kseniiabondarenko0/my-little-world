@@ -2,13 +2,16 @@ import type { ActivityDefinition, FurnitureDefinition, Level, VocabularyWord } f
 import { bedroomWords } from './vocabulary/bedroom';
 import { bedroomExtraWords } from './vocabulary/bedroom-extra';
 import { bedroomActivities } from './activities/bedroom';
+import { kitchenWords } from './vocabulary/kitchen';
+import { kitchenExtraWords } from './vocabulary/kitchen-extra';
+import { kitchenActivities } from './activities/kitchen';
 import { FURNITURE } from './furniture';
 import { activitiesForCourse, wordsForCourse } from './courses';
 import { ACTIVE_COURSE } from '../courses/active';
 
 // All content in one place. When you add a new room's files, add them to these lists.
-export const ENGLISH_WORDS: VocabularyWord[] = [...bedroomWords, ...bedroomExtraWords];
-export const ENGLISH_ACTIVITIES: ActivityDefinition[] = [...bedroomActivities];
+export const ENGLISH_WORDS: VocabularyWord[] = [...bedroomWords, ...bedroomExtraWords, ...kitchenWords, ...kitchenExtraWords];
+export const ENGLISH_ACTIVITIES: ActivityDefinition[] = [...bedroomActivities, ...kitchenActivities];
 
 // The course being learned (English, German, Polish) decides the words and activities.
 // Other courses reuse the English word ids, so rooms and objects work the same.

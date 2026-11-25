@@ -1,5 +1,6 @@
 import type { RoomDefinition } from '../types/game';
 import { bedroom } from './bedroom';
+import { kitchen } from './kitchen';
 
 // The map of the world. A location with a `room` can be played;
 // the others appear as "coming soon" in the navigation menu.
@@ -14,7 +15,7 @@ export interface LocationEntry {
 
 export const LOCATIONS: LocationEntry[] = [
   { id: 'bedroom', name: 'Bedroom', icon: '🛏️', area: 'house', room: bedroom },
-  { id: 'kitchen', name: 'Kitchen', icon: '🍳', area: 'house' },
+  { id: 'kitchen', name: 'Kitchen', icon: '🍳', area: 'house', room: kitchen },
   { id: 'bathroom', name: 'Bathroom', icon: '🛁', area: 'house' },
   { id: 'living-room', name: 'Living room', icon: '🛋️', area: 'house' },
   { id: 'hallway', name: 'Hallway', icon: '🧥', area: 'house' },
@@ -29,6 +30,13 @@ export const LOCATIONS: LocationEntry[] = [
 ];
 
 export const DEFAULT_ROOM_ID = 'bedroom';
+
+/** A room is open when it is the first room or the room before it is complete. */
+export function isRoomOpen(id: string, completedRooms: string[]): boolean {
+  if (id === DEFAULT_ROOM_ID) return true;
+  const before = LOCATIONS.find((l) => l.room?.nextRoom === id);
+  return !!before && completedRooms.includes(before.id);
+}
 
 export function getRoom(id: string): RoomDefinition {
   return LOCATIONS.find((l) => l.id === id)?.room ?? bedroom;

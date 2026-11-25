@@ -75,6 +75,22 @@ export function PropModel({ look, color = '#a9c9f2' }: { look: PropLook; color?:
       );
     case 'phone':
       return <Box size={[0.08, 0.015, 0.16]} position={[0, 0.008, 0]} rotation={[0, 0.4, 0]} color="#4a3f58" radius={0.006} />;
+    case 'plate':
+      return (
+        <group>
+          {[0, 1, 2].map((i) => (
+            <Cyl key={i} top={0.13} bottom={0.09} height={0.02} position={[0, 0.012 + i * 0.024, 0]} color={color} segments={22} />
+          ))}
+        </group>
+      );
+    case 'fruit':
+      return (
+        <group>
+          <Ball radius={0.08} position={[-0.06, 0.08, 0]} color={color} />
+          <Ball radius={0.07} position={[0.08, 0.07, 0.03]} color="#9fd08f" />
+          <Ball radius={0.065} position={[0.01, 0.065, -0.09]} color="#f4a259" />
+        </group>
+      );
     case 'toy':
       return (
         <group>

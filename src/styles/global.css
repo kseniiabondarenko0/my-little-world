@@ -266,6 +266,7 @@ h1, h2, h3 { margin: 0; }
   background: #faf7fd; border: 2px solid transparent; text-align: center;
 }
 .map-tile.playable { background: #fff5f2; border-color: #ffd6cc; }
+.map-tile.playable:hover { border-color: #ff8f7a; }
 .map-tile.current { box-shadow: 0 0 0 4px rgba(255, 143, 122, .2); }
 .map-tile.soon { opacity: .6; }
 .map-icon { font-size: 30px; }

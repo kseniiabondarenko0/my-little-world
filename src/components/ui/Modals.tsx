@@ -4,7 +4,7 @@ import { useProgress } from '../../progression/progressStore';
 import { useLayout } from '../../rooms/layoutStore';
 import { useChapter } from '../../chapter/chapterStore';
 import { usePlayer } from '../../player/playerStore';
-import { LOCATIONS } from '../../rooms';
+import { LOCATIONS, isRoomOpen } from '../../rooms';
 import { ACHIEVEMENTS } from '../../data/achievements';
 import { ALL_WORDS, LEVELS } from '../../data/content';
 import { masteryOf, type Mastery } from '../../learning/srs';
@@ -49,21 +49,30 @@ export function xpLevel(xp: number) {
 function RoomsModal() {
   const completed = useProgress((s) => s.completedRooms);
   const currentRoomId = useProgress((s) => s.currentRoomId);
+  const setRoom = useProgress((s) => s.setRoom);
+  const openModal = useUI((s) => s.openModal);
   const { percent } = useChapterView();
   const area = (a: 'house' | 'city') => LOCATIONS.filter((l) => l.area === a);
-  const bedroomDone = completed.includes('bedroom');
 
   const tile = (l: (typeof LOCATIONS)[number]) => {
     const playable = !!l.room;
+    const open = playable && isRoomOpen(l.id, completed);
+    const before = LOCATIONS.find((b) => b.room?.nextRoom === l.id);
     const pct = l.id === currentRoomId ? percent : completed.includes(l.id) ? 100 : 0;
-    const hint = playable ? `${pct}% complete` : l.id === 'kitchen' && bedroomDone ? 'Coming in the next update!' : 'Coming soon';
+    const hint = open ? `${pct}% complete` : playable && before ? `Finish the ${before.name.toLowerCase()} first` : 'Coming soon';
+    const go = () => {
+      if (!open) return;
+      setRoom(l.id);
+      openModal(null);
+    };
     return (
-      <div key={l.id} className={`map-tile ${playable ? 'playable' : 'soon'} ${currentRoomId === l.id ? 'current' : ''}`}>
+      <button key={l.id} type="button" disabled={!open} onClick={go} aria-label={open ? `Go to ${l.name}` : `${l.name}: ${hint}`}
+        className={`map-tile ${open ? 'playable' : 'soon'} ${currentRoomId === l.id ? 'current' : ''}`}>
         <span className="map-icon">{l.icon}</span>
         <span className="map-name">{l.name}</span>
-        <span className="map-hint">{playable ? hint : <>🔒 {hint}</>}</span>
-        {playable && <div className="mini-track"><div style={{ width: `${pct}%` }} /></div>}
-      </div>
+        <span className="map-hint">{open ? hint : <>🔒 {hint}</>}</span>
+        {open && <div className="mini-track"><div style={{ width: `${pct}%` }} /></div>}
+      </button>
     );
   };
 

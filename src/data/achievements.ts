@@ -56,4 +56,6 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     condition: { type: 'xp', value: 500 } },
   { id: 'bedroom-complete', title: 'Sweet Dreams', description: 'Complete the bedroom chapter (final mission).', icon: '🌙',
     condition: { type: 'roomComplete', roomId: 'bedroom' } },
+  { id: 'kitchen-complete', title: 'Master Chef', description: 'Complete the kitchen chapter (final mission).', icon: '👩‍🍳',
+    condition: { type: 'roomComplete', roomId: 'kitchen' } },
 ];
