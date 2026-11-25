@@ -18,6 +18,7 @@ import { MINIGAMES } from '../src/minigames/registry';
 import { hiddenObjectsMission, interiorDesignerMission } from '../src/minigames/missions';
 import { checkNickname } from '../src/player/playerService';
 import { summarise } from '../src/teacher/overview';
+import { isValidPin } from '../src/teacher/pin';
 
 let passed = 0;
 const failures: string[] = [];
@@ -228,6 +229,8 @@ check('Cyrillic nickname is accepted', checkNickname('Лисичка').ok);
   check('teacher: finished stage 1 moves to stage 2', s.stage?.index === 2, JSON.stringify(s.stage));
   check('teacher: counts mastered and revise words', s.mastered === 1 && s.toRevise === 1, `${s.mastered}/${s.toRevise}`);
   check('teacher: newest writing first', s.writings[0]?.text === 'second' && s.writings.length === 2);
+  check('teacher PIN: 4 digits accepted', isValidPin('0427'));
+  check('teacher PIN: wrong lengths and letters refused', !isValidPin('123') && !isValidPin('12345') && !isValidPin('12a4'));
   check('teacher: keeps level and XP', s.level === 'A2' && s.xp === 40);
 }
 

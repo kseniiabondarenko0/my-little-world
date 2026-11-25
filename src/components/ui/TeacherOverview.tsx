@@ -3,11 +3,81 @@ import { usePlayer } from '../../player/playerStore';
 import { summariseAll } from '../../teacher/overview';
 import { AvatarPortrait } from './AvatarPortrait';
 import { Modal } from './Modals';
+import { checkPin, hasPin, isValidPin, setPin } from '../../teacher/pin';
+
+type Gate = 'enter' | 'create' | 'open';
+
+/** Asks for the teacher PIN (or sets one the first time) before showing the overview. */
+export function TeacherOverviewModal() {
+  const [gate, setGate] = useState<Gate>(() => (hasPin() ? 'enter' : 'create'));
+  const [pin, setPinText] = useState('');
+  const [repeat, setRepeat] = useState('');
+  const [error, setError] = useState('');
+
+  if (gate === 'open') return <TeacherTable onChangePin={() => { setPinText(''); setRepeat(''); setError(''); setGate('create'); }} />;
+
+  const creating = gate === 'create';
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (creating) {
+      if (!isValidPin(pin)) return setError('Use exactly 4 digits.');
+      if (pin !== repeat) return setError('The two PINs don’t match.');
+      setPin(pin);
+      setGate('open');
+    } else if (checkPin(pin)) {
+      setGate('open');
+    } else {
+      setError('Wrong PIN. Try again.');
+      setPinText('');
+    }
+  };
+  const digits = (v: string) => v.replace(/\D/g, '').slice(0, 4);
+
+  return (
+    <Modal title="Teacher overview">
+      <form className="teacher-pin" onSubmit={submit}>
+        <p className="muted">
+          {creating
+            ? 'Choose a 4-digit PIN. You will need it to open this screen, so students can’t read each other’s work.'
+            : 'Enter the teacher PIN.'}
+        </p>
+        <input
+          className="pin-input"
+          type="password"
+          inputMode="numeric"
+          autoComplete="off"
+          autoFocus
+          aria-label={creating ? 'New PIN' : 'PIN'}
+          placeholder="••••"
+          value={pin}
+          onChange={(e) => { setPinText(digits(e.target.value)); setError(''); }}
+        />
+        {creating && (
+          <input
+            className="pin-input"
+            type="password"
+            inputMode="numeric"
+            autoComplete="off"
+            aria-label="Repeat PIN"
+            placeholder="Repeat"
+            value={repeat}
+            onChange={(e) => { setRepeat(digits(e.target.value)); setError(''); }}
+          />
+        )}
+        {error && <p className="pin-error" role="alert">{error}</p>}
+        <button className="btn btn-primary" type="submit" disabled={pin.length !== 4 || (creating && repeat.length !== 4)}>
+          {creating ? 'Save PIN' : 'Open'}
+        </button>
+        <p className="muted small">The PIN is saved in this browser only.</p>
+      </form>
+    </Modal>
+  );
+}
 
 // Every player on this device in one table: chapter stage, mastered words, writing.
 // Tap a row to read that player's texts.
 
-export function TeacherOverviewModal() {
+function TeacherTable({ onChangePin }: { onChangePin: () => void }) {
   const players = usePlayer((s) => s.players);
   const currentId = usePlayer((s) => s.current?.id);
   const rows = useMemo(() => summariseAll(players), [players]);
@@ -99,7 +169,9 @@ export function TeacherOverviewModal() {
           </table>
         </div>
       )}
-      <p className="muted small profile-note">Read from the saves in this browser. Tap a player to read their writing.</p>
+      <p className="muted small profile-note">Read from the saves in this browser. Tap a player to read their writing.{' '}
+        <button className="link-btn" onClick={onChangePin}>Change PIN</button>
+      </p>
     </Modal>
   );
 }

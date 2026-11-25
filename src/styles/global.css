@@ -582,6 +582,11 @@ h1, h2, h3 { margin: 0; }
 .teacher-player { display: flex; align-items: center; gap: 8px; }
 .teacher-sub { display: block; }
 .teacher-detail td { border-top: 0; background: #faf7fd; }
+.teacher-pin { display: grid; gap: 10px; justify-items: center; text-align: center; }
+.pin-input { width: 160px; padding: 10px 12px; font-size: 22px; letter-spacing: .4em; text-align: center; border: 2px solid #e6dcf2; border-radius: 14px; }
+.pin-input:focus { outline: none; border-color: var(--lav, #9b7fe0); }
+.pin-error { color: #d0465a; font-weight: 700; margin: 0; }
+.link-btn { background: none; border: 0; padding: 0; color: inherit; text-decoration: underline; cursor: pointer; font: inherit; }
 @media (max-width: 560px) {
   .teacher-table { font-size: 13px; }
   .teacher-table td, .teacher-table th { padding: 6px 4px; }
