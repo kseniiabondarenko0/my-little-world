@@ -192,7 +192,8 @@ function Flashcards({ pool, onBack, onClose }: { pool: VocabularyWord[]; onBack:
   const card = deck[i];
 
   const answer = (knewIt: boolean) => {
-    useProgress.getState().recordAnswer(card.id, knewIt, true);
+    // Self-marked: no one checks the answer, so flashcards give XP but no stars.
+    useProgress.getState().recordAnswer(card.id, knewIt, true, false);
     if (knewIt) {
       setKnown((k) => k + 1);
       useUI.getState().cheerUp();

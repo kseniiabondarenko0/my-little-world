@@ -21,13 +21,17 @@ const PET_ACCESSORY_LABELS: Record<PetAccessory, string> = {
   none: 'None', collar: 'Collar', bow: 'Bow', bandana: 'Bandana', partyhat: 'Party hat', crown: 'Crown', glasses: 'Glasses',
 };
 
+// Preview size and height per animal, so ears, hats and crowns stay in the picture.
+const SCALE: Record<PetSpecies, number> = { cat: 2.4, dog: 2.4, hamster: 3.2, parrot: 4.2 };
+const LIFT: Record<PetSpecies, number> = { cat: -0.3, dog: -0.3, hamster: -0.5, parrot: -0.55 };
+
 function Spin({ pet }: { pet: PetConfig }) {
   const g = useRef<Group>(null);
   useFrame((s) => {
     if (g.current) g.current.rotation.y = 0.5 + Math.sin(s.clock.elapsedTime * 0.8) * 0.6;
   });
   return (
-    <group ref={g} scale={pet.species === 'parrot' ? 4.2 : 3.2} position={[0, pet.species === 'parrot' ? -0.55 : -0.5, 0]}>
+    <group ref={g} scale={SCALE[pet.species]} position={[0, LIFT[pet.species], 0]}>
       <PetModel pet={pet} />
     </group>
   );

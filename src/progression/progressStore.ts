@@ -27,7 +27,8 @@ interface ProgressData {
 }
 
 interface ProgressActions {
-  recordAnswer: (wordId: string, correct: boolean, firstTry: boolean) => void;
+  /** `star: false` for self-marked answers (flashcards): they still count for XP and review, but give no star. */
+  recordAnswer: (wordId: string, correct: boolean, firstTry: boolean, star?: boolean) => void;
   addXp: (amount: number) => void;
   unlockObject: (id: string) => void;
   markPractised: (id: string) => void;
@@ -63,11 +64,11 @@ export const useProgress = create<ProgressData & ProgressActions>()(
   persist(
     (set) => ({
       ...initial,
-      recordAnswer: (wordId, correct, firstTry) =>
+      recordAnswer: (wordId, correct, firstTry, star = true) =>
         set((s) => ({
           tick: s.tick + 1,
           words: { ...s.words, [wordId]: applyAnswer(s.words[wordId], correct, s.tick + 1) },
-          stars: s.stars + (correct && firstTry ? 1 : 0),
+          stars: s.stars + (star && correct && firstTry ? 1 : 0),
           xp: s.xp + (correct ? (firstTry ? 5 : 2) : 0),
         })),
       addXp: (amount) => set((s) => ({ xp: s.xp + amount })),
