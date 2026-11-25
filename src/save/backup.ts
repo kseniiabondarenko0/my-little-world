@@ -1,9 +1,10 @@
 import type { PlayerProfile } from '../player/types';
-import { STORE_NAMES } from './storage';
+import { STORE_NAMES, type PlayerSave } from './storage';
+import { isCourse } from '../courses/courses';
 
 // A save file a student can keep (USB stick, cloud drive, email to themselves)
 // and load again after the browser's storage was cleared, or on another device.
-// One file = one player: their profile plus their progress, room and chapter.
+// One file = one player: their profile plus progress, room and chapter in every course they started.
 
 const APP = 'my-little-world';
 const FORMAT = 1;
@@ -13,25 +14,28 @@ export interface BackupFile {
   format: number;
   exportedAt: string;
   player: PlayerProfile;
-  /** Each store's saved JSON, parsed (so the file is readable), or null if never saved. */
-  saves: Record<string, unknown>;
+  /** course → store → that store's saved JSON, parsed (so the file is readable), or null if never saved. */
+  saves: Record<string, Record<string, unknown>>;
 }
 
 export type ParsedBackup =
-  | { ok: true; player: PlayerProfile; saves: Record<string, string | null> }
+  | { ok: true; player: PlayerProfile; saves: PlayerSave }
   | { ok: false; reason: string };
 
-export function buildBackup(player: PlayerProfile, saves: Record<string, string | null>, now = new Date()): BackupFile {
-  const parsed: Record<string, unknown> = {};
-  for (const name of STORE_NAMES) {
-    const raw = saves[name];
-    try {
-      parsed[name] = raw ? JSON.parse(raw) : null;
-    } catch {
-      parsed[name] = null;
+export function buildBackup(player: PlayerProfile, save: PlayerSave, now = new Date()): BackupFile {
+  const saves: BackupFile['saves'] = {};
+  for (const [course, stores] of Object.entries(save)) {
+    saves[course] = {};
+    for (const name of STORE_NAMES) {
+      const raw = stores[name];
+      try {
+        saves[course][name] = raw ? JSON.parse(raw) : null;
+      } catch {
+        saves[course][name] = null;
+      }
     }
   }
-  return { app: APP, format: FORMAT, exportedAt: now.toISOString(), player, saves: parsed };
+  return { app: APP, format: FORMAT, exportedAt: now.toISOString(), player, saves };
 }
 
 export function backupFileName(player: PlayerProfile, now = new Date()): string {
@@ -59,19 +63,25 @@ export function parseBackup(text: string): ParsedBackup {
   }
   if (!isObject(data.saves)) return { ok: false, reason: 'This save file is damaged (no progress inside).' };
 
-  const saves: Record<string, string | null> = {};
-  for (const name of STORE_NAMES) {
-    const value = data.saves[name];
-    if (value === undefined || value === null) saves[name] = null;
-    // zustand's persist format: { state: {...}, version: n }
-    else if (isObject(value) && isObject(value.state)) saves[name] = JSON.stringify(value);
-    else return { ok: false, reason: 'This save file is damaged.' };
+  const saves: PlayerSave = {};
+  for (const [course, stores] of Object.entries(data.saves)) {
+    if (!isCourse(course)) continue; // a language this version doesn't have: skip it
+    if (!isObject(stores)) return { ok: false, reason: 'This save file is damaged.' };
+    saves[course] = {};
+    for (const name of STORE_NAMES) {
+      const value = stores[name];
+      if (value === undefined || value === null) saves[course][name] = null;
+      // zustand's persist format: { state: {...}, version: n }
+      else if (isObject(value) && isObject(value.state)) saves[course][name] = JSON.stringify(value);
+      else return { ok: false, reason: 'This save file is damaged.' };
+    }
   }
   const player: PlayerProfile = {
     id: p.id,
     nickname: p.nickname.trim().slice(0, 16),
     avatar: p.avatar as unknown as PlayerProfile['avatar'],
     createdAt: typeof p.createdAt === 'number' ? p.createdAt : Date.now(),
+    ...(isCourse(p.course) ? { course: p.course } : {}),
   };
   return { ok: true, player, saves };
 }

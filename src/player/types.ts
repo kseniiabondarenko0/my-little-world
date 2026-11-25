@@ -1,3 +1,5 @@
+import type { Course } from '../types/game';
+
 // Player identity. The id is permanent and separate from the nickname,
 // so a nickname can change and the same id can later link to a cloud account
 // (friends, room visits, leaderboards). No real names or personal data are stored.
@@ -21,4 +23,6 @@ export interface PlayerProfile {
   nickname: string;
   avatar: AvatarConfig;
   createdAt: number;
+  /** The language this player is learning. Missing on older profiles = English. */
+  course?: Course;
 }

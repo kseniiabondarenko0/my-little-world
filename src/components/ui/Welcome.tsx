@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { AvatarConfig } from '../../player/types';
-import type { Level, NativeLanguage } from '../../types/game';
+import type { Course, Level, NativeLanguage } from '../../types/game';
+import { COURSES, courseInfo, DEFAULT_COURSE } from '../../courses/courses';
 import { usePlayer } from '../../player/playerStore';
 import { checkNickname } from '../../player/playerService';
 import { useProgress } from '../../progression/progressStore';
@@ -8,17 +9,18 @@ import { DEFAULT_AVATAR, PRESETS } from '../../data/avatar';
 import { LEVELS } from '../../data/content';
 import { AvatarCreator } from './AvatarCreator';
 import { AvatarPortrait } from './AvatarPortrait';
-import { Segmented, LANGUAGES } from './Segmented';
 import { ImportSaveButton } from './SaveFile';
+import { Segmented, LANGUAGES, COURSE_OPTIONS } from './Segmented';
 
 // First-time setup: nickname → avatar → language & level. Shown until a profile exists.
 
-const LEVEL_HELP: Record<Level, string> = {
+const levelHelp = (language: string): Record<Level, string> => ({
   A1: 'I’m a beginner',
-  A2: 'I know basic English',
+  A2: `I know basic ${language}`,
   B1: 'I can talk about everyday things',
-  B2: 'I’m confident in English',
-};
+  B2: `I’m confident in ${language}`,
+});
+const LEARNABLE = COURSES.map((c) => c.name).join(', ').replace(/, ([^,]*)$/, ' or $1');
 
 export function Welcome() {
   const current = usePlayer((s) => s.current);
@@ -28,6 +30,8 @@ export function Welcome() {
   const [touched, setTouched] = useState(false);
   const [avatar, setAvatar] = useState<AvatarConfig>(() => PRESETS[Math.floor(Math.random() * PRESETS.length)].avatar ?? DEFAULT_AVATAR);
   const { language, level, setLanguage, setLevel } = useProgress();
+  const [course, setCourse] = useState<Course>(DEFAULT_COURSE);
+  const info = courseInfo(course);
   const hadProgress = useProgress((s) => s.unlocked.length > 0);
 
   if (current) return null;
@@ -35,7 +39,7 @@ export function Welcome() {
 
   const finish = () => {
     useProgress.getState().setSeenIntro();
-    usePlayer.getState().create(nickname, avatar);
+    usePlayer.getState().create(nickname, avatar, course);
     window.location.reload();
   };
 
@@ -46,7 +50,7 @@ export function Welcome() {
           <div className="welcome-step center">
             <div className="intro-art">🏡</div>
             <h1>Welcome to My Little World!</h1>
-            <p className="muted">Learn English by building and decorating your own home.</p>
+            <p className="muted">Learn {LEARNABLE} by building and decorating your own home.</p>
             {hadProgress && <p className="badge">Your saved room will be kept 💾</p>}
             <button className="btn btn-primary btn-big" onClick={() => setStep('name')}>Create my player</button>
             <ImportSaveButton label="📂 I have a save file" />
@@ -114,12 +118,15 @@ export function Welcome() {
             <h2>About you</h2>
             <h3 className="section-title">My language</h3>
             <Segmented value={language} options={LANGUAGES} onChange={(l: NativeLanguage) => setLanguage(l)} />
-            <h3 className="section-title">My English level</h3>
+            <h3 className="section-title">I want to learn</h3>
+            <Segmented value={course} options={COURSE_OPTIONS} onChange={setCourse} />
+            {info.starter && <p className="muted small">{info.name} is new: the Bedroom is ready, more rooms are coming.</p>}
+            <h3 className="section-title">My {info.name} level</h3>
             <div className="level-cards">
               {LEVELS.map((l) => (
                 <button key={l} className={`level-card ${level === l ? 'active' : ''}`} onClick={() => setLevel(l)}>
                   <b className={`level level-${l}`}>{l}</b>
-                  <span>{LEVEL_HELP[l]}</span>
+                  <span>{levelHelp(info.name)[l]}</span>
                 </button>
               ))}
             </div>

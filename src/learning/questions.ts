@@ -1,4 +1,5 @@
 import type { Level, NativeLanguage, VocabularyWord } from '../types/game';
+import { COURSE } from '../courses/active';
 import { ALL_WORDS, getActivitiesForWord, objectOfWord, wordsForRoom } from '../data/content';
 import { distractors, objectDistractors, retryOf, shuffle, unique, type Question } from '../activities/engine';
 import { priority, type WordProgress } from './srs';
@@ -103,7 +104,7 @@ export function makeQuestion(word: VocabularyWord, format: Format, ctx: Ctx, poo
       return { ...base, type: 'listening', prompt: 'Listen. Which word do you hear?', options: shuffle(unique([word.word, ...others])) };
     }
     case 'recall':
-      return { ...base, type: 'typing', mode: 'recall', prompt: 'Type the English word.' };
+      return { ...base, type: 'typing', mode: 'recall', prompt: `Type the ${COURSE.name} word.` };
   }
 }
 
