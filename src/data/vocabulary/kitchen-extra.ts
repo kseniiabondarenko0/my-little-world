@@ -60,7 +60,7 @@ export const kitchenExtraWords: VocabularyWord[] = [
   w('milk', 'A1', 'food', 'fridge', 'молоко', 'молоко'),
   w('egg', 'A1', 'food', 'fridge', 'яйцо', 'яйце'),
   w('cheese', 'A1', 'food', 'fridge', 'сыр', 'сир'),
-  w('butter', 'A1', 'food', 'fridge', 'масло', 'вершкове масло'),
+  w('butter', 'A1', 'food', 'fridge', 'сливочное масло', 'вершкове масло'),
   w('apple', 'A1', 'food', null, 'яблоко', 'яблуко'),
   w('banana', 'A1', 'food', null, 'банан', 'банан'),
   w('water', 'A1', 'food', 'kettle', 'вода', 'вода'),

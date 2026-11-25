@@ -131,15 +131,21 @@ It appears in the Word Book, Practice Mode and Vocabulary Training, and in pract
 ### Languages: English, German, Polish
 
 Each player chooses what they learn (at sign-up, or in the Menu under "I'm learning").
-English is the full game. German and Polish are **starter courses** for the Bedroom.
+English is the full game. German and Polish have **every room and every word** (A1 mission text).
 
 - `src/courses/courses.ts`: the list of languages (name, flag, voice).
-- `src/data/courses/de.ts` and `pl.ts`: the German / Polish words and Bedroom mission text.
+- `src/data/courses/de/<room>.ts` and `pl/<room>.ts`: one file per room with the room's words.
+  `objects` are the 3D objects: `[word, definition, example, ...grammar forms]`; `words` are all other words.
   Words are keyed by the **English word id** (`bed`, `chest-of-drawers`...), so 3D objects,
-  stars and missions stay linked. Ukrainian/Russian translations are reused from English unless given.
-- `src/data/courses/starterChapter.ts`: the shared mission structure; each language only gives the text.
+  stars and missions stay linked. Ukrainian/Russian translations are reused from English.
+- `src/data/courses/de/index.ts` and `pl/index.ts`: the language's sentence patterns with correct grammar
+  (German cases from the article; Polish genitive / instrumental / accusative given per object).
+- `src/data/courses/roomChapter.ts`: builds each room's German/Polish missions from the English chapter's
+  structure (which objects, where they go) plus the language's words. The Bedroom has a hand-written chapter
+  (`starterChapter.ts`, `<lang>/bedroomChapter.ts`).
 - Each language has its **own save** (room, stars, words). Switching language never deletes progress.
-- A room with no German/Polish content yet falls back to English, so adding a new room never breaks a course.
+- **A new room needs a `de/<room>.ts` and `pl/<room>.ts`**: the logic test fails if any English word id
+  or any playable room is missing from a course. Side quests stay English-only and are hidden in other courses.
 
 ### Pet, coins and shop (`src/data/shop.ts`)
 

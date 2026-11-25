@@ -61,7 +61,7 @@ export const supermarketExtraWords: VocabularyWord[] = [
   w('pay', 'A1', 'verbs', 'checkout', 'платить', 'платити'),
   w('sell', 'A1', 'verbs', null, 'продавать', 'продавати'),
   w('cost', 'A1', 'verbs', 'special-offer', 'стоить', 'коштувати'),
-  w('go shopping', 'A1', 'verbs', 'shopping-trolley', 'ходить за покупками', 'ходити по покупки'),
+  w('go shopping', 'A1', 'verbs', 'shopping-trolley', 'ходить за покупками', 'ходити за покупками'),
   w('queue up', 'A2', 'verbs', 'checkout', 'стоять в очереди', 'стояти в черзі'),
   w('pay by card', 'A2', 'verbs', 'checkout', 'платить картой', 'платити карткою'),
   w('compare prices', 'B1', 'verbs', 'special-offer', 'сравнивать цены', 'порівнювати ціни'),

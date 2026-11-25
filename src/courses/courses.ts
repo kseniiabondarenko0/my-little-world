@@ -1,7 +1,7 @@
 import type { Course } from '../types/game';
 
 // The languages a player can learn. English is the full game; German and Polish
-// are starter courses (Bedroom words, lessons, practice, mini-games and missions at A1).
+// are starter courses: every room and word, with A1 mission text and no side quests.
 // To add a language: add it here and to the Course type, then add a folder in src/data/courses/.
 
 export interface CourseInfo {
@@ -13,7 +13,7 @@ export interface CourseInfo {
   flag: string;
   /** Browser voice language for pronunciation. */
   speechLang: string;
-  /** Starter courses don't have every mission yet. */
+  /** Starter courses have A1 mission text only and no side quests. */
   starter: boolean;
 }
 

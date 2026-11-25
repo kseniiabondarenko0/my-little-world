@@ -19,6 +19,6 @@ export const kitchenWords: VocabularyWord[] = [
   main('microwave', 'microwave', 'A2', 'A machine that heats food very quickly.', 'I heat my lunch in the microwave.', 'мікрохвильовка', 'микроволновка'),
   main('toaster', 'toaster', 'A2', 'A machine that makes bread hot and crispy.', 'Put two slices of bread in the toaster.', 'тостер', 'тостер'),
   main('calendar', 'calendar', 'A1', 'It shows the days, weeks and months of the year.', 'Mum’s birthday is on the calendar.', 'календар', 'календарь'),
-  main('bin', 'bin', 'A1', 'You put rubbish in it.', 'Throw the banana skin in the bin.', 'смітник', 'мусорное ведро'),
+  main('bin', 'bin', 'A1', 'You put rubbish in it.', 'Throw the banana skin in the bin.', 'відро для сміття', 'мусорное ведро'),
   main('dishwasher', 'dishwasher', 'A2', 'A machine that washes plates, cups and forks.', 'Put the plates in the dishwasher.', 'посудомийна машина', 'посудомоечная машина'),
 ];

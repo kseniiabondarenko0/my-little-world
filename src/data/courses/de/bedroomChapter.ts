@@ -1,62 +1,8 @@
-import type { CourseContent, CourseWord } from './types';
-import { buildStarterChapter } from './starterChapter';
+import { buildStarterChapter } from '../starterChapter';
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  GERMAN starter course — Bedroom.
-//  Nouns are written with their article (der / die / das): learners need it.
-//  Keys are the English word ids. Translations (uk / ru) are reused from English
-//  unless given here.
-// ═══════════════════════════════════════════════════════════════════════════
+// German Bedroom chapter, hand-written (the other rooms' chapters are built by roomChapter.ts).
 
-const words: Record<string, CourseWord> = {
-  // ── 3D objects (taught in the unlock lessons) ──
-  bed: { word: 'das Bett', definition: 'Hier schläfst du in der Nacht.', example: 'Ich gehe um zehn Uhr ins Bett.' },
-  wardrobe: { word: 'der Kleiderschrank', definition: 'Ein großer Schrank für Kleidung.', example: 'Meine Jacke ist im Kleiderschrank.' },
-  desk: { word: 'der Schreibtisch', definition: 'Ein Tisch für Hausaufgaben.', example: 'Ich mache meine Hausaufgaben am Schreibtisch.' },
-  chair: { word: 'der Stuhl', definition: 'Darauf sitzt du.', example: 'Der Stuhl steht vor dem Schreibtisch.' },
-  bookshelf: { word: 'das Bücherregal', definition: 'Ein Möbelstück für Bücher.', example: 'In meinem Bücherregal stehen zehn Bücher.' },
-  lamp: { word: 'die Lampe', definition: 'Sie macht Licht.', example: 'Ich lese mit der Lampe.' },
-  carpet: { word: 'der Teppich', definition: 'Er liegt weich auf dem Boden.', example: 'Die Katze liegt auf dem Teppich.' },
-  picture: { word: 'das Bild', definition: 'Ein Gemälde oder Foto an der Wand.', example: 'An meiner Wand hängt ein Bild vom Meer.' },
-  mirror: { word: 'der Spiegel', definition: 'Darin siehst du dich selbst.', example: 'Ich schaue jeden Morgen in den Spiegel.' },
-  nightstand: { word: 'der Nachttisch', definition: 'Ein kleiner Tisch neben dem Bett.', example: 'Mein Handy liegt auf dem Nachttisch.' },
-  plant: { word: 'die Pflanze', definition: 'Sie ist grün und braucht Wasser.', example: 'Ich gieße meine Pflanze jeden Tag.' },
-  'chest-of-drawers': { word: 'die Kommode', definition: 'Ein Möbelstück mit Schubladen für Kleidung.', example: 'Meine Socken sind in der Kommode.' },
-
-  // ── More bedroom words ──
-  pillow: { word: 'das Kissen' },
-  blanket: { word: 'die Decke' },
-  shelf: { word: 'das Regal' },
-  window: { word: 'das Fenster' },
-  door: { word: 'die Tür' },
-  clock: { word: 'die Uhr' },
-  'alarm-clock': { word: 'der Wecker' },
-  book: { word: 'das Buch' },
-  notebook: { word: 'das Heft' },
-  pen: { word: 'der Kugelschreiber' },
-  pencil: { word: 'der Bleistift' },
-  backpack: { word: 'der Rucksack' },
-  't-shirt': { word: 'das T-Shirt' },
-  shirt: { word: 'das Hemd' },
-  trousers: { word: 'die Hose' },
-  jeans: { word: 'die Jeans' },
-  skirt: { word: 'der Rock' },
-  dress: { word: 'das Kleid' },
-  sweater: { word: 'der Pullover' },
-  socks: { word: 'die Socken' },
-  shoes: { word: 'die Schuhe' },
-  soft: { word: 'weich' },
-  'wake-up': { word: 'aufwachen' },
-  clean: { word: 'putzen' },
-  in: { word: 'in' },
-  on: { word: 'auf' },
-  under: { word: 'unter' },
-  'next-to': { word: 'neben' },
-  'in-front-of': { word: 'vor' },
-  behind: { word: 'hinter' },
-};
-
-const bedroom = buildStarterChapter({
+export const bedroomChapter = buildStarterChapter({
   title: 'Mein Schlafzimmer',
   exploreIntro: 'Klick auf die Dinge in deinem Zimmer.',
   explore: {
@@ -194,5 +140,3 @@ const bedroom = buildStarterChapter({
       'bücherregal', 'regal', 'bild', 'spiegel', 'pflanze', 'kommode', 'fenster', 'tür', 'kissen', 'decke'],
   },
 });
-
-export const german: CourseContent = { words, chapters: { bedroom } };

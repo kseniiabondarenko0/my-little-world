@@ -120,7 +120,7 @@ export function Welcome() {
             <Segmented value={language} options={LANGUAGES} onChange={(l: NativeLanguage) => setLanguage(l)} />
             <h3 className="section-title">I want to learn</h3>
             <Segmented value={course} options={COURSE_OPTIONS} onChange={setCourse} />
-            {info.starter && <p className="muted small">{info.name} is new: the Bedroom is ready, more rooms are coming.</p>}
+            {info.starter && <p className="muted small">{info.name}: every room and word is ready. Missions use simple A1 sentences.</p>}
             <h3 className="section-title">My {info.name} level</h3>
             <div className="level-cards">
               {LEVELS.map((l) => (

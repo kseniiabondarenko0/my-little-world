@@ -22,7 +22,7 @@ function w(word: string, level: Level, category: string, objectId: string | null
 export const bathroomExtraWords: VocabularyWord[] = [
   // ── Bathroom & fittings ──────────────────────────
   w('bathroom', 'A1', 'furniture', null, 'ванная комната', 'ванна кімната'),
-  w('towel rail', 'A2', 'furniture', 'towel', 'вешалка для полотенец', 'тримач для рушників'),
+  w('towel rail', 'A2', 'furniture', 'towel', 'держатель для полотенец', 'тримач для рушників'),
   w('shower curtain', 'A2', 'furniture', 'shower', 'шторка для душа', 'шторка для душу'),
   w('plug', 'A2', 'furniture', 'bath', 'пробка', 'пробка'),
   w('tiles', 'B1', 'furniture', null, 'плитка', 'плитка'),

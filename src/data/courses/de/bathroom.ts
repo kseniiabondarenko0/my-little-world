@@ -1,0 +1,36 @@
+import type { RoomCourse } from '../types';
+
+export const bathroom: RoomCourse = {
+  title: 'Mein Badezimmer',
+  bins: { fittings: 'Einrichtung', toiletries: 'Pflegeprodukte', laundry: 'Wäsche', actions: 'Was du tust' },
+  objects: {
+    bath: ['die Badewanne', 'Darin liegst du im warmen Wasser.', 'Am Abend nehme ich ein Bad in der Badewanne.'],
+    washbasin: ['das Waschbecken', 'Hier wäschst du dir die Hände.', 'Die Seife liegt am Waschbecken.'],
+    toilet: ['die Toilette', 'Danach drückst du auf die Spülung.', 'Die Toilette ist neben der Dusche.'],
+    shower: ['die Dusche', 'Hier wäschst du dich unter fließendem Wasser.', 'Ich gehe jeden Morgen unter die Dusche.'],
+    towel: ['das Handtuch', 'Damit trocknest du dich ab.', 'Das Handtuch hängt neben der Dusche.'],
+    cabinet: ['der Badschrank', 'Ein kleiner Schrank für Sachen im Bad.', 'Die Zahnpasta ist im Badschrank.'],
+    'washing-machine': ['die Waschmaschine', 'Sie wäscht deine Kleidung.', 'Meine Socken sind in der Waschmaschine.'],
+    'bath-mat': ['der Badvorleger', 'Ein weicher Teppich vor der Badewanne.', 'Nach dem Duschen stehe ich auf dem Badvorleger.'],
+    toothbrush: ['die Zahnbürste', 'Damit putzt du dir die Zähne.', 'Meine Zahnbürste ist blau.'],
+    soap: ['die Seife', 'Damit wäschst du dir die Hände sauber.', 'Wasch dir die Hände mit Seife.'],
+    hairdryer: ['der Föhn', 'Er macht nasse Haare trocken.', 'Ich trockne meine Haare mit dem Föhn.'],
+    scales: ['die Waage', 'Sie zeigt, wie schwer du bist.', 'Die Waage steht neben der Badewanne.'],
+  },
+  words: {
+    bathroom: 'das Badezimmer', 'towel-rail': 'der Handtuchhalter', 'shower-curtain': 'der Duschvorhang', plug: 'der Stöpsel',
+    tiles: 'die Fliesen', radiator: 'der Heizkörper', drain: 'der Abfluss', 'medicine-cabinet': 'der Medizinschrank',
+    'en-suite': 'das eigene Bad', extractor: 'der Lüfter',
+    toothpaste: 'die Zahnpasta', shampoo: 'das Shampoo', 'toilet-paper': 'das Toilettenpapier', comb: 'der Kamm', sponge: 'der Schwamm',
+    'shower-gel': 'das Duschgel', conditioner: 'die Haarspülung', 'bubble-bath': 'das Schaumbad', bathrobe: 'der Bademantel',
+    razor: 'der Rasierer', deodorant: 'das Deo', plaster: 'das Pflaster', 'dental-floss': 'die Zahnseide',
+    'nail-clippers': 'der Nagelknipser', 'washing-powder': 'das Waschpulver', toiletries: 'die Hygieneartikel',
+    'first-aid-kit': 'der Verbandskasten', 'fabric-softener': 'der Weichspüler', limescale: 'der Kalk',
+    wash: 'waschen', 'brush-your-teeth': 'Zähne putzen', 'have-a-shower': 'duschen', 'have-a-bath': 'baden',
+    'wash-your-hands': 'Hände waschen', dry: 'trocknen', 'dry-your-hair': 'Haare föhnen', 'brush-your-hair': 'Haare bürsten',
+    flush: 'spülen', 'do-the-laundry': 'Wäsche waschen', rinse: 'ausspülen', shave: 'sich rasieren', scrub: 'schrubben',
+    weigh: 'wiegen', soak: 'einweichen', unblock: 'den Abfluss frei machen',
+    wet: 'nass', warm: 'warm', slippery: 'rutschig', steamy: 'beschlagen', blocked: 'verstopft', leaking: 'undicht',
+    mouldy: 'schimmelig', waterproof: 'wasserdicht', 'well-ventilated': 'gut belüftet',
+  },
+};

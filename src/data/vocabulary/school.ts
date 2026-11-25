@@ -9,7 +9,7 @@ function main(id: string, word: string, level: 'A1' | 'A2', definition: string, 
 }
 
 export const schoolWords: VocabularyWord[] = [
-  main('whiteboard', 'whiteboard', 'A1', 'A big white board on the wall that the teacher writes on with pens.', 'The teacher writes the date on the whiteboard.', 'біла дошка', 'белая доска'),
+  main('whiteboard', 'whiteboard', 'A1', 'A big white board on the wall that the teacher writes on with pens.', 'The teacher writes the date on the whiteboard.', 'маркерна дошка', 'маркерная доска'),
   main('teachers-desk', 'teacher’s desk', 'A1', 'The big table at the front of the classroom where the teacher sits.', 'Put your homework on the teacher’s desk.', 'учительський стіл', 'учительский стол'),
   main('school-desk', 'school desk', 'A1', 'A small table with a chair where a student sits and works.', 'My school desk is next to the window.', 'парта', 'парта'),
   main('locker', 'locker', 'A2', 'A tall metal cupboard with a door where students keep their things.', 'I keep my sports kit in my locker.', 'шафка', 'шкафчик'),
