@@ -18,6 +18,8 @@ import { buildStages, chapterPercent, choosePicks } from '../src/chapter/stages'
 import { MINIGAMES } from '../src/minigames/registry';
 import { hiddenObjectsMission, interiorDesignerMission } from '../src/minigames/missions';
 import { checkNickname } from '../src/player/playerService';
+import { summarise } from '../src/teacher/overview';
+import { isValidPin } from '../src/teacher/pin';
 import { buildBackup, parseBackup, freeNickname, backupFileName } from '../src/save/backup';
 import { COURSE_CONTENT, activitiesForCourse, wordsForCourse } from '../src/data/courses';
 import { ENGLISH_ACTIVITIES, ENGLISH_WORDS } from '../src/data/content';
@@ -246,6 +248,34 @@ check('Cyrillic nickname is accepted', checkNickname('Лисичка').ok);
   check('nickname clash gets a number', freeNickname('SunnyFox', ['sunnyfox']) === 'SunnyFox 2');
   check('renamed nickname stays within 16 chars', freeNickname('ABCDEFGHIJKLMNOP', ['abcdefghijklmnop']).length <= 16);
   check('file name is safe', /^my-little-world-SunnyFox-\d{4}-\d{2}-\d{2}\.json$/.test(backupFileName(player)));
+}
+
+// ── 11. Teacher overview ───────────────────────────────────────
+{
+  const avatar = { skin: '#fff', hair: 'short', hairColor: '#000', outfit: 'tshirt', outfitColor: '#f00', accessory: 'none' } as const;
+  const player = { id: 'p1', nickname: 'SunnyFox', avatar: { ...avatar }, createdAt: 0 };
+  const blank = summarise(player, { progress: null, chapter: null, layout: null });
+  check('teacher: new player is on stage 1', blank.stage?.index === 1 && blank.mastered === 0 && blank.writings.length === 0);
+  const w0 = ALL_WORDS[0].id;
+  const w1 = ALL_WORDS[1].id;
+  const done = { done: ['movein:unlock', 'movein:place'], picks: [], inspected: [], writings: [
+    { id: 'a', title: 'Old', prompt: 'p', text: 'first', at: 1 },
+    { id: 'b', title: 'New', prompt: 'p', text: 'second', at: 2 },
+  ] };
+  const s = summarise(player, {
+    progress: { words: { [w0]: { ...emptyWord(), box: 3, attempts: 3, correct: 3 }, [w1]: { ...emptyWord(), box: 0, attempts: 2, wrong: 2 } }, level: 'A2', xp: 40 },
+    chapter: { rooms: { bedroom: done } },
+    layout: null,
+  });
+  check('teacher: finished stage 1 moves to stage 2', s.stage?.index === 2, JSON.stringify(s.stage));
+  check('teacher: counts mastered and revise words', s.mastered === 1 && s.toRevise === 1, `${s.mastered}/${s.toRevise}`);
+  check('teacher: newest writing first', s.writings[0]?.text === 'second' && s.writings.length === 2);
+  check('teacher PIN: 4 digits accepted', isValidPin('0427'));
+  check('teacher PIN: wrong lengths and letters refused', !isValidPin('123') && !isValidPin('12345') && !isValidPin('12a4'));
+  check('teacher: profile without a course is English', s.course === 'en');
+  const de = summarise({ ...player, course: 'de' }, { progress: null, chapter: null, layout: null });
+  check('teacher: German player counts German course words', de.course === 'de' && de.totalWords > 0 && de.totalWords <= ENGLISH_WORDS.length);
+  check('teacher: keeps level and XP', s.level === 'A2' && s.xp === 40);
 }
 
 void getFurniture;

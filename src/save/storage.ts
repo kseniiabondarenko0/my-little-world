@@ -86,6 +86,16 @@ export function deletePlayerSave(playerId: string) {
   for (const c of COURSES) for (const name of STORE_NAMES) write(namespace(playerId, c.id) + name, null);
 }
 
+/** Reads another player's saved store (zustand persist format) for a course, without loading it. */
+export function readPlayerStore<T>(playerId: string, name: string, course: Course = DEFAULT_COURSE): T | null {
+  try {
+    const raw = read(namespace(playerId, course) + name);
+    return raw ? ((JSON.parse(raw) as { state?: T }).state ?? null) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function readJSON<T>(key: string, fallback: T): T {
   try {
     const raw = read(PREFIX + key);

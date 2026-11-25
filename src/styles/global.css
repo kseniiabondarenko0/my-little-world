@@ -574,6 +574,24 @@ h1, h2, h3 { margin: 0; }
 .level-progress { display: grid; grid-template-columns: 34px 1fr 60px; align-items: center; gap: 8px; margin: 6px 0; }
 .level-progress .mini-track { width: 100%; }
 .writings { display: grid; gap: 8px; margin-top: 12px; }
+.teacher-table-wrap { overflow-x: auto; margin: 4px 0 8px; }
+.teacher-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.teacher-table th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted, #8a7fa0); padding: 6px 8px; }
+.teacher-table td { padding: 8px; vertical-align: top; border-top: 1px solid #eee6f6; }
+.teacher-row { cursor: pointer; }
+.teacher-row:hover, .teacher-row.open { background: #faf7fd; }
+.teacher-player { display: flex; align-items: center; gap: 8px; }
+.teacher-sub { display: block; }
+.teacher-detail td { border-top: 0; background: #faf7fd; }
+.teacher-pin { display: grid; gap: 10px; justify-items: center; text-align: center; }
+.pin-input { width: 160px; padding: 10px 12px; font-size: 22px; letter-spacing: .4em; text-align: center; border: 2px solid #e6dcf2; border-radius: 14px; }
+.pin-input:focus { outline: none; border-color: var(--lav, #9b7fe0); }
+.pin-error { color: #d0465a; font-weight: 700; margin: 0; }
+.link-btn { background: none; border: 0; padding: 0; color: inherit; text-decoration: underline; cursor: pointer; font: inherit; }
+@media (max-width: 560px) {
+  .teacher-table { font-size: 13px; }
+  .teacher-table td, .teacher-table th { padding: 6px 4px; }
+}
 .writing { padding: 10px 12px; border-radius: 14px; background: #faf7fd; }
 .writing p { margin: 4px 0; user-select: text; }
 .profile-note { margin-top: 16px; }
