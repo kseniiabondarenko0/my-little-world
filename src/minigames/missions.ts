@@ -1,6 +1,7 @@
 import type { Level } from '../types/game';
 import { forLevel, type ChapterDefinition, type MissionDefinition } from '../chapter/types';
 import { shuffle } from '../activities/engine';
+import { SIDE_QUESTS } from '../data/sidequests';
 
 // Builds the 3D-room mini-games from chapter content, with fresh picks each time.
 
@@ -33,5 +34,6 @@ export function missionForTask(chapter: ChapterDefinition, taskId: string, level
   const [group, id] = taskId.split(':');
   if (group === 'explore') return chapter.explore.find((m) => m.id === id) ?? null;
   if (group === 'challenge') return chapter.challenges.find((m) => m.id === id) ?? null;
+  if (group === 'side') return SIDE_QUESTS[chapter.roomId]?.find((m) => m.id === id) ?? null;
   return null;
 }

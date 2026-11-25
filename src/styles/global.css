@@ -643,3 +643,6 @@ h1, h2, h3 { margin: 0; }
 }
 
 .save-file-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+
+/* Side quests: optional, so a dashed border sets them apart from the main stages. */
+.stage.side-quests { border-style: dashed; }

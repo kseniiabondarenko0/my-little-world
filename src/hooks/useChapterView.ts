@@ -4,7 +4,7 @@ import { useLayout, EMPTY_ITEMS } from '../rooms/layoutStore';
 import { useChapter, EMPTY_CHAPTER } from '../chapter/chapterStore';
 import { getRoom } from '../rooms';
 import { getChapter } from '../data/chapters';
-import { buildStages, chapterPercent } from '../chapter/stages';
+import { buildStages, chapterPercent, sideQuests } from '../chapter/stages';
 
 /** The current room's chapter stages, kept up to date with progress. */
 export function useChapterView() {
@@ -18,6 +18,6 @@ export function useChapterView() {
   return useMemo(() => {
     const room = getRoom(roomId);
     const stages = buildStages({ chapter: getChapter(roomId), room, level, state, unlocked, items, words });
-    return { stages, percent: chapterPercent(stages), room };
+    return { stages, percent: chapterPercent(stages), room, side: sideQuests(roomId, stages, state) };
   }, [roomId, level, unlocked, words, items, state]);
 }

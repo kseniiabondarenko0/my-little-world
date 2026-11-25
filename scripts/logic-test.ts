@@ -14,9 +14,11 @@ import { findFreeSpot, isPlacementValid } from '../src/objects/placement';
 import { applyAnswer, masteryOf, emptyWord } from '../src/learning/srs';
 import { buildTraining, makeQuestion, supports, ALL_FORMATS, buildDeck } from '../src/learning/questions';
 import { buildSession } from '../src/activities/engine';
+import { buildLesson } from '../src/activities/lesson';
+import { SIDE_QUESTS } from '../src/data/sidequests';
 import { buildStages, chapterPercent, choosePicks } from '../src/chapter/stages';
 import { MINIGAMES } from '../src/minigames/registry';
-import { hiddenObjectsMission, interiorDesignerMission } from '../src/minigames/missions';
+import { hiddenObjectsMission, interiorDesignerMission, missionForTask } from '../src/minigames/missions';
 import { checkNickname } from '../src/player/playerService';
 import { summarise } from '../src/teacher/overview';
 import { isValidPin } from '../src/teacher/pin';
@@ -106,7 +108,7 @@ function stepObjects(step: MissionStep): string[] {
 const courseChapters = Object.entries(COURSE_CONTENT).flatMap(([c, content]) => Object.entries(content!.chapters).map(([room, ch]) => [`${c}/${room}`, ch] as const));
 for (const [roomId, chapter] of [...Object.entries(CHAPTERS), ...courseChapters]) {
   const starter = roomId.includes('/');
-  const missions: MissionDefinition[] = [...chapter.explore, ...chapter.challenges, chapter.makeover, chapter.final];
+  const missions: MissionDefinition[] = [...chapter.explore, ...chapter.challenges, chapter.makeover, chapter.final, ...(starter ? [] : SIDE_QUESTS[roomId] ?? [])];
   for (const m of missions) {
     for (const level of LEVELS) {
       const steps = forLevel(m.steps, level);
@@ -142,6 +144,12 @@ for (const [roomId, chapter] of [...Object.entries(CHAPTERS), ...courseChapters]
   for (const p of chapter.prepositions) check(`preposition answer in options: ${p.sentence}`, p.options.includes(p.answer));
   const bins = new Set(chapter.sortGame.bins.map((b) => b.id));
   for (const i of chapter.sortGame.items) check(`sort item "${i.word}" has a real group`, bins.has(i.bin));
+}
+for (const roomId of Object.keys(SIDE_QUESTS)) {
+  check(`side quests are for a playable room (${roomId})`, !!CHAPTERS[roomId]);
+  check(`${roomId} has at least 3 side quests`, SIDE_QUESTS[roomId].length >= 3);
+  check(`${roomId} side quest ids are unique`, new Set(SIDE_QUESTS[roomId].map((m) => m.id)).size === SIDE_QUESTS[roomId].length);
+  for (const m of SIDE_QUESTS[roomId]) check(`side quest ${m.id} starts from the journey`, missionForTask(CHAPTERS[roomId], `side:${m.id}`, 'A1') === m);
 }
 check('every furniture word exists', FURNITURE.every((f) => ALL_WORDS.some((w) => w.id === f.wordId)));
 check('word ids are unique', new Set(ALL_WORDS.map((w) => w.id)).size === ALL_WORDS.length);
@@ -181,6 +189,18 @@ for (const roomId of Object.keys(CHAPTERS)) for (const level of LEVELS) {
     check(`practice deck builds (${roomId}/${level}/${language})`, buildDeck(wordsForRoom(roomId, level), ['image', 'letters', 'recall'], ctx, {}, 0, 10).length === 10);
     for (const f of FURNITURE.filter((d) => getRoomOf(d.id) === roomId)) {
       check(`lesson for ${f.id} has 3 questions`, buildSession(f.id, 'lesson', ctx).length === 3);
+      const lesson = buildLesson(f.id, ctx);
+      const minSteps = { A1: 4, A2: 5, B1: 5, B2: 5 }[level];
+      check(`unlock lesson for ${f.id}/${level} has at least ${minSteps} steps`, lesson.length >= minSteps, String(lesson.length));
+      check(`unlock lesson for ${f.id}/${level} mixes at least 4 activity types`, new Set(lesson.map((q) => q.type)).size >= 4, lesson.map((q) => q.type).join(','));
+      check(`unlock lesson keys are unique (${f.id})`, new Set(lesson.map((q) => q.key)).size === lesson.length);
+      if (level !== 'A1') check(`unlock lesson for ${f.id}/${level} has a match step`, lesson.some((q) => q.type === 'match' && q.pairs?.length === 4));
+      if (level === 'B1' || level === 'B2') check(`unlock lesson for ${f.id}/${level} has a sentence builder`, lesson.some((q) => q.type === 'builder'));
+      for (const q of lesson) {
+        if (q.options.length) check(`lesson options include the answer (${f.id}/${q.type})`, q.options.includes(q.answer), q.options.join('|'));
+        if (q.type === 'spelling') check(`lesson spelling hides 2+ letters or the whole short word (${q.answer})`, (q.hide ?? []).length >= Math.min(2, q.answer.length - 2));
+        if (q.type === 'typing' && q.mode === 'recall') check('lesson recall shows a translation', !!q.native);
+      }
       check(`practice for ${f.id} has questions`, buildSession(f.id, 'practice', ctx).length >= 3);
     }
   }

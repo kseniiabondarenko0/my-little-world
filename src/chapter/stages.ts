@@ -7,6 +7,7 @@ import { MASTERED_BOX } from '../learning/srs';
 import { wordsForRoom } from '../data/content';
 import { MINIGAMES } from '../minigames/registry';
 import { shuffle } from '../activities/engine';
+import { SIDE_QUESTS } from '../data/sidequests';
 
 // The 7 stages of a room chapter, built from the chapter content.
 // Stages open one after another; the room is complete when the final mission is done.
@@ -138,4 +139,17 @@ export function chapterPercent(stages: Stage[]): number {
 
 export function findTask(stages: Stage[], taskId: string): Task | undefined {
   return stages.flatMap((s) => s.tasks).find((t) => t.id === taskId);
+}
+
+/**
+ * Optional side quests for a room. They open when Move In is done (all furniture in the room),
+ * are English-only (their text is English) and never count towards chapter progress.
+ */
+export function sideQuests(roomId: string, stages: Stage[], state: RoomChapter): { open: boolean; tasks: Task[] } {
+  if (COURSE.id !== 'en') return { open: false, tasks: [] };
+  const tasks = (SIDE_QUESTS[roomId] ?? []).map((m) => ({
+    id: `side:${m.id}`, title: m.title, icon: m.icon, kind: 'mission' as const, missionId: m.id,
+    done: state.done.includes(`side:${m.id}`), xp: m.xp ?? 80,
+  }));
+  return { open: stages[0]?.done ?? false, tasks };
 }
