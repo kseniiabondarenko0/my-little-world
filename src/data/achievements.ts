@@ -74,4 +74,6 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     condition: { type: 'roomComplete', roomId: 'office' } },
   { id: 'hospital-complete', title: 'Junior Doctor', description: 'Complete the hospital chapter (final mission).', icon: '🩺',
     condition: { type: 'roomComplete', roomId: 'hospital' } },
+  { id: 'supermarket-complete', title: 'Smart Shopper', description: 'Complete the supermarket chapter (final mission).', icon: '🛒',
+    condition: { type: 'roomComplete', roomId: 'supermarket' } },
 ];
