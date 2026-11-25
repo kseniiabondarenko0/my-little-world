@@ -149,8 +149,10 @@ export interface RoomDefinition {
     wallLower: string;
     trim: string;
     floor: [string, string];
-    /** How the floor is laid: wooden planks (default), square tiles, or smooth concrete. */
-    floorStyle?: 'planks' | 'tiles' | 'concrete';
+    /** How the floor is laid: wooden planks (default), square tiles, smooth concrete, or outdoor paving slabs. */
+    floorStyle?: 'planks' | 'tiles' | 'concrete' | 'paving';
+    /** Outdoors: clouds in the sky and a striped shop awning instead of curtains. */
+    outdoor?: boolean;
     base: string;
     curtain: string;
   };

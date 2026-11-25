@@ -103,6 +103,7 @@ export const SHOP_ITEMS: ShopItem[] = [
   { ...room, kind: 'floor', id: 'floor-whitewash', name: 'White wood floor', icon: '🤍', price: 60, floor: ['#f1e9de', '#e7dccd'], floorStyle: 'planks' },
   { ...room, kind: 'floor', id: 'floor-checker', name: 'Checker tiles', icon: '🏁', price: 70, floor: ['#fbf7f2', '#4a4458'], floorStyle: 'tiles' },
   { ...room, kind: 'floor', id: 'floor-candy', name: 'Candy tiles', icon: '🍬', price: 80, floor: ['#fde2ea', '#d9ecfb'], floorStyle: 'tiles' },
+  { ...room, kind: 'floor', id: 'floor-paving', name: 'Stone paving', icon: '🪨', price: 70, floor: ['#c9c3ba', '#b8b1a7'], floorStyle: 'paving' },
   // Room: decorations
   { ...room, kind: 'decor', id: 'decor-fairy-lights', name: 'Fairy lights', icon: '✨', price: 50 },
   { ...room, kind: 'decor', id: 'decor-bunting', name: 'Party flags', icon: '🎏', price: 45 },

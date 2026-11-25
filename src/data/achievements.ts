@@ -78,4 +78,6 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     condition: { type: 'roomComplete', roomId: 'supermarket' } },
   { id: 'restaurant-complete', title: 'Master Chef', description: 'Complete the restaurant chapter (final mission).', icon: '🍝',
     condition: { type: 'roomComplete', roomId: 'restaurant' } },
+  { id: 'city-complete', title: 'City Explorer', description: 'Complete the city chapter (final mission).', icon: '🏙️',
+    condition: { type: 'roomComplete', roomId: 'city' } },
 ];

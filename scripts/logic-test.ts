@@ -96,6 +96,7 @@ check('office is locked until the school is complete', !isRoomOpen('office', ['b
 check('hospital is locked until the office is complete', !isRoomOpen('hospital', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway', 'basement', 'entrance', 'school']) && isRoomOpen('hospital', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway', 'basement', 'entrance', 'school', 'office']));
 check('supermarket is locked until the hospital is complete', !isRoomOpen('supermarket', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway', 'basement', 'entrance', 'school', 'office']) && isRoomOpen('supermarket', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway', 'basement', 'entrance', 'school', 'office', 'hospital']));
 check('restaurant is locked until the supermarket is complete', !isRoomOpen('restaurant', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway', 'basement', 'entrance', 'school', 'office', 'hospital']) && isRoomOpen('restaurant', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway', 'basement', 'entrance', 'school', 'office', 'hospital', 'supermarket']));
+check('city is locked until the restaurant is complete', !isRoomOpen('city', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway', 'basement', 'entrance', 'school', 'office', 'hospital', 'supermarket']) && isRoomOpen('city', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway', 'basement', 'entrance', 'school', 'office', 'hospital', 'supermarket', 'restaurant']));
 {
   const placed: PlacedItem[] = [];
   for (const id of bedroom.objects) {

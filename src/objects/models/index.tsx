@@ -11,6 +11,7 @@ import { Computer, FilingCabinet, FireExtinguisher, Laptop, MeetingTable, Office
 import { Bandage, Crutches, DripStand, EyeChart, HeartMonitor, HospitalBed, MedicalTrolley, Stethoscope, Syringe, Thermometer, Wheelchair, XRay } from './hospital';
 import { BarcodeScanner, BreadRack, CashRegister, Checkout, DrinksFridge, FruitStand, OpeningHours, ShoppingBag, ShoppingBasket, ShoppingTrolley, SpecialOffer, Watermelon } from './supermarket';
 import { Bill, Counter, DessertTrolley, HighChair, Menu, OpenSign, Pizza, PizzaOven, SaltAndPepper, SpecialsBoard, TableForTwo, TipJar } from './restaurant';
+import { BusStop, BusTicket, CityMap, Fountain, IceCreamCart, ParkBench, Pigeon, PostBox, Skateboard, StreetLamp, StreetSign, TrafficLight } from './city';
 
 // Procedural 3D models. Each model:
 //  - faces +z (its front),
@@ -400,6 +401,19 @@ export const MODELS: Record<string, ComponentType> = {
   saltAndPepper: SaltAndPepper,
   specialsBoard: SpecialsBoard,
   openSign: OpenSign,
+  // city
+  parkBench: ParkBench,
+  busStop: BusStop,
+  streetLamp: StreetLamp,
+  trafficLight: TrafficLight,
+  postBox: PostBox,
+  fountain: Fountain,
+  iceCreamCart: IceCreamCart,
+  busTicket: BusTicket,
+  skateboard: Skateboard,
+  pigeon: Pigeon,
+  streetSign: StreetSign,
+  cityMap: CityMap,
 };
 
 export function FurnitureModel({ model }: { model: string }) {

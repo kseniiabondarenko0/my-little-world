@@ -33,18 +33,19 @@ function Floor({ room }: { room: RoomDefinition }) {
     );
   }
   // Tiles: a checkerboard of squares with thin grout lines. Concrete: big slabs, one colour.
-  const tile = style === 'tiles' ? 0.4 : 1.0;
+  // Paving: medium outdoor slabs in two close stone colours.
+  const tile = style === 'tiles' ? 0.4 : style === 'paving' ? 0.6 : 1.0;
   const nx = Math.round(W / tile);
   const nz = Math.round(D / tile);
   const tw = W / nx;
   const td = D / nz;
-  const gap = style === 'tiles' ? 0.014 : 0.008;
+  const gap = style === 'tiles' ? 0.014 : style === 'paving' ? 0.022 : 0.008;
   return (
     <group>
       {Array.from({ length: nx * nz }, (_, k) => {
         const i = k % nx;
         const j = Math.floor(k / nx);
-        const color = style === 'tiles' ? ((i + j) % 2 ? c2 : c1) : c1;
+        const color = style === 'tiles' ? ((i + j) % 2 ? c2 : c1) : style === 'paving' ? ((i * 7 + j * 3) % 5 < 2 ? c2 : c1) : c1;
         return (
           <mesh key={k} position={[-W / 2 + tw / 2 + i * tw, -0.02, -D / 2 + td / 2 + j * td]} receiveShadow>
             <boxGeometry args={[tw - gap, 0.04, td - gap]} />
@@ -92,13 +93,49 @@ function Window({ room, opening }: { room: RoomDefinition; opening: WallOpening 
       <Box size={[0.04, h, 0.04]} position={[0, cy, 0.03]} color={frame} radius={0.01} />
       <Box size={[w, 0.04, 0.04]} position={[0, cy, 0.03]} color={frame} radius={0.01} />
       <Box size={[w + 0.3, 0.05, 0.18]} position={[0, bottom - f - 0.02, 0.09]} color={frame} radius={0.02} />
+      {room.theme.outdoor ? <Awning width={w} y={bottom + h + 0.22} /> : <>
       {/* curtains and rod */}
       <Cyl top={0.018} height={w + 0.9} rotation={[0, 0, Math.PI / 2]} position={[0, bottom + h + 0.2, 0.14]} color="#e0b25e" segments={10} />
       {[-1, 1].map((s) => (
         <Box key={s} size={[0.34, h + 0.5, 0.06]} position={[s * (w / 2 + 0.24), bottom + h / 2 - 0.08, 0.14]}
           color={room.theme.curtain} radius={0.03} />
       ))}
+      </>}
     </OnWall>
+  );
+}
+
+/** A striped shop awning over an outdoor window. */
+function Awning({ width, y }: { width: number; y: number }) {
+  const n = 8;
+  const sw = (width + 0.5) / n;
+  return (
+    <group position={[0, y, 0.32]} rotation={[0.45, 0, 0]}>
+      {Array.from({ length: n }, (_, i) => (
+        <Box key={i} size={[sw, 0.03, 0.62]} position={[-(width + 0.5) / 2 + sw / 2 + i * sw, 0, 0]}
+          color={i % 2 ? '#fff7ec' : '#e46a5a'} radius={0.006} />
+      ))}
+    </group>
+  );
+}
+
+/** A few soft clouds floating above an outdoor scene. */
+function Clouds({ room }: { room: RoomDefinition }) {
+  const { width: W, depth: D, height: H } = room.size;
+  const clouds: [number, number, number, number][] = [[-0.25, 0.9, -0.45, 1], [0.2, 1.25, -0.4, 0.8], [-0.45, 1.1, 0.1, 0.7]];
+  return (
+    <group>
+      {clouds.map(([u, v, t, s], i) => (
+        <group key={i} position={[u * W, H + 0.15 + v * 0.35, t * D]} scale={[s, s, s]}>
+          {[[-0.32, 0, 0, 0.26], [0, 0.1, 0, 0.34], [0.34, 0, 0, 0.24]].map(([x, y, z, r], k) => (
+            <mesh key={k} position={[x, y, z]}>
+              <icosahedronGeometry args={[r, 1]} />
+              <meshStandardMaterial color="#ffffff" roughness={1} />
+            </mesh>
+          ))}
+        </group>
+      ))}
+    </group>
   );
 }
 
@@ -156,6 +193,7 @@ export function Room({ room }: { room: RoomDefinition }) {
       <Wall room={room} wall="left" />
       {room.window && <Window room={room} opening={room.window} />}
       {room.door && <Door room={room} opening={room.door} />}
+      {room.theme.outdoor && <Clouds room={room} />}
     </group>
   );
 }
