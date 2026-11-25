@@ -19,6 +19,7 @@ import { COURSE } from '../../courses/active';
 import { checkNickname } from '../../player/playerService';
 import { TeacherOverviewModal } from './TeacherOverview';
 import { ExportSaveButton, ImportSaveButton } from './SaveFile';
+import { PetModal, ShopModal } from './PetShop';
 
 export function Modal({ title, children, wide }: { title: string; children: ReactNode; wide?: boolean }) {
   const close = () => useUI.getState().openModal(null);
@@ -137,6 +138,8 @@ function MenuModal() {
 
   const tiles: { icon: string; label: string; onClick: () => void }[] = [
     { icon: '👤', label: 'My profile', onClick: () => open('profile') },
+    { icon: '🐾', label: 'My pet', onClick: () => open('pet') },
+    { icon: '🛍️', label: 'Shop', onClick: () => open('shop') },
     { icon: '🎯', label: 'Practice Mode', onClick: () => open('practice') },
     { icon: '📖', label: 'Word Book', onClick: () => open('words') },
     { icon: '🏆', label: 'Achievements', onClick: () => open('achievements') },
@@ -384,6 +387,8 @@ export function Modals() {
     case 'words': return <WordBookModal />;
     case 'profile': return <ProfileModal />;
     case 'teacher': return <TeacherOverviewModal />;
+    case 'pet': return <PetModal />;
+    case 'shop': return <ShopModal />;
     default: return null;
   }
 }

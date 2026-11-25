@@ -52,6 +52,23 @@ function Hair({ avatar }: { avatar: AvatarConfig }) {
           <mesh position={[0, 0.02, -0.01]} scale={[1.12, 0.95, 1.12]} castShadow><sphereGeometry args={[0.2, 16, 12, 0, Math.PI * 2, 0, Math.PI / 1.55]} />{mat}</mesh>
         </group>
       );
+    case 'ponytail':
+      return (
+        <group>
+          <mesh position={[0, 0.04, -0.02]} scale={[1.05, 0.8, 1.05]} castShadow><sphereGeometry args={[0.2, 16, 12, 0, Math.PI * 2, 0, Math.PI / 1.8]} />{mat}</mesh>
+          <mesh position={[0, 0.1, -0.2]} castShadow><sphereGeometry args={[0.05, 10, 8]} /><meshStandardMaterial color="#ff6f91" /></mesh>
+          <mesh position={[0, -0.04, -0.25]} rotation={[0.35, 0, 0]} castShadow><capsuleGeometry args={[0.06, 0.2, 4, 10]} />{mat}</mesh>
+        </group>
+      );
+    case 'pigtails':
+      return (
+        <group>
+          <mesh position={[0, 0.04, -0.02]} scale={[1.05, 0.8, 1.05]} castShadow><sphereGeometry args={[0.2, 16, 12, 0, Math.PI * 2, 0, Math.PI / 1.8]} />{mat}</mesh>
+          {[-1, 1].map((side) => (
+            <mesh key={side} position={[side * 0.22, -0.06, -0.04]} rotation={[0, 0, side * 0.35]} castShadow><capsuleGeometry args={[0.055, 0.16, 4, 10]} />{mat}</mesh>
+          ))}
+        </group>
+      );
   }
 }
 
@@ -98,6 +115,37 @@ function Accessory({ avatar }: { avatar: AvatarConfig }) {
           <mesh><sphereGeometry args={[0.022, 8, 6]} /><meshStandardMaterial color="#ffd27a" /></mesh>
         </group>
       );
+    case 'crown':
+      return (
+        <group position={[0, 0.2, -0.01]}>
+          <mesh castShadow><cylinderGeometry args={[0.12, 0.12, 0.08, 16, 1, true]} /><meshStandardMaterial color="#f2c94c" metalness={0.5} roughness={0.3} side={2} /></mesh>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <mesh key={i} position={[Math.cos((i / 5) * Math.PI * 2) * 0.12, 0.07, Math.sin((i / 5) * Math.PI * 2) * 0.12]}><coneGeometry args={[0.025, 0.07, 4]} /><meshStandardMaterial color="#f2c94c" metalness={0.5} roughness={0.3} /></mesh>
+          ))}
+          <mesh position={[0, 0, 0.12]}><sphereGeometry args={[0.02, 8, 6]} /><meshStandardMaterial color="#e0503a" /></mesh>
+        </group>
+      );
+    case 'wizard':
+      return (
+        <group position={[0, 0.14, -0.02]}>
+          <mesh><cylinderGeometry args={[0.27, 0.27, 0.02, 24]} /><meshStandardMaterial color="#5a4fb8" /></mesh>
+          <mesh position={[0, 0.2, -0.02]} rotation={[-0.12, 0, 0]} castShadow><coneGeometry args={[0.16, 0.42, 20]} /><meshStandardMaterial color="#5a4fb8" /></mesh>
+          {[[0.06, 0.12, 0.13], [-0.05, 0.25, 0.09]].map((p, i) => (
+            <mesh key={i} position={p as [number, number, number]}><octahedronGeometry args={[0.025, 0]} /><meshStandardMaterial color="#ffd27a" emissive="#ffd27a" emissiveIntensity={0.6} /></mesh>
+          ))}
+        </group>
+      );
+    case 'catears':
+      return (
+        <group position={[0, 0.17, 0]}>
+          {[-1, 1].map((side) => (
+            <group key={side} position={[side * 0.11, 0, 0]} rotation={[0, 0, -side * 0.3]}>
+              <mesh castShadow><coneGeometry args={[0.06, 0.1, 4]} /><meshStandardMaterial color={avatar.hairColor} /></mesh>
+              <mesh position={[0, -0.01, 0.02]} scale={0.6}><coneGeometry args={[0.06, 0.1, 4]} /><meshStandardMaterial color="#ffb3c1" /></mesh>
+            </group>
+          ))}
+        </group>
+      );
     default:
       return null;
   }
@@ -133,7 +181,8 @@ export function AvatarFigure({ avatar, position }: { avatar: AvatarConfig; posit
 
   const skin = <meshStandardMaterial color={avatar.skin} roughness={0.7} />;
   const cloth = <meshStandardMaterial color={avatar.outfitColor} roughness={0.8} />;
-  const dress = avatar.outfit === 'dress';
+  const dress = avatar.outfit === 'dress' || avatar.outfit === 'gown';
+  const bareArms = avatar.outfit === 'tshirt' || avatar.outfit === 'cape' || dress;
 
   return (
     <group position={[position[0], 0, position[1]]}>
@@ -146,11 +195,17 @@ export function AvatarFigure({ avatar, position }: { avatar: AvatarConfig; posit
         {[-0.07, 0.07].map((x) => (
           <mesh key={x} position={[x, 0.13, 0]} castShadow>
             <capsuleGeometry args={[0.045, 0.14, 4, 8]} />
-            <meshStandardMaterial color={avatar.outfit === 'overalls' ? avatar.outfitColor : dress ? avatar.skin : '#5b6b8c'} />
+            <meshStandardMaterial color={avatar.outfit === 'overalls' || avatar.outfit === 'suit' ? avatar.outfitColor : dress ? avatar.skin : '#5b6b8c'} />
           </mesh>
         ))}
         {/* body */}
-        {dress ? (
+        {avatar.outfit === 'gown' ? (
+          <group>
+            <mesh position={[0, 0.3, 0]} castShadow><coneGeometry args={[0.27, 0.5, 20]} />{cloth}</mesh>
+            <mesh position={[0, 0.5, 0]} castShadow><capsuleGeometry args={[0.11, 0.08, 6, 12]} />{cloth}</mesh>
+            <mesh position={[0, 0.42, 0]} rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[0.13, 0.015, 6, 20]} /><meshStandardMaterial color="#ffffff" /></mesh>
+          </group>
+        ) : dress ? (
           <mesh position={[0, 0.38, 0]} castShadow><coneGeometry args={[0.2, 0.36, 16]} />{cloth}</mesh>
         ) : (
           <mesh position={[0, 0.4, 0]} castShadow><capsuleGeometry args={[0.13, 0.16, 6, 12]} />{cloth}</mesh>
@@ -158,15 +213,27 @@ export function AvatarFigure({ avatar, position }: { avatar: AvatarConfig; posit
         {avatar.outfit === 'hoodie' && (
           <mesh position={[0, 0.53, -0.08]} castShadow><sphereGeometry args={[0.1, 12, 8]} />{cloth}</mesh>
         )}
+        {avatar.outfit === 'cape' && (
+          <group>
+            <mesh position={[0, 0.36, -0.15]} rotation={[0.12, 0, 0]} castShadow><boxGeometry args={[0.34, 0.5, 0.02]} /><meshStandardMaterial color="#e0503a" /></mesh>
+            <mesh position={[0, 0.42, 0.125]}><circleGeometry args={[0.05, 5]} /><meshStandardMaterial color="#ffd27a" /></mesh>
+          </group>
+        )}
+        {avatar.outfit === 'suit' && (
+          <group>
+            <mesh position={[0, 0.47, 0.125]}><boxGeometry args={[0.07, 0.12, 0.02]} /><meshStandardMaterial color="#ffffff" /></mesh>
+            <mesh position={[0, 0.45, 0.137]}><boxGeometry args={[0.025, 0.1, 0.01]} /><meshStandardMaterial color="#e0503a" /></mesh>
+          </group>
+        )}
         {avatar.outfit === 'overalls' && (
           <mesh position={[0, 0.44, 0.115]}><boxGeometry args={[0.14, 0.1, 0.02]} /><meshStandardMaterial color="#ffffff" /></mesh>
         )}
         {/* arms */}
         <group ref={armL} position={[-0.16, 0.5, 0]}>
-          <mesh position={[0, -0.1, 0]} castShadow><capsuleGeometry args={[0.04, 0.12, 4, 8]} />{avatar.outfit === 'tshirt' || dress ? skin : cloth}</mesh>
+          <mesh position={[0, -0.1, 0]} castShadow><capsuleGeometry args={[0.04, 0.12, 4, 8]} />{bareArms ? skin : cloth}</mesh>
         </group>
         <group ref={armR} position={[0.16, 0.5, 0]}>
-          <mesh position={[0, -0.1, 0]} castShadow><capsuleGeometry args={[0.04, 0.12, 4, 8]} />{avatar.outfit === 'tshirt' || dress ? skin : cloth}</mesh>
+          <mesh position={[0, -0.1, 0]} castShadow><capsuleGeometry args={[0.04, 0.12, 4, 8]} />{bareArms ? skin : cloth}</mesh>
         </group>
         {/* head */}
         <group position={[0, 0.78, 0]}>

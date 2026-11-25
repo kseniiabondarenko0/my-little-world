@@ -27,6 +27,9 @@ import { COURSE_CONTENT, activitiesForCourse, wordsForCourse } from '../src/data
 import { ENGLISH_ACTIVITIES, ENGLISH_WORDS } from '../src/data/content';
 import { COURSES } from '../src/courses/courses';
 import { autoHide } from '../src/activities/engine';
+import { SHOP_ITEMS, PET_SPECIES, styledRoom, coinsForXp, exclusiveFor } from '../src/data/shop';
+import { useCompanion, sanitize, initialCompanion } from '../src/companion/companionStore';
+import { HAIR_STYLES, OUTFITS, ACCESSORIES } from '../src/data/avatar';
 
 const getRoomOf = (objectId: string) => LOCATIONS.find((l) => l.room?.objects.includes(objectId))?.id;
 
@@ -336,6 +339,52 @@ void getFurniture;
     }
   }
   check('de: German article stays visible in spelling', autoHide('das Bett').every((i) => i > 3));
+}
+
+// ── Pet + coin shop ────────────────────────────────────────────
+{
+  const ids = SHOP_ITEMS.map((i) => i.id);
+  check('shop: item ids are unique', new Set(ids).size === ids.length);
+  check('shop: prices are positive whole numbers', SHOP_ITEMS.every((i) => Number.isInteger(i.price) && i.price > 0));
+  check('shop: every category has items', ['room', 'avatar', 'pet'].every((c) => SHOP_ITEMS.some((i) => i.category === c)));
+  check('pets: four animals with a word in every course', PET_SPECIES.length === 4 && PET_SPECIES.every((p) => COURSES.every((c) => !!p.word[c.id]) && p.colors.length >= 4));
+  check('shop: every exclusive avatar item is in the creator', SHOP_ITEMS.every((i) =>
+    i.kind === 'hair' ? HAIR_STYLES.some((h) => h.id === i.hair) : i.kind === 'outfit' ? OUTFITS.some((o) => o.id === i.outfit) : i.kind === 'accessory' ? ACCESSORIES.some((a) => a.id === i.accessory) : true));
+  check('shop: starter avatar styles stay free', ['short', 'long', 'bun', 'curly', 'spiky', 'bob'].every((h) => !exclusiveFor('hair', h)) && !exclusiveFor('outfit', 'dress'));
+  check('coins: tasks pay a quarter of XP, at least 5', coinsForXp(40) === 10 && coinsForXp(90) === 23 && coinsForXp(4) === 5);
+  const painted = styledRoom(bedroom, { wall: 'paint-mint', floor: 'floor-checker' });
+  check('room style: paint and floor change the theme', painted.theme.wall === '#dff3ea' && painted.theme.floorStyle === 'tiles' && bedroom.theme.wall !== '#dff3ea');
+  check('room style: no style keeps the room', styledRoom(bedroom, undefined) === bedroom && styledRoom(bedroom, { wall: 'nope' }).theme.wall === bedroom.theme.wall);
+
+  const c = useCompanion;
+  c.setState({ ...initialCompanion });
+  c.getState().start(12);
+  check('coins: starter coins plus one per star (older saves)', c.getState().coins === 37 && c.getState().started);
+  c.getState().start(50);
+  check('coins: starter coins only once', c.getState().coins === 37);
+  check('shop: can’t buy without enough coins', !c.getState().buy('acc-crown') && c.getState().coins === 37);
+  check('shop: buying needs the full price', !c.getState().buy('paint-mint') && !c.getState().owned.includes('paint-mint'));
+  c.setState({ coins: 100 });
+  check('shop: buying adds the item and takes coins', c.getState().buy('pet-bow') && c.getState().coins === 70 && c.getState().owned.includes('pet-bow'));
+  check('shop: an item can’t be bought twice', !c.getState().buy('pet-bow') && c.getState().coins === 70);
+  c.getState().earn(15);
+  check('coins: earning adds to coins and lifetime total', c.getState().coins === 85 && c.getState().earned === 52);
+  c.getState().adopt({ species: 'parrot', name: '   ', color: '#4cb860', accessory: 'none' });
+  check('pet: empty name gets a default', c.getState().pet?.name === 'Buddy');
+  c.getState().updatePet({ name: 'A very very long pet name' });
+  check('pet: name is at most 16 letters', (c.getState().pet?.name.length ?? 0) <= 16);
+  c.getState().toggleDecor('bedroom', 'decor-balloons');
+  c.getState().setRoomStyle('bedroom', { wall: 'paint-mint' });
+  check('room style: decor and paint are kept together', c.getState().roomStyles.bedroom.decor?.[0] === 'decor-balloons' && c.getState().roomStyles.bedroom.wall === 'paint-mint');
+  check('save: damaged companion data is cleaned', JSON.stringify(sanitize({ coins: -5, owned: ['pet-bow', 'fake', 3], pet: 'x' })) === JSON.stringify({ owned: ['pet-bow'] }));
+
+  const player = { id: 'p1', nickname: 'SunnyFox', avatar: { skin: '#f1c', hair: 'short', hairColor: '#000', outfit: 'tshirt', outfitColor: '#00f', accessory: 'none' } as const, createdAt: 1 };
+  const companion = JSON.stringify({ state: { coins: 85, pet: { species: 'cat', name: 'Mochi', color: '#e8a05c', accessory: 'bow' } }, version: 1 });
+  const file = JSON.stringify(buildBackup(player, { en: { progress: null, layout: null, chapter: null }, profile: { companion } }));
+  const back = parseBackup(file);
+  check('save file keeps the pet and coins', back.ok && back.saves.profile?.companion === companion);
+  const old = parseBackup(JSON.stringify({ ...JSON.parse(file), saves: { en: JSON.parse(file).saves.en } }));
+  check('save file from before the pet still loads', old.ok && !old.saves.profile);
 }
 
 console.log(`\n${passed} checks passed, ${failures.length} failed`);

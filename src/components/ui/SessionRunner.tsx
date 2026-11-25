@@ -1,3 +1,5 @@
+import { earnCoins } from '../../companion/coins';
+import { COIN_REWARDS } from '../../data/shop';
 import { useCallback, useRef, useState, type ReactNode } from 'react';
 import { useProgress } from '../../progression/progressStore';
 import { useUI } from '../../hooks/useUIStore';
@@ -65,6 +67,7 @@ export function SessionRunner({ questions, eyebrow, onClose, onFinish, renderSum
       return;
     }
     const r = { stars: stars.current, firstTry: stars.current, total: questions.length, perfect: missed.current.size === 0 };
+    earnCoins(COIN_REWARDS.session + (r.perfect ? COIN_REWARDS.perfectBonus : 0), r.perfect ? 'Perfect session!' : 'Session finished');
     onFinish?.(r);
     setResult(r);
   };

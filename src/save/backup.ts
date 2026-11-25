@@ -1,5 +1,5 @@
 import type { PlayerProfile } from '../player/types';
-import { STORE_NAMES, type PlayerSave } from './storage';
+import { PROFILE_SAVE_KEY, PROFILE_STORE_NAMES, STORE_NAMES, type PlayerSave } from './storage';
 import { isCourse } from '../courses/courses';
 
 // A save file a student can keep (USB stick, cloud drive, email to themselves)
@@ -14,7 +14,10 @@ export interface BackupFile {
   format: number;
   exportedAt: string;
   player: PlayerProfile;
-  /** course → store → that store's saved JSON, parsed (so the file is readable), or null if never saved. */
+  /**
+   * course → store → that store's saved JSON, parsed (so the file is readable), or null if never saved.
+   * "profile" holds the stores every course shares (pet, coins, shop). Files from before the pet have none.
+   */
   saves: Record<string, Record<string, unknown>>;
 }
 
@@ -26,7 +29,7 @@ export function buildBackup(player: PlayerProfile, save: PlayerSave, now = new D
   const saves: BackupFile['saves'] = {};
   for (const [course, stores] of Object.entries(save)) {
     saves[course] = {};
-    for (const name of STORE_NAMES) {
+    for (const name of course === PROFILE_SAVE_KEY ? PROFILE_STORE_NAMES : STORE_NAMES) {
       const raw = stores[name];
       try {
         saves[course][name] = raw ? JSON.parse(raw) : null;
@@ -65,10 +68,11 @@ export function parseBackup(text: string): ParsedBackup {
 
   const saves: PlayerSave = {};
   for (const [course, stores] of Object.entries(data.saves)) {
-    if (!isCourse(course)) continue; // a language this version doesn't have: skip it
+    const profile = course === PROFILE_SAVE_KEY;
+    if (!profile && !isCourse(course)) continue; // a language this version doesn't have: skip it
     if (!isObject(stores)) return { ok: false, reason: 'This save file is damaged.' };
     saves[course] = {};
-    for (const name of STORE_NAMES) {
+    for (const name of profile ? PROFILE_STORE_NAMES : STORE_NAMES) {
       const value = stores[name];
       if (value === undefined || value === null) saves[course][name] = null;
       // zustand's persist format: { state: {...}, version: n }
