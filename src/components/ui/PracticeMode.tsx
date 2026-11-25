@@ -166,7 +166,7 @@ function Practice() {
 
 /** A word to attach a sentence to (for statistics): the first room word that appears in it. */
 function wordFor(text: string, roomId: string): VocabularyWord {
-  const lower = ` ${text.toLowerCase().replace(/[^a-z' -]/g, ' ')} `;
+  const lower = ` ${text.toLowerCase().replace(/[^\p{L}' -]/gu, ' ')} `;
   const words = ALL_WORDS.filter((w) => w.topic === roomId && w.category !== 'prepositions').sort((a, b) => b.word.length - a.word.length);
   return words.find((w) => lower.includes(` ${w.word.toLowerCase()} `)) ?? words[0];
 }
@@ -260,7 +260,7 @@ const RecognitionImpl: RecognitionCtor | undefined =
       (window as unknown as { webkitSpeechRecognition?: RecognitionCtor }).webkitSpeechRecognition)
     : undefined;
 
-const simplify = (s: string) => s.toLowerCase().replace(/[^a-z ]/g, '').replace(/\s+/g, ' ').trim();
+const simplify = (s: string) => s.toLowerCase().replace(/[^\p{L} ]/gu, '').replace(/\s+/g, ' ').trim();
 
 function Speaking({ pool, level, roomId, onBack, onClose }: { pool: VocabularyWord[]; level: Level; roomId: string; onBack: () => void; onClose: () => void }) {
   const language = useProgress((s) => s.language);

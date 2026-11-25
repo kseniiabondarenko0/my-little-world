@@ -14,7 +14,8 @@ import type { Level } from '../../types/game';
 import { SpeakButton } from './SpeakButton';
 import { AvatarPortrait } from './AvatarPortrait';
 import { AvatarCreator } from './AvatarCreator';
-import { Segmented, LANGUAGES } from './Segmented';
+import { Segmented, LANGUAGES, COURSE_OPTIONS } from './Segmented';
+import { COURSE } from '../../courses/active';
 import { checkNickname } from '../../player/playerService';
 
 function Modal({ title, children, wide }: { title: string; children: ReactNode; wide?: boolean }) {
@@ -158,10 +159,14 @@ function MenuModal() {
         ))}
       </div>
 
+      <h3 className="section-title">I’m learning</h3>
+      <Segmented value={COURSE.id} options={COURSE_OPTIONS} onChange={(c) => usePlayer.getState().setCourse(c, language)} />
+      <p className="muted small">Each language has its own room, stars and words. You can switch back any time.</p>
+
       <h3 className="section-title">My language</h3>
       <Segmented value={language} options={LANGUAGES} onChange={setLanguage} />
 
-      <h3 className="section-title">My English level</h3>
+      <h3 className="section-title">My {COURSE.name} level</h3>
       <Segmented value={level} options={LEVELS.map((l) => ({ id: l, label: l }))} onChange={(l: Level) => setLevel(l)} />
       <p className="muted small">Missions, games and practice change with the level.</p>
 
@@ -267,7 +272,7 @@ function ProfileModal() {
         <AvatarPortrait avatar={player.avatar} size={96} />
         <div className="profile-id">
           <h2>{player.nickname}</h2>
-          <p className="muted small">Level {lvl.level} explorer · English level <b>{progress.level}</b></p>
+          <p className="muted small">Level {lvl.level} explorer · {COURSE.name} level <b>{progress.level}</b></p>
           <div className="xp-bar"><div style={{ width: `${(lvl.into / lvl.need) * 100}%` }} /></div>
           <p className="muted small">{lvl.into}/{lvl.need} XP to level {lvl.level + 1}</p>
         </div>

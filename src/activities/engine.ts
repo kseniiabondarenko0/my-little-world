@@ -1,4 +1,5 @@
 import type { ActivityDefinition, ActivityStage, ActivityType, Level, NativeLanguage, VocabularyWord } from '../types/game';
+import { COURSE } from '../courses/active';
 import { ALL_WORDS, getActivitiesForWord, getFurniture, getLinkedWords, getWord, isObjectWord, levelAtMost } from '../data/content';
 
 // Turns content (words + activity definitions) into ready-to-play questions.
@@ -66,10 +67,11 @@ export function objectDistractors(word: VocabularyWord, count: number): string[]
   return shuffle(ALL_WORDS.filter((w) => isObjectWord(w) && w.id !== word.id)).slice(0, count).map((w) => w.word);
 }
 
-/** Default letters to hide for spelling: the vowels (at most 5). */
+/** Default letters to hide for spelling: the vowels (at most 5). A German article stays visible. */
 export function autoHide(word: string): number[] {
-  const letters = [...word].map((c, i) => ({ c, i })).filter(({ c }) => /[a-z]/i.test(c));
-  let hidden = letters.filter(({ c }) => /[aeiou]/i.test(c)).map(({ i }) => i);
+  const article = /^(der|die|das) /i.exec(word)?.[0].length ?? 0;
+  const letters = [...word].map((c, i) => ({ c, i })).filter(({ c, i }) => i >= article && /\p{L}/u.test(c));
+  let hidden = letters.filter(({ c }) => /[aeiouäöüąęó]/i.test(c)).map(({ i }) => i);
   if (hidden.length === 0 || hidden.length === letters.length) hidden = [letters[Math.floor(letters.length / 2)].i];
   if (hidden.length > 5) hidden = hidden.filter((_, k) => k % 2 === 0).slice(0, 5);
   return hidden;
@@ -103,7 +105,7 @@ function resolve(def: ActivityDefinition, objectId: string, opts: SessionOptions
     case 'translation':
       return {
         ...base,
-        prompt: 'Translate into English.',
+        prompt: `Translate into ${COURSE.name}.`,
         answer: word.word,
         options: shuffle(unique([word.word, ...(def.distractors ?? distractors(word, 3, opts))])),
       };
@@ -112,7 +114,7 @@ function resolve(def: ActivityDefinition, objectId: string, opts: SessionOptions
 
 /** Auto-made question about any word: translation, or spelling for short single words. */
 function autoQuestion(word: VocabularyWord, objectId: string, opts: SessionOptions, key: string): Question | null {
-  const canSpell = /^[a-z]{3,10}$/i.test(word.word);
+  const canSpell = /^\p{L}{3,10}$/u.test(word.word);
   const hasTranslation = !!word.translations?.[opts.language];
   if (!hasTranslation && !canSpell) return null;
   const type: ActivityType = hasTranslation && (!canSpell || Math.random() < 0.6) ? 'translation' : 'spelling';

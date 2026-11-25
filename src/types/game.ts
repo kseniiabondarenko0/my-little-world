@@ -28,6 +28,9 @@ export type ActivityType =
 /** Students' home language, used by translation activities. */
 export type NativeLanguage = 'uk' | 'ru';
 
+/** The language the student is learning. Each course has its own save (room, stars, words). */
+export type Course = 'en' | 'de' | 'pl';
+
 /**
  * 'lesson'   = played to unlock an object (from the catalogue).
  * 'practice' = played by clicking an object already placed in the room.

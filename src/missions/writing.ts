@@ -18,7 +18,7 @@ export interface WritingResult {
 const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export function countWords(text: string): number {
-  return text.trim().split(/\s+/).filter((w) => /[a-z]/i.test(w)).length;
+  return text.trim().split(/\s+/).filter((w) => /\p{L}/u.test(w)).length;
 }
 
 export function evaluateWriting(text: string, minWords: number, require: WordRequirement[] = []): WritingResult {
@@ -28,7 +28,7 @@ export function evaluateWriting(text: string, minWords: number, require: WordReq
     { label: `At least ${minWords} words`, ok: wordCount >= minWords, detail: `${wordCount}/${minWords}` },
   ];
   const occurrences = (phrase: string, inText = lower) =>
-    (inText.match(new RegExp(`(^|[^a-z])${escape(phrase.toLowerCase())}(?=[^a-z]|$)`, 'g')) ?? []).length;
+    (inText.match(new RegExp(`(^|[^\\p{L}])${escape(phrase.toLowerCase())}(?=[^\\p{L}]|$)`, 'gu')) ?? []).length;
   for (const r of require) {
     const found = r.words.filter((w) => occurrences(w) > 0);
     // "in" inside "in front of" only counts if "in" is also used on its own.

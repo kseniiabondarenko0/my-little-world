@@ -1,6 +1,8 @@
 import type { ChapterDefinition } from '../../chapter/types';
 import { bedroomChapter } from './bedroom';
 import { kitchenChapter } from './kitchen';
+import { COURSE_CONTENT } from '../courses';
+import { ACTIVE_COURSE } from '../../courses/active';
 
 // One chapter per playable room. Add new rooms' chapters here.
 export const CHAPTERS: Record<string, ChapterDefinition> = {
@@ -8,6 +10,7 @@ export const CHAPTERS: Record<string, ChapterDefinition> = {
   kitchen: kitchenChapter,
 };
 
+/** German / Polish chapters replace the English one where they exist (see src/data/courses). */
 export function getChapter(roomId: string): ChapterDefinition {
-  return CHAPTERS[roomId] ?? bedroomChapter;
+  return COURSE_CONTENT[ACTIVE_COURSE]?.chapters[roomId] ?? CHAPTERS[roomId] ?? bedroomChapter;
 }
