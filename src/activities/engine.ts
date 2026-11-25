@@ -57,14 +57,20 @@ export function distractors(word: VocabularyWord, count: number, opts: SessionOp
       (!native || w.translations?.[opts.language] !== native),
   );
   // Prefer words at a similar level, then fill up with the rest.
-  const near = shuffle(pool.filter((w) => levelAtMost(w.level, opts.level === 'A1' ? 'A2' : opts.level)));
-  const far = shuffle(pool.filter((w) => !near.includes(w)));
+  // Same room first, so a kitchen question doesn't offer obviously wrong bedroom words.
+  const near = sameTopicFirst(word, shuffle(pool.filter((w) => levelAtMost(w.level, opts.level === 'A1' ? 'A2' : opts.level))));
+  const far = sameTopicFirst(word, shuffle(pool.filter((w) => !near.includes(w))));
   return [...near, ...far].slice(0, count).map((w) => w.word);
 }
 
 /** Wrong answers for "What is this?": names of other 3D objects, never parts of this one. */
 export function objectDistractors(word: VocabularyWord, count: number): string[] {
-  return shuffle(ALL_WORDS.filter((w) => isObjectWord(w) && w.id !== word.id)).slice(0, count).map((w) => w.word);
+  return sameTopicFirst(word, shuffle(ALL_WORDS.filter((w) => isObjectWord(w) && w.id !== word.id))).slice(0, count).map((w) => w.word);
+}
+
+/** Stable reorder: words from the same room (topic) come before the rest. */
+function sameTopicFirst(word: VocabularyWord, list: VocabularyWord[]): VocabularyWord[] {
+  return [...list.filter((w) => w.topic === word.topic), ...list.filter((w) => w.topic !== word.topic)];
 }
 
 /** Default letters to hide for spelling: the vowels (at most 5). A German article stays visible. */
