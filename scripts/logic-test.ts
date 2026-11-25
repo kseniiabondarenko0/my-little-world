@@ -17,6 +17,7 @@ import { buildStages, chapterPercent, choosePicks } from '../src/chapter/stages'
 import { MINIGAMES } from '../src/minigames/registry';
 import { hiddenObjectsMission, interiorDesignerMission } from '../src/minigames/missions';
 import { checkNickname } from '../src/player/playerService';
+import { summarise } from '../src/teacher/overview';
 
 let passed = 0;
 const failures: string[] = [];
@@ -206,6 +207,29 @@ check('phone number in nickname is refused', !checkNickname('kid0501234567').ok)
 check('email in nickname is refused', !checkNickname('me@mail.com').ok);
 check('normal nickname is accepted', checkNickname('SunnyFox').ok);
 check('Cyrillic nickname is accepted', checkNickname('Лисичка').ok);
+
+// ── 9. Teacher overview ────────────────────────────────────────
+{
+  const avatar = { skin: '#fff', hair: 'short', hairColor: '#000', outfit: 'tshirt', outfitColor: '#f00', accessory: 'none' } as const;
+  const player = { id: 'p1', nickname: 'SunnyFox', avatar: { ...avatar }, createdAt: 0 };
+  const blank = summarise(player, { progress: null, chapter: null, layout: null });
+  check('teacher: new player is on stage 1', blank.stage?.index === 1 && blank.mastered === 0 && blank.writings.length === 0);
+  const w0 = ALL_WORDS[0].id;
+  const w1 = ALL_WORDS[1].id;
+  const done = { done: ['movein:unlock', 'movein:place'], picks: [], inspected: [], writings: [
+    { id: 'a', title: 'Old', prompt: 'p', text: 'first', at: 1 },
+    { id: 'b', title: 'New', prompt: 'p', text: 'second', at: 2 },
+  ] };
+  const s = summarise(player, {
+    progress: { words: { [w0]: { ...emptyWord(), box: 3, attempts: 3, correct: 3 }, [w1]: { ...emptyWord(), box: 0, attempts: 2, wrong: 2 } }, level: 'A2', xp: 40 },
+    chapter: { rooms: { bedroom: done } },
+    layout: null,
+  });
+  check('teacher: finished stage 1 moves to stage 2', s.stage?.index === 2, JSON.stringify(s.stage));
+  check('teacher: counts mastered and revise words', s.mastered === 1 && s.toRevise === 1, `${s.mastered}/${s.toRevise}`);
+  check('teacher: newest writing first', s.writings[0]?.text === 'second' && s.writings.length === 2);
+  check('teacher: keeps level and XP', s.level === 'A2' && s.xp === 40);
+}
 
 void getFurniture;
 console.log(`\n${passed} checks passed, ${failures.length} failed`);

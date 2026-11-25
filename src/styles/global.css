@@ -573,6 +573,19 @@ h1, h2, h3 { margin: 0; }
 .level-progress { display: grid; grid-template-columns: 34px 1fr 60px; align-items: center; gap: 8px; margin: 6px 0; }
 .level-progress .mini-track { width: 100%; }
 .writings { display: grid; gap: 8px; margin-top: 12px; }
+.teacher-table-wrap { overflow-x: auto; margin: 4px 0 8px; }
+.teacher-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.teacher-table th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted, #8a7fa0); padding: 6px 8px; }
+.teacher-table td { padding: 8px; vertical-align: top; border-top: 1px solid #eee6f6; }
+.teacher-row { cursor: pointer; }
+.teacher-row:hover, .teacher-row.open { background: #faf7fd; }
+.teacher-player { display: flex; align-items: center; gap: 8px; }
+.teacher-sub { display: block; }
+.teacher-detail td { border-top: 0; background: #faf7fd; }
+@media (max-width: 560px) {
+  .teacher-table { font-size: 13px; }
+  .teacher-table td, .teacher-table th { padding: 6px 4px; }
+}
 .writing { padding: 10px 12px; border-radius: 14px; background: #faf7fd; }
 .writing p { margin: 4px 0; user-select: text; }
 .profile-note { margin-top: 16px; }

@@ -16,8 +16,9 @@ import { AvatarPortrait } from './AvatarPortrait';
 import { AvatarCreator } from './AvatarCreator';
 import { Segmented, LANGUAGES } from './Segmented';
 import { checkNickname } from '../../player/playerService';
+import { TeacherOverviewModal } from './TeacherOverview';
 
-function Modal({ title, children, wide }: { title: string; children: ReactNode; wide?: boolean }) {
+export function Modal({ title, children, wide }: { title: string; children: ReactNode; wide?: boolean }) {
   const close = () => useUI.getState().openModal(null);
   return (
     <div className="overlay" onPointerDown={(e) => e.target === e.currentTarget && close()}>
@@ -129,6 +130,7 @@ function MenuModal() {
     { icon: '📖', label: 'Word Book', onClick: () => open('words') },
     { icon: '🏆', label: 'Achievements', onClick: () => open('achievements') },
     { icon: '🗺️', label: 'My World', onClick: () => open('rooms') },
+    { icon: '🧑‍🏫', label: 'Teacher overview', onClick: () => open('teacher') },
     { icon: '🧭', label: 'Journey', onClick: () => { useUI.getState().setPanelTab('journey'); open(null); } },
   ];
 
@@ -361,6 +363,7 @@ export function Modals() {
     case 'menu': return <MenuModal />;
     case 'words': return <WordBookModal />;
     case 'profile': return <ProfileModal />;
+    case 'teacher': return <TeacherOverviewModal />;
     default: return null;
   }
 }
