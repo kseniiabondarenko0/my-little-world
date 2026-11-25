@@ -578,9 +578,151 @@ const winterEvening: MissionDefinition = {
   },
 };
 
+// ── HALLWAY ────────────────────────────────────────────────────────────────
+
+const HALL = ['coat', 'coat stand', 'shoes', 'shoe rack', 'stairs', 'hall table', 'umbrella', 'bench', 'keys', 'key hook', 'noticeboard', 'telephone', 'phone', 'torch', 'scooter', 'boots'];
+const hallWords = room(HALL, 'hallway words');
+
+const lostKeys: MissionDefinition = {
+  id: 'lost-keys', title: 'The Missing Keys', icon: '🔑', xp: 90,
+  intro: {
+    A1: 'Dad is late for work and he can’t find his car keys! Follow the clues.',
+    B1: 'Dad has to leave in three minutes and his car keys have disappeared. Retrace his steps from last night.',
+  },
+  steps: {
+    A1: [
+      find('Dad came home and took off his coat. Look there first.', ['coat-stand']),
+      find('Then he took off his shoes.', ['shoe-rack']),
+      find('Then he sat down to read the post.', ['bench']),
+      find('Found them! They were on the hook all the time.', ['key-hook']),
+    ],
+    A2: [
+      find('Dad came in from the rain and put something wet away.', ['umbrella-stand']),
+      find('Then he read a message from Mum on the wall.', ['noticeboard']),
+      find('Then he called Grandma.', ['telephone']),
+      find('The keys were on the table under the letters!', ['hall-table']),
+      { type: 'write', prompt: 'Write what Dad did, in order. Use first, then, after that.', minWords: 15,
+        require: [linkers(2), hallWords(2)], sample: 'First, Dad put his umbrella in the…' },
+    ],
+    B1: [
+      find('He always empties his pockets where he sits to take off his boots.', ['bench']),
+      find('He hung up his jacket — check the pockets.', ['coat-stand']),
+      find('He wrote a reminder about the car service.', ['noticeboard']),
+      find('Somebody tidied the keys away where they belong.', ['key-hook']),
+      { type: 'write', prompt: 'Suggest to Dad a simple habit so he never loses his keys again.', minWords: 30,
+        require: [linkers(2), hallWords(2)], sample: 'The keys were on the hook because…' },
+    ],
+    B2: [
+      find('Start where things tend to get dropped the moment someone walks in.', ['hall-table']),
+      find('Check the outerwear — keys often stay in a pocket.', ['coat-stand']),
+      find('He went upstairs to change. Check the route.', ['stairs']),
+      find('Mystery solved. Click where they were.', ['key-hook']),
+      { type: 'write', prompt: 'Write a short, humorous note for the noticeboard about the Great Key Hunt and one sensible rule.', minWords: 40,
+        require: [linkers(1), advanced(1), hallWords(2)], sample: 'Although it was a close call, the keys…' },
+    ],
+  },
+};
+
+const powerCut: MissionDefinition = {
+  id: 'power-cut', title: 'Power Cut!', icon: '🔦', xp: 100,
+  intro: {
+    A1: 'Oh no! The lights went out. Find your way in the dark hallway.',
+    B1: 'There’s a power cut on a stormy night and you’re in charge until your parents get home.',
+  },
+  steps: {
+    A1: [
+      find('Find something that gives light.', ['torch']),
+      find('Find the phone to call Mum.', ['telephone']),
+      find('Go carefully up to your bedroom. Click the way up.', ['stairs']),
+    ],
+    A2: [
+      find('It is very dark. Find the torch.', ['torch']),
+      find('Your little sister is scared. Sit with her. Find a seat.', ['bench']),
+      find('Call Dad and tell him about the power cut.', ['telephone']),
+      { type: 'place', prompt: 'Nobody should trip in the dark: put the scooter next to the stairs.', checks: [{ rel: 'nextTo', a: 'scooter', b: 'stairs' }] },
+      { type: 'write', prompt: 'Write what you did in the power cut. Use first and then.', minWords: 15,
+        require: [linkers(2), hallWords(2)], sample: 'First, I found the torch…' },
+    ],
+    B1: [
+      find('You need light before you do anything else.', ['torch']),
+      { type: 'place', prompt: 'Clear the walkway so nobody trips: scooter next to the stairs.', checks: [{ rel: 'nextTo', a: 'scooter', b: 'stairs' }] },
+      find('Check the emergency numbers Mum pinned up.', ['noticeboard']),
+      { type: 'choice', prompt: 'The power company says it will be off for three hours. What do you tell your little brother?', options: [
+        { text: 'Don’t worry, we have a torch. Let’s play a game until Mum gets home.', correct: true, feedback: 'Calm and reassuring.' },
+        { text: 'It might be off forever!', correct: false, feedback: 'That will scare him.' },
+        { text: 'Go to sleep now.', correct: false, feedback: 'He’s too scared to sleep.' },
+      ] },
+      { type: 'write', prompt: 'Write a message to your parents explaining what happened and what you did.', minWords: 30,
+        require: [linkers(2), hallWords(1)], sample: 'First, the lights went out, so…' },
+    ],
+    B2: [
+      find('Priority one: a reliable light source.', ['torch']),
+      find('Check the list of emergency contacts.', ['noticeboard']),
+      find('Use the phone that doesn’t need charging… or does it? Check it.', ['telephone']),
+      { type: 'choice', prompt: 'The cordless phone won’t work without power and your mobile is at 5%. What is the most sensible thing to do?', options: [
+        { text: 'Send one short text to Mum, then switch the mobile off to save battery.', correct: true, feedback: 'Efficient and keeps you reachable.' },
+        { text: 'Watch videos until the power comes back.', correct: false, feedback: 'Your battery will be dead in minutes.' },
+        { text: 'Do nothing and wait.', correct: false, feedback: 'Your parents might worry.' },
+      ] },
+      { type: 'write', prompt: 'Write a short power-cut plan for the noticeboard so the family knows what to do next time.', minWords: 45,
+        require: [advanced(1), hallWords(2)], sample: 'Although power cuts are rare, everyone should know where…' },
+    ],
+  },
+};
+
+const rainyWalk: MissionDefinition = {
+  id: 'rainy-walk', title: 'Back from the Rain', icon: '☔', xp: 90,
+  intro: {
+    A1: 'The family is back from a walk in the rain. Everything is wet!',
+    B1: 'Everyone has just come back from a muddy walk in the pouring rain. Stop the mess spreading through the house.',
+  },
+  steps: {
+    A1: [
+      { type: 'sort', prompt: 'Put the wet things away.', props: [
+        item('r1', 'the wet umbrella', 'phone', '#f25c5c', ['umbrella-stand'], 'Put the umbrella in the umbrella stand.'),
+        item('r2', 'the wet coat', 'clothes', '#7fa7d8', ['coat-stand'], 'Hang the coat on the coat stand.'),
+        item('r3', 'the muddy boots', 'shoes', '#9c7150', ['shoe-rack'], 'Put the boots on the shoe rack.'),
+      ] },
+      find('Sit down and take off your socks. Find a seat.', ['bench']),
+    ],
+    A2: [
+      { type: 'sort', prompt: 'Tidy up after the walk.', props: [
+        item('r1', 'two wet umbrellas', 'phone', '#2f3440', ['umbrella-stand'], 'Put the umbrellas in the stand.'),
+        item('r2', 'the raincoats', 'clothes', '#f2c46d', ['coat-stand'], 'Hang the raincoats up.'),
+        item('r3', 'the muddy wellies', 'shoes', '#9fd08f', ['shoe-rack'], 'Put the wellies on the shoe rack.'),
+        item('r4', 'the dog lead', 'phone', '#f28c8c', ['key-hook', 'coat-stand'], 'Hang the dog lead on a hook.'),
+      ] },
+      { type: 'place', prompt: 'Put the shoe rack next to the bench.', checks: [{ rel: 'nextTo', a: 'shoe-rack', b: 'bench' }] },
+      { type: 'write', prompt: 'Write what the family did when they came home.', minWords: 15,
+        require: [hallWords(2), linkers(1)], sample: 'We came home and took off…' },
+    ],
+    B1: [
+      { type: 'sort', prompt: 'Keep the mud in the hall.', props: [
+        item('r1', 'the dripping umbrellas', 'phone', '#2f3440', ['umbrella-stand'], 'Stop them dripping on the floor.'),
+        item('r2', 'the soaking coats', 'clothes', '#7fa7d8', ['coat-stand'], 'They need to hang up to dry.'),
+        item('r3', 'the filthy boots', 'shoes', '#9c7150', ['shoe-rack'], 'Nobody walks upstairs in those!'),
+      ] },
+      { type: 'choice', prompt: 'Your brother walks straight upstairs in his muddy boots. What do you say?', options: [
+        { text: 'Could you take your boots off, please? The carpet upstairs will get dirty.', correct: true, feedback: 'Polite and gives a reason.' },
+        { text: 'You’re so annoying!', correct: false, feedback: 'That won’t get the boots off.' },
+        { text: 'Say nothing and clean it up later.', correct: false, feedback: 'He won’t learn.' },
+      ] },
+      { type: 'write', prompt: 'Write a “wet weather rule” for the noticeboard.', minWords: 30,
+        require: [linkers(2), hallWords(2)], sample: 'When you come in from the rain, first…' },
+    ],
+    B2: [
+      { type: 'place', prompt: 'Set up a proper wet-weather station: umbrella stand next to the coat stand, shoe rack next to the bench.',
+        checks: [{ rel: 'nextTo', a: 'umbrella-stand', b: 'coat-stand' }, { rel: 'nextTo', a: 'shoe-rack', b: 'bench' }] },
+      { type: 'write', prompt: 'Your parents want to replace the hall runner with tiles only. Argue for or against it.', minWords: 45,
+        require: [advanced(1), hallWords(2)], sample: 'Although tiles are easier to clean, a runner…' },
+    ],
+  },
+};
+
 export const SIDE_QUESTS: Record<string, MissionDefinition[]> = {
   bedroom: [lostPhone, sleepover, laundryDay],
   kitchen: [midnightSnack, recipeCard, inspector],
   bathroom: [lostRing, spaDay, plumber],
   'living-room': [lostRemote, pianoConcert, winterEvening],
+  hallway: [lostKeys, powerCut, rainyWalk],
 };

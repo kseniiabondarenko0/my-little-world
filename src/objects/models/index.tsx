@@ -3,6 +3,7 @@ import { Ball, Box, Cyl, Legs } from './parts';
 import { Bin, Calendar, Cooker, Cupboard, Dishwasher, Fridge, Kettle, KitchenTable, Microwave, Sink, Stool, Toaster } from './kitchen';
 import { Bath, BathCabinet, BathMat, Hairdryer, Scales, Shower, Soap, Toilet, Toothbrush, TowelRail, WashingMachine, Washbasin } from './bathroom';
 import { Armchair, Beanbag, Bookcase, CoffeeTable, Cushion, Fireplace, FloorLamp, Piano, RemoteControl, Sofa, Television, WallClock } from './livingroom';
+import { Bench, CoatStand, HallTable, KeyHook, Noticeboard, Runner, Scooter, ShoeRack, Stairs, Telephone, Torch, UmbrellaStand } from './hallway';
 
 // Procedural 3D models. Each model:
 //  - faces +z (its front),
@@ -288,6 +289,19 @@ export const MODELS: Record<string, ComponentType> = {
   wallClock: WallClock,
   piano: Piano,
   beanbag: Beanbag,
+  // hallway
+  coatStand: CoatStand,
+  shoeRack: ShoeRack,
+  stairs: Stairs,
+  hallTable: HallTable,
+  umbrellaStand: UmbrellaStand,
+  bench: Bench,
+  keyHook: KeyHook,
+  noticeboard: Noticeboard,
+  runner: Runner,
+  telephone: Telephone,
+  torch: Torch,
+  scooter: Scooter,
 };
 
 export function FurnitureModel({ model }: { model: string }) {
