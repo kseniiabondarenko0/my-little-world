@@ -3,12 +3,19 @@ import { useUI } from '../../hooks/useUIStore';
 import { usePlayer } from '../../player/playerStore';
 import { useChapterView } from '../../hooks/useChapterView';
 import { AvatarPortrait } from './AvatarPortrait';
+import { useEffect, useState } from 'react';
+import { isSfxMuted, onSfxMutedChange, setSfxMuted } from '../../audio/sfx';
 
 export function TopBar() {
   const stars = useProgress((s) => s.stars);
   const player = usePlayer((s) => s.current);
   const openModal = useUI((s) => s.openModal);
   const { percent, room } = useChapterView();
+  const [muted, setMuted] = useState(isSfxMuted());
+  useEffect(() => {
+    const off = onSfxMutedChange(setMuted);
+    return () => { off(); };
+  }, []);
 
   return (
     <header className="topbar">
@@ -44,6 +51,15 @@ export function TopBar() {
         </div>
         <button className="icon-btn practice-btn" onClick={() => openModal('practice')} aria-label="Practice Mode" title="Practice Mode">
           🎯<span className="hide-sm">Practice</span>
+        </button>
+        <button
+          className="icon-btn"
+          onClick={() => setSfxMuted(!muted)}
+          aria-label={muted ? 'Turn click sounds on' : 'Turn click sounds off'}
+          aria-pressed={!muted}
+          title={muted ? 'Click sounds: off' : 'Click sounds: on'}
+        >
+          {muted ? '🔇' : '🔔'}
         </button>
         <button className="icon-btn" onClick={() => openModal('menu')} aria-label="Menu" title="Menu">☰</button>
       </div>
