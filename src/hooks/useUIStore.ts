@@ -22,7 +22,7 @@ export interface ActivityRequest {
   nonce?: number;
 }
 
-export type ModalId = 'rooms' | 'achievements' | 'menu' | 'words' | 'profile' | 'practice' | 'teacher' | null;
+export type ModalId = 'rooms' | 'achievements' | 'menu' | 'words' | 'profile' | 'practice' | 'teacher' | 'pet' | 'shop' | null;
 
 export interface Toast {
   id: number;

@@ -6,7 +6,10 @@ import { useProgress } from '../../progression/progressStore';
 import { useLayout, EMPTY_ITEMS } from '../../rooms/layoutStore';
 import { useUI } from '../../hooks/useUIStore';
 import { getRoom } from '../../rooms';
-import { Room } from './Room';
+import { Room, RoomDecor } from './Room';
+import { PetFigure } from './PetFigure';
+import { useCompanion } from '../../companion/companionStore';
+import { styledRoom } from '../../data/shop';
 import { PlacedObject } from './PlacedObject';
 import { MissionProps } from './MissionProps';
 import { AvatarFigure } from './AvatarFigure';
@@ -49,6 +52,10 @@ export function Scene() {
   const dragging = useUI((s) => s.drag !== null);
   const select = useUI((s) => s.select);
   const avatar = usePlayer((s) => s.current?.avatar);
+  const pet = useCompanion((s) => s.pet);
+  const style = useCompanion((s) => s.roomStyles[room.id]);
+  const owned = useCompanion((s) => s.owned);
+  const decor = (style?.decor ?? []).filter((d) => owned.includes(d));
 
   return (
     <Canvas
@@ -84,7 +91,8 @@ export function Scene() {
       )}
 
       <ViewOffset />
-      <Room room={room} />
+      <Room room={styledRoom(room, style)} />
+      <RoomDecor room={room} decor={decor} />
       {items.map((item) => (
         <PlacedObject key={item.uid} item={item} room={room} />
       ))}
@@ -99,6 +107,7 @@ export function Scene() {
           <AvatarFigure avatar={avatar} position={room.avatarSpot} />
         </group>
       )}
+      {avatar && pet && room.avatarSpot && <PetFigure pet={pet} avatarSpot={room.avatarSpot} />}
 
       <OrbitControls
         makeDefault

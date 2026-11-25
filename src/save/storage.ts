@@ -66,6 +66,19 @@ export function seedCourseSave(playerId: string, course: Course, language: strin
 
 export const STORE_NAMES = ['progress', 'layout', 'chapter'];
 
+/** Stores shared by all of a player's courses (pet, coins, shop): "my-little-world:p:<playerId>:<store>". */
+export const PROFILE_STORE_NAMES = ['companion'];
+/** The key that holds those stores in a PlayerSave (it's not a course id). */
+export const PROFILE_SAVE_KEY = 'profile';
+
+const profileNamespace = (playerId: string | null) => (playerId ? `${PREFIX}p:${playerId}:` : PREFIX);
+
+export const profileStorage: StateStorage = {
+  getItem: (name) => read(profileNamespace(ACTIVE_PLAYER_ID) + name),
+  setItem: (name, value) => write(profileNamespace(ACTIVE_PLAYER_ID) + name, value),
+  removeItem: (name) => write(profileNamespace(ACTIVE_PLAYER_ID) + name, null),
+};
+
 /** Makes another player active. The page must reload so every store loads that player's save. */
 export function setActivePlayer(playerId: string | null) {
   write(ACTIVE_KEY, playerId);
@@ -84,6 +97,7 @@ export function adoptLegacySave(playerId: string, course: Course = DEFAULT_COURS
 
 export function deletePlayerSave(playerId: string) {
   for (const c of COURSES) for (const name of STORE_NAMES) write(namespace(playerId, c.id) + name, null);
+  for (const name of PROFILE_STORE_NAMES) write(profileNamespace(playerId) + name, null);
 }
 
 /** Reads another player's saved store (zustand persist format) for a course, without loading it. */
@@ -109,7 +123,10 @@ export function writeJSON(key: string, value: unknown) {
   write(PREFIX + key, JSON.stringify(value));
 }
 
-/** One player's saved stores for every course: course → store → the raw JSON zustand keeps. */
+/**
+ * One player's saved stores for every course: course → store → the raw JSON zustand keeps.
+ * The stores shared by all courses (pet, coins) sit under the PROFILE_SAVE_KEY entry.
+ */
 export type PlayerSave = Record<string, Record<string, string | null>>;
 
 /** Everything one player has saved on this device, in every course they started. */
@@ -119,10 +136,13 @@ export function readPlayerSave(playerId: string): PlayerSave {
     const stores = Object.fromEntries(STORE_NAMES.map((name) => [name, read(namespace(playerId, c.id) + name)]));
     if (Object.values(stores).some((v) => v !== null)) save[c.id] = stores;
   }
+  const profile = Object.fromEntries(PROFILE_STORE_NAMES.map((name) => [name, read(profileNamespace(playerId) + name)]));
+  if (Object.values(profile).some((v) => v !== null)) save[PROFILE_SAVE_KEY] = profile;
   return save;
 }
 
 /** Replaces one player's saves in every course. Courses and stores missing from `save` are cleared. */
 export function writePlayerSave(playerId: string, save: PlayerSave) {
   for (const c of COURSES) for (const name of STORE_NAMES) write(namespace(playerId, c.id) + name, save[c.id]?.[name] ?? null);
+  for (const name of PROFILE_STORE_NAMES) write(profileNamespace(playerId) + name, save[PROFILE_SAVE_KEY]?.[name] ?? null);
 }

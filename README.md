@@ -141,6 +141,16 @@ English is the full game. German and Polish are **starter courses** for the Bedr
 - Each language has its **own save** (room, stars, words). Switching language never deletes progress.
 - A room with no German/Polish content yet falls back to English, so adding a new room never breaks a course.
 
+### Pet, coins and shop (`src/data/shop.ts`)
+
+Every finished lesson, practice session, mission, mini-game and side quest gives coins
+(amounts in `COIN_REWARDS`; Journey tasks pay a quarter of their XP). Students adopt a
+pet (cat, dog, hamster or parrot), name it and pick its colour; it stays next to their
+avatar in every room. Coins buy wall paint, floors and decorations for any room, exclusive
+hairstyles, clothes and hats for the avatar, and accessories and colours for the pet.
+Pet, coins and purchases are saved per player (shared by all their courses) and travel
+in the save file. Don't rename shop item ids: they are stored in saves.
+
 ## 4. Publish an update
 
 The game is published by GitHub Pages from the `main` branch: **https://kseniiabondarenko0.github.io/my-little-world/**

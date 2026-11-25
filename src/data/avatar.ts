@@ -13,6 +13,9 @@ export const HAIR_STYLES: { id: HairStyle; label: string }[] = [
   { id: 'curly', label: 'Curly' },
   { id: 'spiky', label: 'Spiky' },
   { id: 'bob', label: 'Bob' },
+  // exclusive: bought in the shop (src/data/shop.ts)
+  { id: 'ponytail', label: 'Ponytail' },
+  { id: 'pigtails', label: 'Pigtails' },
 ];
 
 export const OUTFITS: { id: OutfitStyle; label: string }[] = [
@@ -20,6 +23,9 @@ export const OUTFITS: { id: OutfitStyle; label: string }[] = [
   { id: 'hoodie', label: 'Hoodie' },
   { id: 'dress', label: 'Dress' },
   { id: 'overalls', label: 'Overalls' },
+  { id: 'cape', label: 'Hero cape' },
+  { id: 'suit', label: 'Suit' },
+  { id: 'gown', label: 'Party dress' },
 ];
 
 export const ACCESSORIES: { id: Accessory; label: string }[] = [
@@ -29,6 +35,9 @@ export const ACCESSORIES: { id: Accessory; label: string }[] = [
   { id: 'headphones', label: 'Headphones' },
   { id: 'bow', label: 'Bow' },
   { id: 'flower', label: 'Flower' },
+  { id: 'crown', label: 'Crown' },
+  { id: 'wizard', label: 'Wizard hat' },
+  { id: 'catears', label: 'Cat ears' },
 ];
 
 export const PRESETS: { name: string; avatar: AvatarConfig }[] = [

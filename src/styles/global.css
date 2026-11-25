@@ -646,3 +646,49 @@ h1, h2, h3 { margin: 0; }
 
 /* Side quests: optional, so a dashed border sets them apart from the main stages. */
 .stage.side-quests { border-style: dashed; }
+
+/* ── Pet + coin shop ─────────────────────────────────────────────────────── */
+.pill.coins { background: #fff4d6; color: #9a6a00; animation: pop .45s ease; cursor: pointer; }
+.pill.coins:hover { background: #ffecb8; }
+.pet-new { position: relative; }
+.pet-new::after { content: ''; position: absolute; top: 4px; right: 4px; width: 9px; height: 9px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 2px white; animation: pulse-dot 1.4s ease-in-out infinite; }
+@keyframes pulse-dot { 50% { transform: scale(1.35); opacity: .7; } }
+.pet-top { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.pet-preview { border-radius: 24px; background: radial-gradient(circle at 50% 60%, #fff 0%, var(--lav-soft) 75%); }
+.pet-word { font-weight: 900; font-size: 18px; margin: 0; }
+.species-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.species-card { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 4px; border-radius: 16px; background: #faf7fd; font-weight: 800; border: 2px solid transparent; }
+.species-card.active { border-color: var(--primary); background: #fff3ef; }
+.species-icon { font-size: 30px; line-height: 1.1; }
+.species-name { text-transform: capitalize; }
+.pet-name-input { width: 100%; padding: 10px 14px; border-radius: 14px; border: 2px solid #ece4f5; font: inherit; font-weight: 800; font-size: 16px; color: var(--ink); background: white; }
+.pet-name-input:focus { outline: none; border-color: var(--lav); }
+.swatch-more { display: grid; place-items: center; background: #faf7fd; font-size: 16px; }
+.pet-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+.chip:disabled, .chip-exclusive:disabled { opacity: .6; cursor: not-allowed; }
+.chip-exclusive:not(:disabled):not(.active) { background: #fff4d6; }
+.shop-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.shop-head p { margin: 0; flex: 1; min-width: 180px; }
+.coin-balance { font-size: 20px; padding: 6px 14px; border-radius: 999px; background: #fff4d6; color: #9a6a00; }
+.shop-note { margin: 8px 0 0; }
+.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 10px; }
+.shop-card { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 8px; border-radius: 18px; background: #faf7fd; text-align: center; border: 2px solid transparent; }
+.shop-card.on { border-color: var(--mint); background: var(--mint-soft); }
+.shop-icon { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; font-size: 28px; background: white; box-shadow: inset 0 0 0 2px #ece4f5; overflow: hidden; }
+.floor-chip { width: 100%; height: 100%; }
+.shop-name { font-weight: 800; font-size: 13px; line-height: 1.2; min-height: 2.4em; display: grid; place-items: center; }
+.btn-gold { background: var(--sun); color: #5c3d00; box-shadow: 0 3px 0 #e0a83a; }
+.btn-gold:disabled { background: #efe6d6; color: #a99a80; box-shadow: none; cursor: not-allowed; }
+.shop-card .muted.small { margin-top: -2px; }
+@media (max-width: 520px) { .species-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) {
+  /* Room for the coins and pet buttons: the chapter % is in the Journey tab too. */
+  .topbar .progress { display: none; }
+  .pill.coins { padding: 6px 10px; }
+}
+@media (max-width: 440px) {
+  .pill.coins, .pill.stars { padding: 5px 8px; gap: 4px; }
+  .topbar { gap: 5px; }
+  /* Practice Mode is also in the menu. */
+  .topbar .practice-btn { display: none; }
+}

@@ -16,8 +16,10 @@ import { useLayout } from './rooms/layoutStore';
 import { useMission } from './missions/missionStore';
 import { usePlayer } from './player/playerStore';
 import { connectMissions } from './progression/actions';
+import { startCompanion } from './companion/coins';
 
 connectMissions();
+startCompanion();
 
 export default function App() {
   useProgressWatcher();

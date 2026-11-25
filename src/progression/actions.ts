@@ -10,6 +10,8 @@ import { useMission, type MissionRun } from '../missions/missionStore';
 import { getChapter } from '../data/chapters';
 import { missionForTask } from '../minigames/missions';
 import { buildStages, choosePicks, findTask, type Task } from '../chapter/stages';
+import { earnCoins } from '../companion/coins';
+import { COIN_REWARDS, coinsForXp } from '../data/shop';
 
 // Game actions that touch several stores at once (room layout + progress + screen state).
 
@@ -79,7 +81,10 @@ export function commitDrag(drag: DragState) {
 /** Called when a lesson or practice session is finished. */
 export function finishSession(objectId: string, stage: ActivityStage, perfect: boolean) {
   const progress = useProgress.getState();
-  if (stage === 'lesson') progress.unlockObject(objectId);
+  if (stage === 'lesson') {
+    if (!progress.unlocked.includes(objectId)) earnCoins(COIN_REWARDS.unlockLesson);
+    progress.unlockObject(objectId);
+  }
   else progress.markPractised(objectId);
   if (perfect) progress.addPerfectSession();
 }
@@ -91,8 +96,10 @@ export function completeTask(taskId: string, title: string, xp: number) {
   const room = currentRoom();
   if (!useChapter.getState().complete(room.id, taskId)) return;
   useProgress.getState().addXp(xp);
+  const coins = coinsForXp(xp);
+  earnCoins(coins);
   useUI.getState().cheerUp();
-  toast({ icon: '✅', title: `${title} — done!`, text: `+${xp} XP`, tone: 'success', avatar: true });
+  toast({ icon: '✅', title: `${title} — done!`, text: `+${xp} XP · +${coins} 🪙`, tone: 'success', avatar: true });
 }
 
 export function currentStages() {
@@ -159,6 +166,7 @@ export function connectMissions() {
         text,
       });
       useProgress.getState().addXp(15);
+      earnCoins(COIN_REWARDS.writing);
     },
   });
 }

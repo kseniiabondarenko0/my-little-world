@@ -4,9 +4,15 @@ import type { Course } from '../types/game';
 // so a nickname can change and the same id can later link to a cloud account
 // (friends, room visits, leaderboards). No real names or personal data are stored.
 
-export type HairStyle = 'short' | 'long' | 'bun' | 'curly' | 'spiky' | 'bob';
-export type OutfitStyle = 'tshirt' | 'hoodie' | 'dress' | 'overalls';
-export type Accessory = 'none' | 'glasses' | 'cap' | 'headphones' | 'bow' | 'flower';
+export type HairStyle = 'short' | 'long' | 'bun' | 'curly' | 'spiky' | 'bob'
+  // exclusive, bought in the shop:
+  | 'ponytail' | 'pigtails';
+export type OutfitStyle = 'tshirt' | 'hoodie' | 'dress' | 'overalls'
+  // exclusive, bought in the shop:
+  | 'cape' | 'suit' | 'gown';
+export type Accessory = 'none' | 'glasses' | 'cap' | 'headphones' | 'bow' | 'flower'
+  // exclusive, bought in the shop:
+  | 'crown' | 'wizard' | 'catears';
 
 export interface AvatarConfig {
   skin: string;

@@ -159,3 +159,90 @@ export function Room({ room }: { room: RoomDefinition }) {
     </group>
   );
 }
+
+// ── Shop decorations ───────────────────────────────────────────────────────
+// Bought with coins (src/data/shop.ts) and switched on per room in the shop.
+
+const LIGHT_COLORS = ['#ffd27a', '#ff8fa3', '#8fd3b6', '#a9c9f2'];
+const FLAG_COLORS = ['#ff8f7a', '#ffd27a', '#8fd3b6', '#a9c9f2', '#c3b0e6'];
+
+function FairyLights({ room }: { room: RoomDefinition }) {
+  const { width: W, height: H, depth: D } = room.size;
+  const n = 22;
+  return (
+    <group position={[0, 0, -D / 2 + 0.03]}>
+      {Array.from({ length: n }, (_, i) => {
+        const u = i / (n - 1);
+        const x = -W / 2 + 0.2 + u * (W - 0.4);
+        const y = H - 0.18 - Math.sin(u * Math.PI * 3) ** 2 * 0.22;
+        return (
+          <mesh key={i} position={[x, y, 0]}>
+            <sphereGeometry args={[0.035, 10, 8]} />
+            <meshStandardMaterial color={LIGHT_COLORS[i % 4]} emissive={LIGHT_COLORS[i % 4]} emissiveIntensity={1.4} />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+}
+
+function Bunting({ room }: { room: RoomDefinition }) {
+  const { depth: D, height: H, width: W } = room.size;
+  const n = 14;
+  return (
+    <group position={[-W / 2 + 0.03, 0, 0]}>
+      {Array.from({ length: n }, (_, i) => {
+        const u = i / (n - 1);
+        const z = -D / 2 + 0.25 + u * (D - 0.5);
+        const y = H - 0.2 - Math.sin(u * Math.PI) * 0.25;
+        return (
+          <mesh key={i} position={[0.01, y - 0.09, z]} rotation={[0, Math.PI / 2, Math.PI]}>
+            <circleGeometry args={[0.12, 3]} />
+            <meshStandardMaterial color={FLAG_COLORS[i % FLAG_COLORS.length]} side={2} />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+}
+
+function WallStars({ room }: { room: RoomDefinition }) {
+  const { width: W, height: H, depth: D } = room.size;
+  const spots: [number, number, number][] = [[-0.38, 0.82, 0.12], [-0.25, 0.9, 0.08], [-0.12, 0.78, 0.1], [0.3, 0.88, 0.09], [0.4, 0.76, 0.13], [0.18, 0.93, 0.07]];
+  return (
+    <group position={[0, 0, -D / 2 + 0.02]}>
+      {spots.map(([u, v, r], i) => (
+        <mesh key={i} position={[u * W, v * H, 0]} rotation={[0, 0, i]} scale={[1, 1, 0.25]}>
+          <octahedronGeometry args={[r, 0]} />
+          <meshStandardMaterial color="#fff2a8" emissive="#ffe27a" emissiveIntensity={0.9} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function Balloons({ room }: { room: RoomDefinition }) {
+  const { width: W, depth: D, height: H } = room.size;
+  const balloons: [number, number, number, string][] = [[0, 0.1, 0, '#ff8fa3'], [0.22, 0, 0.08, '#a9c9f2'], [0.08, -0.12, 0.2, '#ffd27a']];
+  return (
+    <group position={[-W / 2 + 0.45, H - 0.75, -D / 2 + 0.45]}>
+      {balloons.map(([x, y, z, c], i) => (
+        <group key={i} position={[x, y, z]}>
+          <mesh scale={[1, 1.18, 1]} castShadow><sphereGeometry args={[0.15, 16, 12]} /><meshStandardMaterial color={c} roughness={0.35} /></mesh>
+          <mesh position={[0, -0.45, 0]}><cylinderGeometry args={[0.004, 0.004, 0.6, 4]} /><meshStandardMaterial color="#ffffff" /></mesh>
+        </group>
+      ))}
+    </group>
+  );
+}
+
+export function RoomDecor({ room, decor }: { room: RoomDefinition; decor: string[] }) {
+  return (
+    <group>
+      {decor.includes('decor-fairy-lights') && <FairyLights room={room} />}
+      {decor.includes('decor-bunting') && <Bunting room={room} />}
+      {decor.includes('decor-stars') && <WallStars room={room} />}
+      {decor.includes('decor-balloons') && <Balloons room={room} />}
+    </group>
+  );
+}

@@ -1,3 +1,5 @@
+import { earnCoins } from '../../companion/coins';
+import { COIN_REWARDS } from '../../data/shop';
 import { useCallback, useState } from 'react';
 import { useUI } from '../../hooks/useUIStore';
 import { useProgress } from '../../progression/progressStore';
@@ -25,7 +27,10 @@ function Game({ gameId, taskId }: { gameId: string; taskId: string | null }) {
     (r: MiniGameResult) => {
       setResult(r);
       if (taskId) completeTask(taskId, info.title, 40);
-      else useProgress.getState().addXp(15);
+      else {
+        useProgress.getState().addXp(15);
+        earnCoins(COIN_REWARDS.freeMinigame, 'Mini-game finished');
+      }
     },
     [taskId, info.title],
   );

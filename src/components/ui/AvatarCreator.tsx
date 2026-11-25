@@ -1,6 +1,21 @@
 import type { AvatarConfig } from '../../player/types';
 import { ACCESSORIES, HAIR_COLORS, HAIR_STYLES, OUTFIT_COLORS, OUTFITS, PRESETS, SKIN_TONES } from '../../data/avatar';
 import { AvatarPortrait } from './AvatarPortrait';
+import { exclusiveFor } from '../../data/shop';
+import { useCompanion } from '../../companion/companionStore';
+
+/** A style chip. Exclusive styles are locked (with their price) until bought in the shop. */
+function StyleChip({ kind, id, label, active, onPick }: { kind: 'hair' | 'outfit' | 'accessory'; id: string; label: string; active: boolean; onPick: () => void }) {
+  const owned = useCompanion((s) => s.owned);
+  const item = exclusiveFor(kind, id);
+  const locked = !!item && !owned.includes(item.id);
+  return (
+    <button className={`chip ${active ? 'active' : ''} ${item ? 'chip-exclusive' : ''}`} disabled={locked} onClick={onPick}
+      title={locked ? `Buy it in the shop for ${item.price} coins` : undefined}>
+      {item && (locked ? '🔒 ' : '✨ ')}{label}{locked && <> · 🪙{item.price}</>}
+    </button>
+  );
+}
 
 // Pick a ready-made character, then change any detail. Live preview at the top.
 
@@ -33,7 +48,7 @@ export function AvatarCreator({ value, onChange }: { value: AvatarConfig; onChan
       <h3 className="section-title">Hair</h3>
       <div className="chips">
         {HAIR_STYLES.map((h) => (
-          <button key={h.id} className={`chip ${value.hair === h.id ? 'active' : ''}`} onClick={() => set('hair', h.id)}>{h.label}</button>
+          <StyleChip key={h.id} kind="hair" id={h.id} label={h.label} active={value.hair === h.id} onPick={() => set('hair', h.id)} />
         ))}
       </div>
       <div className="swatches">
@@ -45,7 +60,7 @@ export function AvatarCreator({ value, onChange }: { value: AvatarConfig; onChan
       <h3 className="section-title">Clothes</h3>
       <div className="chips">
         {OUTFITS.map((o) => (
-          <button key={o.id} className={`chip ${value.outfit === o.id ? 'active' : ''}`} onClick={() => set('outfit', o.id)}>{o.label}</button>
+          <StyleChip key={o.id} kind="outfit" id={o.id} label={o.label} active={value.outfit === o.id} onPick={() => set('outfit', o.id)} />
         ))}
       </div>
       <div className="swatches">
@@ -57,7 +72,7 @@ export function AvatarCreator({ value, onChange }: { value: AvatarConfig; onChan
       <h3 className="section-title">Accessory</h3>
       <div className="chips">
         {ACCESSORIES.map((a) => (
-          <button key={a.id} className={`chip ${value.accessory === a.id ? 'active' : ''}`} onClick={() => set('accessory', a.id)}>{a.label}</button>
+          <StyleChip key={a.id} kind="accessory" id={a.id} label={a.label} active={value.accessory === a.id} onPick={() => set('accessory', a.id)} />
         ))}
       </div>
     </div>
