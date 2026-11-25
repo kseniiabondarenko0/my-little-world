@@ -3,6 +3,7 @@ import { bedroomChapter } from './bedroom';
 import { kitchenChapter } from './kitchen';
 import { bathroomChapter } from './bathroom';
 import { livingRoomChapter } from './livingroom';
+import { hallwayChapter } from './hallway';
 import { COURSE_CONTENT } from '../courses';
 import { ACTIVE_COURSE } from '../../courses/active';
 
@@ -12,6 +13,7 @@ export const CHAPTERS: Record<string, ChapterDefinition> = {
   kitchen: kitchenChapter,
   bathroom: bathroomChapter,
   'living-room': livingRoomChapter,
+  hallway: hallwayChapter,
 };
 
 /** German / Polish chapters replace the English one where they exist (see src/data/courses). */

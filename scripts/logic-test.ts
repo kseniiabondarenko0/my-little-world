@@ -85,6 +85,7 @@ check('every furniture belongs to exactly one room', FURNITURE.every((f) => PLAY
 check('kitchen is locked until the bedroom is complete', !isRoomOpen('kitchen', []) && isRoomOpen('kitchen', ['bedroom']) && isRoomOpen('bedroom', []));
 check('bathroom is locked until the kitchen is complete', !isRoomOpen('bathroom', ['bedroom']) && isRoomOpen('bathroom', ['bedroom', 'kitchen']));
 check('living room is locked until the bathroom is complete', !isRoomOpen('living-room', ['bedroom', 'kitchen']) && isRoomOpen('living-room', ['bedroom', 'kitchen', 'bathroom']));
+check('hallway is locked until the living room is complete', !isRoomOpen('hallway', ['bedroom', 'kitchen', 'bathroom']) && isRoomOpen('hallway', ['bedroom', 'kitchen', 'bathroom', 'living-room']));
 {
   const placed: PlacedItem[] = [];
   for (const id of bedroom.objects) {
