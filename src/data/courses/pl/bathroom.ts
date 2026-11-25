@@ -1,0 +1,36 @@
+import type { RoomCourse } from '../types';
+
+export const bathroom: RoomCourse = {
+  title: 'Moja łazienka',
+  bins: { fittings: 'Wyposażenie', toiletries: 'Kosmetyki', laundry: 'Pranie', actions: 'Co robisz' },
+  objects: {
+    bath: ['wanna', 'Leżysz w niej w ciepłej wodzie.', 'Wieczorem biorę kąpiel w wannie.', 'wanny', 'wanną', 'wannę'],
+    washbasin: ['umywalka', 'Myjesz w niej ręce.', 'Mydło leży na umywalce.', 'umywalki', 'umywalką', 'umywalkę'],
+    toilet: ['toaleta', 'Potem spłukujesz w niej wodę.', 'Toaleta jest obok prysznica.', 'toalety', 'toaletą', 'toaletę'],
+    shower: ['prysznic', 'Myjesz się pod nim w bieżącej wodzie.', 'Każdego ranka biorę prysznic.', 'prysznica', 'prysznicem'],
+    towel: ['ręcznik', 'Wycierasz się nim.', 'Ręcznik wisi obok prysznica.', 'ręcznika', 'ręcznikiem'],
+    cabinet: ['szafka łazienkowa', 'Mała szafka na rzeczy w łazience.', 'Pasta do zębów jest w szafce łazienkowej.', 'szafki łazienkowej', 'szafką łazienkową', 'szafkę łazienkową'],
+    'washing-machine': ['pralka', 'Pierze twoje ubrania.', 'Moje skarpetki są w pralce.', 'pralki', 'pralką', 'pralkę'],
+    'bath-mat': ['dywanik łazienkowy', 'Miękki dywanik przed wanną.', 'Po prysznicu stoję na dywaniku łazienkowym.', 'dywanika łazienkowego', 'dywanikiem łazienkowym'],
+    toothbrush: ['szczoteczka do zębów', 'Myjesz nią zęby.', 'Moja szczoteczka do zębów jest niebieska.', 'szczoteczki do zębów', 'szczoteczką do zębów', 'szczoteczkę do zębów'],
+    soap: ['mydło', 'Myjesz nim ręce do czysta.', 'Umyj ręce mydłem.', 'mydła', 'mydłem'],
+    hairdryer: ['suszarka do włosów', 'Suszy mokre włosy.', 'Suszę włosy suszarką do włosów.', 'suszarki do włosów', 'suszarką do włosów', 'suszarkę do włosów'],
+    scales: ['waga', 'Pokazuje, ile ważysz.', 'Waga stoi obok wanny.', 'wagi', 'wagą', 'wagę'],
+  },
+  words: {
+    bathroom: 'łazienka', 'towel-rail': 'wieszak na ręczniki', 'shower-curtain': 'zasłona prysznicowa', plug: 'zatyczka',
+    tiles: 'kafelki', radiator: 'kaloryfer', drain: 'odpływ', 'medicine-cabinet': 'apteczka', 'en-suite': 'łazienka przy sypialni',
+    extractor: 'wentylator',
+    toothpaste: 'pasta do zębów', shampoo: 'szampon', 'toilet-paper': 'papier toaletowy', comb: 'grzebień', sponge: 'gąbka',
+    'shower-gel': 'żel pod prysznic', conditioner: 'odżywka do włosów', 'bubble-bath': 'płyn do kąpieli', bathrobe: 'płaszcz kąpielowy',
+    razor: 'maszynka do golenia', deodorant: 'dezodorant', plaster: 'plaster', 'dental-floss': 'nić dentystyczna',
+    'nail-clippers': 'obcinacz do paznokci', 'washing-powder': 'proszek do prania', toiletries: 'kosmetyki',
+    'first-aid-kit': 'apteczka pierwszej pomocy', 'fabric-softener': 'płyn do płukania', limescale: 'kamień',
+    wash: 'myć', 'brush-your-teeth': 'myć zęby', 'have-a-shower': 'brać prysznic', 'have-a-bath': 'brać kąpiel',
+    'wash-your-hands': 'myć ręce', dry: 'suszyć', 'dry-your-hair': 'suszyć włosy', 'brush-your-hair': 'czesać włosy',
+    flush: 'spłukiwać wodę', 'do-the-laundry': 'robić pranie', rinse: 'płukać', shave: 'golić się', scrub: 'szorować',
+    weigh: 'ważyć', soak: 'moczyć', unblock: 'przetykać',
+    wet: 'mokry', warm: 'ciepły', slippery: 'śliski', steamy: 'zaparowany', blocked: 'zatkany', leaking: 'cieknący',
+    mouldy: 'spleśniały', waterproof: 'wodoodporny', 'well-ventilated': 'dobrze wentylowany',
+  },
+};

@@ -321,15 +321,15 @@ void getFurniture;
     const words = wordsForCourse(ENGLISH_WORDS, course as never, objectIds);
     const english = new Map(ENGLISH_WORDS.map((w) => [w.id, w]));
     for (const id of Object.keys(content!.words)) check(`${course}: word key "${id}" is a real English word id`, english.has(id));
-    // Rooms this course has its own chapter for must be fully translated; other rooms fall back to English.
-    const courseObjects = FURNITURE.filter((f) => Object.keys(content!.chapters).some((r) => getRoomOf(f.id) === r));
-    const fallbackWordIds = new Set(FURNITURE.filter((f) => !courseObjects.includes(f)).map((f) => f.wordId));
-    for (const f of courseObjects) check(`${course}: object word "${f.wordId}" is translated`, !!content!.words[f.wordId]);
+    // Every English word and every playable room must exist in the course, so a learner never sees English.
+    for (const w of ENGLISH_WORDS) check(`${course}: word "${w.id}" is translated`, !!content!.words[w.id]);
+    for (const roomId of Object.keys(CHAPTERS)) check(`${course}: room "${roomId}" has its own chapter`, !!content!.chapters[roomId]);
+    const courseObjects = FURNITURE;
     check(`${course}: enough words to master ${10}`, words.length >= 20, `${words.length}`);
     check(`${course}: every word has uk and ru`, words.every((w) => w.translations?.uk && w.translations?.ru));
-    check(`${course}: no word is still English`, words.every((w) => content!.words[w.id] || fallbackWordIds.has(w.id)), words.filter((w) => !content!.words[w.id] && !fallbackWordIds.has(w.id)).map((w) => w.id).join(','));
+    check(`${course}: every word is in the course`, words.length === ENGLISH_WORDS.length, `${words.length}/${ENGLISH_WORDS.length}`);
     const forms = new Set(words.map((w) => w.word.toLowerCase()));
-    check(`${course}: no two words look the same`, forms.size === words.length);
+    check(`${course}: no two words look the same`, forms.size === words.length, words.filter((w, i) => words.findIndex((x) => x.word.toLowerCase() === w.word.toLowerCase()) !== i).map((w) => w.word).join(', '));
     const acts = activitiesForCourse(ENGLISH_ACTIVITIES, course as never);
     check(`${course}: no English-only activities`, acts.every((a) => a.type !== 'sentence' && a.type !== 'multipleChoice'));
     for (const f of courseObjects) check(`${course}: lesson for ${f.id} has 3 steps`, acts.filter((a) => a.wordId === f.wordId && a.stage === 'lesson').length === 3);
@@ -342,6 +342,17 @@ void getFurniture;
     if (write?.type === 'write') {
       const sentence = course === 'de' ? 'Mein Bett steht am Fenster und die Lampe ist auf dem Nachttisch.' : 'Moje łóżko stoi przy oknie, a lampa jest na szafce nocnej.';
       check(`${course}: a good answer passes the writing task`, evaluateWriting(sentence, write.minWords, write.require).ok, JSON.stringify(evaluateWriting(sentence, write.minWords, write.require).checks));
+    }
+    // Built chapters: a sentence with two of the room's words passes the final writing task.
+    for (const [roomId, chapter] of Object.entries(content!.chapters)) {
+      if (roomId === 'bedroom') continue;
+      const w = chapter.final.steps.A1.find((s) => s.type === 'write');
+      const objects = FURNITURE.filter((f) => getRoomOf(f.id) === roomId).map((f) => content!.words[f.wordId].word);
+      const text = course === 'de' ? `${objects[0]} ist neben ${objects[1]} und alles ist sehr schön hier.` : `${objects[0]} i ${objects[1]} są tutaj, a wszystko jest bardzo ładne.`;
+      check(`${course}/${roomId}: a good answer passes the writing task`, w?.type === 'write' && evaluateWriting(text, w.minWords, w.require).ok, text);
+      check(`${course}/${roomId}: chapter title is not English`, chapter.title !== CHAPTERS[roomId].title);
+      check(`${course}/${roomId}: hidden-object clues are not English`, chapter.hiddenObjects.every((h, i) => h.prompt.A1 !== CHAPTERS[roomId].hiddenObjects[i]?.prompt.A1));
+      check(`${course}/${roomId}: sort game has words`, chapter.sortGame.items.length >= 8, String(chapter.sortGame.items.length));
     }
   }
   check('de: German article stays visible in spelling', autoHide('das Bett').every((i) => i > 3));

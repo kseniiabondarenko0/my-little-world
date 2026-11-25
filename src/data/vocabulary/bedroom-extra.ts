@@ -57,7 +57,7 @@ export const bedroomExtraWords: VocabularyWord[] = [
   w('storage box', 'A2', 'small objects', 'wardrobe', 'коробка для хранения', 'коробка для зберігання'),
   w('photo frame', 'A2', 'small objects', 'picture', 'фоторамка', 'фоторамка'),
   w('wastepaper bin', 'A2', 'small objects', 'desk', 'корзина для мусора', 'кошик для сміття'),
-  w('hairbrush', 'A2', 'small objects', 'mirror', 'расчёска', 'гребінець'),
+  w('hairbrush', 'A2', 'small objects', 'mirror', 'щётка для волос', 'щітка для волосся'),
   w('perfume', 'A2', 'small objects', 'mirror', 'духи', 'парфуми'),
   w('wallet', 'A2', 'small objects', null, 'кошелёк', 'гаманець'),
   w('blanket chest', 'B1', 'small objects', null, 'сундук для хранения одеял', 'скриня для ковдр'),

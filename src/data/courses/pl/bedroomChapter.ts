@@ -1,61 +1,8 @@
-import type { CourseContent, CourseWord } from './types';
-import { buildStarterChapter } from './starterChapter';
+import { buildStarterChapter } from '../starterChapter';
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  POLISH starter course — Bedroom.
-//  Keys are the English word ids. Translations (uk / ru) are reused from English
-//  unless given here.
-// ═══════════════════════════════════════════════════════════════════════════
+// Polish Bedroom chapter, hand-written (the other rooms' chapters are built by roomChapter.ts).
 
-const words: Record<string, CourseWord> = {
-  // ── 3D objects (taught in the unlock lessons) ──
-  bed: { word: 'łóżko', definition: 'Śpisz w nim w nocy.', example: 'Idę do łóżka o dziesiątej.' },
-  wardrobe: { word: 'szafa', definition: 'Wysoki mebel na ubrania.', example: 'Mój płaszcz jest w szafie.' },
-  desk: { word: 'biurko', definition: 'Stół do nauki i pracy.', example: 'Odrabiam lekcje przy biurku.' },
-  chair: { word: 'krzesło', definition: 'Siedzisz na nim.', example: 'Krzesło stoi przed biurkiem.' },
-  bookshelf: { word: 'regał', definition: 'Mebel z półkami na książki.', example: 'Na moim regale jest dziesięć książek.' },
-  lamp: { word: 'lampa', definition: 'Daje światło.', example: 'Czytam przy lampie.' },
-  carpet: { word: 'dywan', definition: 'Leży miękko na podłodze.', example: 'Kot leży na dywanie.' },
-  picture: { word: 'obraz', definition: 'Obraz albo zdjęcie na ścianie.', example: 'Na ścianie wisi obraz z morzem.' },
-  mirror: { word: 'lustro', definition: 'Widzisz w nim siebie.', example: 'Codziennie rano patrzę w lustro.' },
-  nightstand: { word: 'szafka nocna', definition: 'Mała szafka obok łóżka.', example: 'Mój telefon leży na szafce nocnej.' },
-  plant: { word: 'roślina', definition: 'Jest zielona i potrzebuje wody.', example: 'Codziennie podlewam roślinę.' },
-  'chest-of-drawers': { word: 'komoda', definition: 'Mebel z szufladami na ubrania.', example: 'Moje skarpetki są w komodzie.' },
-
-  // ── More bedroom words ──
-  pillow: { word: 'poduszka' },
-  blanket: { word: 'koc' },
-  shelf: { word: 'półka' },
-  window: { word: 'okno' },
-  door: { word: 'drzwi' },
-  clock: { word: 'zegar' },
-  'alarm-clock': { word: 'budzik' },
-  book: { word: 'książka' },
-  notebook: { word: 'zeszyt' },
-  pen: { word: 'długopis' },
-  pencil: { word: 'ołówek' },
-  backpack: { word: 'plecak' },
-  't-shirt': { word: 'koszulka' },
-  shirt: { word: 'koszula' },
-  trousers: { word: 'spodnie' },
-  jeans: { word: 'dżinsy' },
-  skirt: { word: 'spódnica' },
-  dress: { word: 'sukienka' },
-  sweater: { word: 'sweter' },
-  socks: { word: 'skarpetki' },
-  shoes: { word: 'buty' },
-  soft: { word: 'miękki' },
-  'wake-up': { word: 'budzić się' },
-  clean: { word: 'sprzątać' },
-  in: { word: 'w' },
-  on: { word: 'na' },
-  under: { word: 'pod' },
-  'next-to': { word: 'obok' },
-  'in-front-of': { word: 'przed' },
-  behind: { word: 'za' },
-};
-
-const bedroom = buildStarterChapter({
+export const bedroomChapter = buildStarterChapter({
   title: 'Mój pokój',
   exploreIntro: 'Kliknij rzeczy w swoim pokoju.',
   explore: {
@@ -195,5 +142,3 @@ const bedroom = buildStarterChapter({
       'obraz', 'lustro', 'roślina', 'komoda', 'komodzie', 'okno', 'oknie', 'drzwi', 'poduszka', 'koc'],
   },
 });
-
-export const polish: CourseContent = { words, chapters: { bedroom } };

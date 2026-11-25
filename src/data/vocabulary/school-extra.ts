@@ -70,7 +70,7 @@ export const schoolExtraWords: VocabularyWord[] = [
 
   // ── Describing ───────────────────────────────────
   w('easy', 'A1', 'adjectives', null, 'лёгкий', 'легкий'),
-  w('difficult', 'A1', 'adjectives', null, 'трудный', 'важкий'),
+  w('difficult', 'A1', 'adjectives', null, 'трудный', 'складний'),
   w('interesting', 'A1', 'adjectives', null, 'интересный', 'цікавий'),
   w('boring', 'A2', 'adjectives', null, 'скучный', 'нудний'),
   w('strict', 'B1', 'adjectives', 'teachers-desk', 'строгий', 'суворий'),
