@@ -98,3 +98,21 @@ export function readJSON<T>(key: string, fallback: T): T {
 export function writeJSON(key: string, value: unknown) {
   write(PREFIX + key, JSON.stringify(value));
 }
+
+/** One player's saved stores for every course: course → store → the raw JSON zustand keeps. */
+export type PlayerSave = Record<string, Record<string, string | null>>;
+
+/** Everything one player has saved on this device, in every course they started. */
+export function readPlayerSave(playerId: string): PlayerSave {
+  const save: PlayerSave = {};
+  for (const c of COURSES) {
+    const stores = Object.fromEntries(STORE_NAMES.map((name) => [name, read(namespace(playerId, c.id) + name)]));
+    if (Object.values(stores).some((v) => v !== null)) save[c.id] = stores;
+  }
+  return save;
+}
+
+/** Replaces one player's saves in every course. Courses and stores missing from `save` are cleared. */
+export function writePlayerSave(playerId: string, save: PlayerSave) {
+  for (const c of COURSES) for (const name of STORE_NAMES) write(namespace(playerId, c.id) + name, save[c.id]?.[name] ?? null);
+}
