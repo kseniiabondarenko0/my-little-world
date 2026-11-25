@@ -93,6 +93,7 @@ check('basement is locked until the hallway is complete', !isRoomOpen('basement'
 check('entrance is locked until the basement is complete', !isRoomOpen('entrance', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway']) && isRoomOpen('entrance', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway', 'basement']));
 check('school is locked until the entrance is complete', !isRoomOpen('school', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway', 'basement']) && isRoomOpen('school', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway', 'basement', 'entrance']));
 check('office is locked until the school is complete', !isRoomOpen('office', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway', 'basement', 'entrance']) && isRoomOpen('office', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway', 'basement', 'entrance', 'school']));
+check('hospital is locked until the office is complete', !isRoomOpen('hospital', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway', 'basement', 'entrance', 'school']) && isRoomOpen('hospital', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway', 'basement', 'entrance', 'school', 'office']));
 {
   const placed: PlacedItem[] = [];
   for (const id of bedroom.objects) {
