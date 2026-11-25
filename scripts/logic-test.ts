@@ -341,6 +341,16 @@ void getFurniture;
   check('de: German article stays visible in spelling', autoHide('das Bett').every((i) => i > 3));
 }
 
+// ── Stars ──────────────────────────────────────────────────────
+{
+  const { useProgress } = await import('../src/progression/progressStore');
+  const before = useProgress.getState().stars;
+  useProgress.getState().recordAnswer(ALL_WORDS[0].id, true, true, false);
+  check('stars: self-marked flashcards give no star', useProgress.getState().stars === before);
+  useProgress.getState().recordAnswer(ALL_WORDS[0].id, true, true);
+  check('stars: a checked first-try answer gives one star', useProgress.getState().stars === before + 1);
+}
+
 // ── Pet + coin shop ────────────────────────────────────────────
 {
   const ids = SHOP_ITEMS.map((i) => i.id);
