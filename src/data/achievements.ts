@@ -64,4 +64,6 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     condition: { type: 'roomComplete', roomId: 'living-room' } },
   { id: 'hallway-complete', title: 'Grand Entrance', description: 'Complete the hallway chapter (final mission).', icon: '🧥',
     condition: { type: 'roomComplete', roomId: 'hallway' } },
+  { id: 'basement-complete', title: 'Handy Helper', description: 'Complete the basement chapter (final mission).', icon: '🧰',
+    condition: { type: 'roomComplete', roomId: 'basement' } },
 ];
