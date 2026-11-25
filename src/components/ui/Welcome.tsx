@@ -9,6 +9,7 @@ import { LEVELS } from '../../data/content';
 import { AvatarCreator } from './AvatarCreator';
 import { AvatarPortrait } from './AvatarPortrait';
 import { Segmented, LANGUAGES } from './Segmented';
+import { ImportSaveButton } from './SaveFile';
 
 // First-time setup: nickname → avatar → language & level. Shown until a profile exists.
 
@@ -48,6 +49,7 @@ export function Welcome() {
             <p className="muted">Learn English by building and decorating your own home.</p>
             {hadProgress && <p className="badge">Your saved room will be kept 💾</p>}
             <button className="btn btn-primary btn-big" onClick={() => setStep('name')}>Create my player</button>
+            <ImportSaveButton label="📂 I have a save file" />
             {players.length > 0 && (
               <div className="switch-list">
                 <p className="muted small">Already playing on this device?</p>

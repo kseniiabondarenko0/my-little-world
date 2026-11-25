@@ -17,6 +17,7 @@ import { buildStages, chapterPercent, choosePicks } from '../src/chapter/stages'
 import { MINIGAMES } from '../src/minigames/registry';
 import { hiddenObjectsMission, interiorDesignerMission } from '../src/minigames/missions';
 import { checkNickname } from '../src/player/playerService';
+import { buildBackup, parseBackup, freeNickname, backupFileName } from '../src/save/backup';
 
 let passed = 0;
 const failures: string[] = [];
@@ -206,6 +207,22 @@ check('phone number in nickname is refused', !checkNickname('kid0501234567').ok)
 check('email in nickname is refused', !checkNickname('me@mail.com').ok);
 check('normal nickname is accepted', checkNickname('SunnyFox').ok);
 check('Cyrillic nickname is accepted', checkNickname('Лисичка').ok);
+
+// ── 9. Save files ──────────────────────────────────────────────
+{
+  const player = { id: 'p1', nickname: 'SunnyFox', avatar: { skin: '#f1c', hair: 'short', hairColor: '#000', outfit: 'tshirt', outfitColor: '#00f', accessory: 'none' } as const, createdAt: 1 };
+  const progress = JSON.stringify({ state: { xp: 40, unlocked: ['bed'] }, version: 2 });
+  const file = JSON.stringify(buildBackup(player, { progress, layout: null, chapter: null }));
+  const back = parseBackup(file);
+  check('save file round-trips', back.ok && back.player.id === 'p1' && back.saves.progress === progress && back.saves.layout === null);
+  check('random JSON is refused', !parseBackup('{"hello":1}').ok);
+  check('non-JSON is refused', !parseBackup('not json').ok);
+  check('newer format is refused', !parseBackup(file.replace('"format": 1', '"format": 99').replace('"format":1', '"format":99')).ok);
+  check('damaged store is refused', !parseBackup(JSON.stringify({ ...JSON.parse(file), saves: { progress: 5 } })).ok);
+  check('nickname clash gets a number', freeNickname('SunnyFox', ['sunnyfox']) === 'SunnyFox 2');
+  check('renamed nickname stays within 16 chars', freeNickname('ABCDEFGHIJKLMNOP', ['abcdefghijklmnop']).length <= 16);
+  check('file name is safe', /^my-little-world-SunnyFox-\d{4}-\d{2}-\d{2}\.json$/.test(backupFileName(player)));
+}
 
 void getFurniture;
 console.log(`\n${passed} checks passed, ${failures.length} failed`);

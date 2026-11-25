@@ -622,3 +622,5 @@ h1, h2, h3 { margin: 0; }
   .word-row .mastery { display: none; }
   .toolbar-example { display: none; }
 }
+
+.save-file-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }

@@ -69,3 +69,13 @@ export function readJSON<T>(key: string, fallback: T): T {
 export function writeJSON(key: string, value: unknown) {
   write(PREFIX + key, JSON.stringify(value));
 }
+
+/** The raw saved stores of one player (the strings zustand keeps in localStorage). */
+export function readPlayerSave(playerId: string): Record<string, string | null> {
+  return Object.fromEntries(STORE_NAMES.map((name) => [name, read(namespace(playerId) + name)]));
+}
+
+/** Replaces one player's saved stores. Stores missing from `saves` are cleared. */
+export function writePlayerSave(playerId: string, saves: Record<string, string | null>) {
+  for (const name of STORE_NAMES) write(namespace(playerId) + name, saves[name] ?? null);
+}

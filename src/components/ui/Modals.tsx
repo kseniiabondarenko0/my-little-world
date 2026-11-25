@@ -16,6 +16,7 @@ import { AvatarPortrait } from './AvatarPortrait';
 import { AvatarCreator } from './AvatarCreator';
 import { Segmented, LANGUAGES } from './Segmented';
 import { checkNickname } from '../../player/playerService';
+import { ExportSaveButton, ImportSaveButton } from './SaveFile';
 
 function Modal({ title, children, wide }: { title: string; children: ReactNode; wide?: boolean }) {
   const close = () => useUI.getState().openModal(null);
@@ -178,6 +179,11 @@ function MenuModal() {
       <p className="muted small">Each player has their own room and progress, saved in this browser.</p>
 
       <h3 className="section-title">Progress</h3>
+      <p className="muted small">On a shared tablet? Save your progress to a file at the end of the lesson, and load it next time.</p>
+      <div className="save-file-row">
+        <ExportSaveButton />
+        <ImportSaveButton />
+      </div>
       {confirm ? (
         <div className="confirm-row">
           <span>Delete <b>{player?.nickname ?? 'this player'}</b>’s progress?</span>

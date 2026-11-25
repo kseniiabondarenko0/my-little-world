@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { AvatarConfig, PlayerProfile } from './types';
-import { ACTIVE_PLAYER_ID, adoptLegacySave, deletePlayerSave, readJSON, setActivePlayer, writeJSON } from '../save/storage';
+import { ACTIVE_PLAYER_ID, adoptLegacySave, deletePlayerSave, readJSON, readPlayerSave, setActivePlayer, writeJSON, writePlayerSave } from '../save/storage';
+import { buildBackup, freeNickname, type BackupFile } from '../save/backup';
 
 // All player profiles on this device, and which one is playing.
 // Profiles are stored once per device (not per player save).
@@ -27,6 +28,10 @@ interface PlayerState {
   update: (patch: Partial<Pick<PlayerProfile, 'nickname' | 'avatar'>>) => void;
   switchTo: (id: string | null) => void;
   remove: (id: string) => void;
+  /** The current player's profile and progress, ready to save as a file. */
+  exportCurrent: () => BackupFile | null;
+  /** Adds a player from a save file (or replaces the same player) and makes them active. Reload after. */
+  importSave: (player: PlayerProfile, saves: Record<string, string | null>) => PlayerProfile;
 }
 
 const initialPlayers = load();
@@ -66,5 +71,22 @@ export const usePlayer = create<PlayerState>()((set, get) => ({
     writeJSON(KEY, players);
     deletePlayerSave(id);
     set({ players });
+  },
+
+  exportCurrent: () => {
+    const current = get().current;
+    return current ? buildBackup(current, readPlayerSave(current.id)) : null;
+  },
+
+  importSave: (player, saves) => {
+    // Same id = the same player coming back: their save is replaced by the file.
+    const others = get().players.filter((p) => p.id !== player.id);
+    const profile = { ...player, nickname: freeNickname(player.nickname, others.map((p) => p.nickname)) };
+    const players = [...others, profile];
+    writeJSON(KEY, players);
+    writePlayerSave(profile.id, saves);
+    setActivePlayer(profile.id);
+    set({ players });
+    return profile;
   },
 }));
