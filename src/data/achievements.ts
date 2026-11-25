@@ -60,4 +60,6 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     condition: { type: 'roomComplete', roomId: 'kitchen' } },
   { id: 'bathroom-complete', title: 'Squeaky Clean', description: 'Complete the bathroom chapter (final mission).', icon: '🫧',
     condition: { type: 'roomComplete', roomId: 'bathroom' } },
+  { id: 'living-room-complete', title: 'Home Sweet Home', description: 'Complete the living room chapter (final mission).', icon: '🛋️',
+    condition: { type: 'roomComplete', roomId: 'living-room' } },
 ];

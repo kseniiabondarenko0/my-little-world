@@ -432,8 +432,155 @@ const plumber: MissionDefinition = {
   },
 };
 
+// ── LIVING ROOM ────────────────────────────────────────────────────────────
+
+const LIVING = ['sofa', 'armchair', 'coffee table', 'tv', 'television', 'fireplace', 'bookcase', 'floor lamp', 'lamp', 'cushion', 'remote control', 'remote', 'clock', 'piano', 'beanbag', 'rug'];
+const livingWords = room(LIVING, 'living room words');
+
+const lostRemote: MissionDefinition = {
+  id: 'lost-remote', title: 'Where’s the Remote?', icon: '🎛️', xp: 90,
+  intro: {
+    A1: 'The football match starts in five minutes and Dad can’t find the remote! Follow the clues.',
+    B1: 'The match is about to start and the remote has vanished. Retrace everyone’s steps from last night.',
+  },
+  steps: {
+    A1: [
+      find('Dad sat on the long soft seat. Look there first.', ['sofa']),
+      find('Then he made a cup of tea and put it on the low table.', ['coffee-table']),
+      find('Then he read a book. Look where the books are.', ['bookcase']),
+      find('Found it! It was in front of the TV all the time.', ['remote']),
+    ],
+    A2: [
+      find('Last night Grandma watched a film in her seat for one person.', ['armchair']),
+      find('Then she turned on the tall light to read.', ['floor-lamp']),
+      find('Your brother played music on the instrument with black and white keys.', ['piano']),
+      find('There it is, next to the snacks!', ['remote']),
+      { type: 'write', prompt: 'Write what the family did last night, in order. Use first, then, after that.', minWords: 15,
+        require: [linkers(2), livingWords(2)], sample: 'First, Grandma sat in the…' },
+    ],
+    B1: [
+      find('Your sister always falls asleep where three people can sit. Check there.', ['sofa']),
+      find('She warmed her feet somewhere hot before bed.', ['fireplace']),
+      find('She curled up on the floor seat to play video games.', ['beanbag']),
+      find('Somebody tidied it away with the other small things.', ['remote']),
+      { type: 'write', prompt: 'Suggest to your family a simple rule so the remote never gets lost again.', minWords: 30,
+        require: [linkers(2), livingWords(2)], sample: 'The remote was on the table because…' },
+    ],
+    B2: [
+      find('Start where things most often slip down between the cushions.', ['sofa', 'armchair']),
+      find('Check the surface above the hearth where people leave things.', ['fireplace']),
+      find('Check the instrument — your cousin was practising scales there.', ['piano']),
+      find('There it is. Click it before the kick-off!', ['remote']),
+      { type: 'write', prompt: 'Write a short, humorous note for the family noticeboard about the Great Remote Hunt and one sensible habit.', minWords: 40,
+        require: [linkers(1), advanced(1), livingWords(2)], sample: 'Although it was a close call, the remote…' },
+    ],
+  },
+};
+
+const pianoConcert: MissionDefinition = {
+  id: 'piano-concert', title: 'Home Concert', icon: '🎹', xp: 100,
+  intro: {
+    A1: 'You are giving a small piano concert for your family! Get the room ready.',
+    B1: 'You’re performing a short piano recital for relatives at home. Set up the room so everyone can see and hear.',
+  },
+  steps: {
+    A1: [
+      find('Find the instrument for the concert.', ['piano']),
+      { type: 'sort', prompt: 'Get ready for the concert.', props: [
+        item('c1', 'the music book', 'book', '#fffdf6', ['piano'], 'Put the music book on the piano.'),
+        item('c2', 'the flowers', 'cup', '#f7b2d0', ['coffee-table', 'fireplace'], 'Put the flowers on the coffee table.'),
+      ] },
+      { type: 'place', prompt: 'Put the piano against the wall.', checks: [{ rel: 'againstWall', a: 'piano' }] },
+    ],
+    A2: [
+      find('Grandma will sit in a comfortable seat for one. Click it.', ['armchair']),
+      { type: 'sort', prompt: 'Make the room ready.', props: [
+        item('c1', 'the sheet music', 'book', '#fffdf6', ['piano'], 'Put the sheet music on the piano.'),
+        item('c2', 'the drinks', 'cup', '#a9c9f2', ['coffee-table'], 'Put the drinks on the coffee table.'),
+        item('c3', 'the toys', 'toy', '#ffd54f', ['bookcase'], 'Put the toys away on the bookcase.'),
+      ] },
+      { type: 'place', prompt: 'Put the piano against the wall and the floor lamp next to it so you can read the music.',
+        checks: [{ rel: 'againstWall', a: 'piano' }, { rel: 'nextTo', a: 'floor-lamp', b: 'piano' }] },
+      { type: 'write', prompt: 'Write an invitation to your concert. Say where people will sit.', minWords: 15,
+        require: [livingWords(2), prep(1)], sample: 'Please come to my concert! You can sit on…' },
+    ],
+    B1: [
+      { type: 'place', prompt: 'You need light to read the music: put the floor lamp next to the piano.', checks: [{ rel: 'nextTo', a: 'floor-lamp', b: 'piano' }] },
+      { type: 'place', prompt: 'The audience should face the piano: put the sofa opposite it, away from the instrument.', checks: [{ rel: 'farFrom', a: 'sofa', b: 'piano' }] },
+      { type: 'choice', prompt: 'Your little cousin keeps talking during the concert. What do you say afterwards?', options: [
+        { text: 'Next time, could you listen quietly? Then you can play a song too!', correct: true, feedback: 'Kind, clear and it gives him a reason.' },
+        { text: 'You ruined everything!', correct: false, feedback: 'Too harsh for a small child.' },
+        { text: 'Say nothing and never play again.', correct: false, feedback: 'That doesn’t help anyone.' },
+      ] },
+      { type: 'write', prompt: 'Write a short programme for your concert: what you’ll play and why you chose it.', minWords: 30,
+        require: [linkers(2), livingWords(1)], sample: 'First, I’ll play… because…' },
+    ],
+    B2: [
+      { type: 'place', prompt: 'Good acoustics and lighting: piano against a wall, floor lamp beside it.',
+        checks: [{ rel: 'againstWall', a: 'piano' }, { rel: 'nextTo', a: 'floor-lamp', b: 'piano' }] },
+      { type: 'place', prompt: 'Seating for the audience: sofa well away from the piano, coffee table in front of the sofa for drinks.',
+        checks: [{ rel: 'farFrom', a: 'sofa', b: 'piano' }, { rel: 'inFrontOf', a: 'coffee-table', b: 'sofa' }] },
+      { type: 'write', prompt: 'Write a short speech to introduce your concert: thank your guests and explain what they’re about to hear.', minWords: 45,
+        require: [advanced(1), livingWords(1)], sample: 'Although I’m a little nervous, I’m delighted that…' },
+    ],
+  },
+};
+
+const winterEvening: MissionDefinition = {
+  id: 'winter-evening', title: 'Snowy Evening', icon: '❄️', xp: 90,
+  intro: {
+    A1: 'It is snowing outside! Make the living room warm and cosy.',
+    B1: 'There’s a snowstorm and the heating has broken. Keep the family warm and cheerful in the living room.',
+  },
+  steps: {
+    A1: [
+      find('Find where you can make a fire.', ['fireplace']),
+      { type: 'sort', prompt: 'Make it cosy.', props: [
+        item('w1', 'a warm blanket', 'blanket', '#c9b6e4', ['sofa', 'armchair'], 'Put the blanket on the sofa.'),
+        item('w2', 'hot chocolate', 'cup', '#a0522d', ['coffee-table'], 'Put the hot chocolate on the coffee table.'),
+      ] },
+      { type: 'place', prompt: 'Put the armchair next to the fireplace.', checks: [{ rel: 'nextTo', a: 'armchair', b: 'fireplace' }] },
+    ],
+    A2: [
+      find('It’s getting dark. Find a light to turn on.', ['floor-lamp']),
+      { type: 'sort', prompt: 'Get everything ready.', props: [
+        item('w1', 'blankets', 'blanket', '#c9b6e4', ['sofa', 'armchair'], 'Put the blankets on the sofa.'),
+        item('w2', 'firewood', 'box', '#9c7150', ['fireplace'], 'Put the firewood by the fireplace.'),
+        item('w3', 'a board game', 'box', '#9fd08f', ['coffee-table'], 'Put the board game on the coffee table.'),
+      ] },
+      { type: 'place', prompt: 'Keep the beanbag far from the fire.', checks: [{ rel: 'farFrom', a: 'beanbag', b: 'fireplace' }] },
+      { type: 'write', prompt: 'Write what your family does on a snowy evening.', minWords: 15,
+        require: [livingWords(2), linkers(1)], sample: 'We sit by the fire and…' },
+    ],
+    B1: [
+      find('The heating is broken. What can you use to heat the room?', ['fireplace']),
+      { type: 'place', prompt: 'Bring the seats closer to the warmth: armchair next to the fireplace.', checks: [{ rel: 'nextTo', a: 'armchair', b: 'fireplace' }] },
+      { type: 'place', prompt: 'Safety first: the beanbag must stay far from the fire.', checks: [{ rel: 'farFrom', a: 'beanbag', b: 'fireplace' }] },
+      { type: 'choice', prompt: 'The power goes off and your little sister is scared of the dark. What do you do?', options: [
+        { text: 'Sit with her by the fire and tell her a story.', correct: true, feedback: 'Calm and comforting.' },
+        { text: 'Tell her not to be a baby.', correct: false, feedback: 'That won’t make her feel better.' },
+        { text: 'Leave her and go to bed.', correct: false, feedback: 'She needs someone with her.' },
+      ] },
+      { type: 'write', prompt: 'Write a diary entry about the snowy evening.', minWords: 30,
+        require: [linkers(2), livingWords(2)], sample: 'First, the heating stopped working, so…' },
+    ],
+    B2: [
+      { type: 'place', prompt: 'Create a warm zone: armchair beside the fireplace, beanbag at a safe distance.',
+        checks: [{ rel: 'nextTo', a: 'armchair', b: 'fireplace' }, { rel: 'farFrom', a: 'beanbag', b: 'fireplace' }] },
+      { type: 'choice', prompt: 'Your neighbour is elderly and lives alone, and the storm will last all night. What is the most responsible thing to do?', options: [
+        { text: 'Check on her and invite her to stay by your fire.', correct: true, feedback: 'Thoughtful and practical.' },
+        { text: 'Assume she’s fine.', correct: false, feedback: 'She might need help.' },
+        { text: 'Post about the storm online.', correct: false, feedback: 'That doesn’t help her.' },
+      ] },
+      { type: 'write', prompt: 'Write a message to your neighbour inviting her over and explaining how you’ve made the room warm and safe.', minWords: 45,
+        require: [advanced(1), livingWords(2), prep(1)], sample: 'Although the heating isn’t working, we have…' },
+    ],
+  },
+};
+
 export const SIDE_QUESTS: Record<string, MissionDefinition[]> = {
   bedroom: [lostPhone, sleepover, laundryDay],
   kitchen: [midnightSnack, recipeCard, inspector],
   bathroom: [lostRing, spaDay, plumber],
+  'living-room': [lostRemote, pianoConcert, winterEvening],
 };

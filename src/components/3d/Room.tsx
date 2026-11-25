@@ -9,20 +9,50 @@ const T = 0.14; // wall thickness
 
 function Floor({ room }: { room: RoomDefinition }) {
   const { width: W, depth: D } = room.size;
-  const plank = 0.5;
-  const count = Math.round(D / plank);
+  const style = room.theme.floorStyle ?? 'planks';
+  const [c1, c2] = room.theme.floor;
+  const base = (
+    <mesh position={[0, -0.025, 0]}>
+      <boxGeometry args={[W, 0.03, D]} />
+      <meshStandardMaterial color={style === 'planks' ? '#c9a57f' : c2} />
+    </mesh>
+  );
+  if (style === 'planks') {
+    const plank = 0.5;
+    const count = Math.round(D / plank);
+    return (
+      <group>
+        {Array.from({ length: count }, (_, i) => (
+          <mesh key={i} position={[0, -0.02, -D / 2 + plank / 2 + i * plank]} receiveShadow>
+            <boxGeometry args={[W, 0.04, plank - 0.012]} />
+            <meshStandardMaterial color={room.theme.floor[i % 2]} roughness={0.85} />
+          </mesh>
+        ))}
+        {base}
+      </group>
+    );
+  }
+  // Tiles: a checkerboard of squares with thin grout lines. Concrete: big slabs, one colour.
+  const tile = style === 'tiles' ? 0.4 : 1.0;
+  const nx = Math.round(W / tile);
+  const nz = Math.round(D / tile);
+  const tw = W / nx;
+  const td = D / nz;
+  const gap = style === 'tiles' ? 0.014 : 0.008;
   return (
     <group>
-      {Array.from({ length: count }, (_, i) => (
-        <mesh key={i} position={[0, -0.02, -D / 2 + plank / 2 + i * plank]} receiveShadow>
-          <boxGeometry args={[W, 0.04, plank - 0.012]} />
-          <meshStandardMaterial color={room.theme.floor[i % 2]} roughness={0.85} />
-        </mesh>
-      ))}
-      <mesh position={[0, -0.025, 0]}>
-        <boxGeometry args={[W, 0.03, D]} />
-        <meshStandardMaterial color="#c9a57f" />
-      </mesh>
+      {Array.from({ length: nx * nz }, (_, k) => {
+        const i = k % nx;
+        const j = Math.floor(k / nx);
+        const color = style === 'tiles' ? ((i + j) % 2 ? c2 : c1) : c1;
+        return (
+          <mesh key={k} position={[-W / 2 + tw / 2 + i * tw, -0.02, -D / 2 + td / 2 + j * td]} receiveShadow>
+            <boxGeometry args={[tw - gap, 0.04, td - gap]} />
+            <meshStandardMaterial color={color} roughness={style === 'tiles' ? 0.45 : 0.95} />
+          </mesh>
+        );
+      })}
+      {base}
     </group>
   );
 }
