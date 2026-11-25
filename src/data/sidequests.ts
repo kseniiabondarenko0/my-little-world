@@ -1101,6 +1101,134 @@ const newStudent: MissionDefinition = {
   },
 };
 
+// ── OFFICE ─────────────────────────────────────────────────────────────────
+
+const OFFICE = ['office', 'boss', 'colleague', 'meeting', 'table', 'meeting table', 'chair', 'filing cabinet', 'cabinet', 'water cooler', 'shredder', 'printer', 'computer', 'laptop', 'stapler', 'sticky notes', 'chart', 'email'];
+const officeWords = room(OFFICE, 'office words');
+
+const lostLaptop: MissionDefinition = {
+  id: 'lost-laptop', title: 'Where’s My Laptop?', icon: '💻', xp: 90,
+  intro: {
+    A1: 'Your laptop is not on the table! Look around the office.',
+    B1: 'Your presentation starts in ten minutes and your laptop has disappeared. Retrace your morning.',
+  },
+  steps: {
+    A1: [
+      find('Is it near the printer? Click it.', ['printer']),
+      find('No. Is it on the cabinet?', ['filing-cabinet']),
+      find('No. Is it by the water?', ['water-cooler']),
+      find('Found it! It is on your chair.', ['office-chair']),
+    ],
+    A2: [
+      find('This morning you got some water first.', ['water-cooler']),
+      find('Then you printed a report.', ['printer']),
+      find('Then you put the report together with this.', ['stapler']),
+      find('Then you went to the meeting. Look there!', ['meeting-table']),
+      { type: 'write', prompt: 'Write what you did this morning, in order. Use first, then, after that.', minWords: 15,
+        require: [linkers(2), officeWords(2)], sample: 'First, I got some water…' },
+    ],
+    B1: [
+      find('You wrote a reminder this morning. Check your notes.', ['sticky-notes']),
+      find('The note says “old contracts — 9:30”. Where are contracts kept?', ['filing-cabinet']),
+      find('Then you destroyed the old copies.', ['shredder']),
+      find('Found it — next to the shredder, on your chair! Click the chair.', ['office-chair']),
+      { type: 'write', prompt: 'Write a quick message to your team explaining why the presentation will start a few minutes late.', minWords: 30,
+        require: [linkers(2), officeWords(2)], sample: 'Sorry, everyone, because my laptop…' },
+    ],
+    B2: [
+      find('Think logically: you last used it to check the figures on the wall. Start there.', ['sales-chart']),
+      find('Rule out the place where you only keep paper files.', ['filing-cabinet']),
+      find('Check the place where the morning meeting was held.', ['meeting-table']),
+      find('Located — it was under a pile of printouts. Click the printer.', ['printer']),
+      { type: 'write', prompt: 'Write a short email to your colleagues suggesting a rule for shared equipment so nothing goes missing.', minWords: 40,
+        require: [linkers(1), advanced(1), officeWords(2)], sample: 'Although we all share the meeting room, …' },
+    ],
+  },
+};
+
+const fireDrill: MissionDefinition = {
+  id: 'fire-drill', title: 'Fire Drill', icon: '🚨', xp: 100,
+  intro: {
+    A1: 'The fire alarm is ringing! It’s only practice. Do the right things.',
+    B1: 'The building is having a fire drill and you are the fire warden for your office. Make sure everything is safe.',
+  },
+  steps: {
+    A1: [
+      find('Find the red fire extinguisher.', ['fire-extinguisher']),
+      find('Turn off your computer.', ['computer']),
+      { type: 'place', prompt: 'Move the shredder far from the meeting table so people can walk out.', checks: [{ rel: 'farFrom', a: 'shredder', b: 'meeting-table' }] },
+    ],
+    A2: [
+      find('Check the fire extinguisher is on the wall.', ['fire-extinguisher']),
+      find('Close the drawers of the filing cabinet.', ['filing-cabinet']),
+      { type: 'place', prompt: 'Clear the way: put the office chair next to the meeting table and the water cooler in the corner.',
+        checks: [{ rel: 'nextTo', a: 'office-chair', b: 'meeting-table' }, { rel: 'inCorner', a: 'water-cooler' }] },
+      { type: 'write', prompt: 'Write what you did in the fire drill.', minWords: 15,
+        require: [officeWords(2), linkers(1)], sample: 'First, I turned off the…' },
+    ],
+    B1: [
+      { type: 'place', prompt: 'Nothing should block the exit: water cooler in a corner, filing cabinet against a wall.',
+        checks: [{ rel: 'inCorner', a: 'water-cooler' }, { rel: 'againstWall', a: 'filing-cabinet' }] },
+      { type: 'choice', prompt: 'A colleague says: “I’ll just finish this email first.” What do you say?', options: [
+        { text: 'Sorry, we all need to leave now. The email can wait.', correct: true, feedback: 'Firm but polite — that’s a fire warden.' },
+        { text: 'OK, take your time.', correct: false, feedback: 'In a real fire, every second counts.' },
+        { text: 'Turn off their computer without a word.', correct: false, feedback: 'Explain first — politely.' },
+      ] },
+      { type: 'write', prompt: 'Write a short report for your manager about the fire drill: what went well and what didn’t.', minWords: 30,
+        require: [officeWords(2), linkers(2)], sample: 'First, the alarm rang and…' },
+    ],
+    B2: [
+      { type: 'place', prompt: 'Make the office fire-safe: filing cabinet against a wall, water cooler in a corner, shredder far from the meeting table.',
+        checks: [{ rel: 'againstWall', a: 'filing-cabinet' }, { rel: 'inCorner', a: 'water-cooler' }, { rel: 'farFrom', a: 'shredder', b: 'meeting-table' }] },
+      { type: 'write', prompt: 'Write a persuasive email to all staff explaining why fire drills matter, even though they are inconvenient.', minWords: 45,
+        require: [advanced(1), officeWords(2)], sample: 'Although fire drills interrupt our work, …' },
+    ],
+  },
+};
+
+const jobInterview: MissionDefinition = {
+  id: 'job-interview', title: 'The Job Interview', icon: '🤝', xp: 90,
+  intro: {
+    A1: 'Somebody is coming for a job interview. Help get ready and say hello!',
+    B1: 'You’re helping your manager interview a new team member. Prepare the room and take part in the interview.',
+  },
+  steps: {
+    A1: [
+      { type: 'choice', prompt: 'The visitor arrives. What do you say?', options: [
+        { text: 'Hello! Welcome. Please sit down.', correct: true, feedback: 'Friendly and polite!' },
+        { text: 'What do you want?', correct: false, feedback: 'Not very welcoming.' },
+        { text: 'Goodbye!', correct: false, feedback: 'They’ve just arrived!' },
+      ] },
+      find('Show the visitor where to sit.', ['office-chair']),
+      find('Get the visitor some water.', ['water-cooler']),
+    ],
+    A2: [
+      find('Print the visitor’s CV.', ['printer']),
+      find('Put the CV pages together.', ['stapler']),
+      find('Sit down for the interview here.', ['meeting-table']),
+      { type: 'write', prompt: 'Write three questions to ask at the interview.', minWords: 15,
+        require: [officeWords(1)], sample: 'Do you like working in an office? …' },
+    ],
+    B1: [
+      find('Open the job description on the portable computer.', ['laptop']),
+      find('Take quick notes during the interview.', ['sticky-notes']),
+      { type: 'choice', prompt: 'The candidate asks about the salary. What is the best answer?', options: [
+        { text: 'That’s a good question — my manager will discuss it with you at the end.', correct: true, feedback: 'Polite and professional.' },
+        { text: 'It’s a secret.', correct: false, feedback: 'Not very helpful.' },
+        { text: 'Why do you care about money?', correct: false, feedback: 'Everyone needs a salary!' },
+      ] },
+      { type: 'write', prompt: 'Write a short note to your manager about the candidate: strengths and weaknesses.', minWords: 30,
+        require: [linkers(2), officeWords(1)], sample: 'The candidate was friendly, but…' },
+    ],
+    B2: [
+      find('After the interview, file the signed application securely.', ['filing-cabinet']),
+      find('Destroy your rough notes, which contain personal data.', ['shredder']),
+      { type: 'write', prompt: 'Write a polite email to the candidate who did not get the job, thanking them and offering feedback.', minWords: 45,
+        require: [advanced(1), officeWords(1)], sample: 'Although your interview was impressive, …' },
+    ],
+  },
+};
+
 export const SIDE_QUESTS: Record<string, MissionDefinition[]> = {
   bedroom: [lostPhone, sleepover, laundryDay],
   kitchen: [midnightSnack, recipeCard, inspector],
@@ -1110,4 +1238,5 @@ export const SIDE_QUESTS: Record<string, MissionDefinition[]> = {
   basement: [strangeNoise, bikeRepair, timeCapsule],
   entrance: [missingParcel, gardenDay, newNeighbours],
   school: [lostHomework, scienceFair, newStudent],
+  office: [lostLaptop, fireDrill, jobInterview],
 };
