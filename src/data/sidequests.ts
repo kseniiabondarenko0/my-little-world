@@ -1229,6 +1229,134 @@ const jobInterview: MissionDefinition = {
   },
 };
 
+// ── HOSPITAL ───────────────────────────────────────────────────────────────
+
+const HOSPITAL = ['hospital', 'doctor', 'nurse', 'patient', 'bed', 'wheelchair', 'drip stand', 'trolley', 'crutches', 'stethoscope', 'thermometer', 'bandage', 'syringe', 'monitor', 'x-ray', 'eye chart', 'medicine'];
+const hospitalWords = room(HOSPITAL, 'hospital words');
+
+const lostStethoscope: MissionDefinition = {
+  id: 'lost-stethoscope', title: 'The Doctor’s Missing Stethoscope', icon: '🩺', xp: 90,
+  intro: {
+    A1: 'Dr Green can’t find her stethoscope! Help her look.',
+    B1: 'Dr Green has patients waiting and her stethoscope has vanished. Follow her round of the ward to find it.',
+  },
+  steps: {
+    A1: [
+      find('Is it on the bed? Click it.', ['hospital-bed']),
+      find('No. Is it on the wheelchair?', ['wheelchair']),
+      find('No. Is it by the eye chart?', ['eye-chart']),
+      find('Found it! It is on the medical trolley.', ['medical-trolley']),
+    ],
+    A2: [
+      find('First, Dr Green checked a patient’s temperature.', ['thermometer']),
+      find('Then she looked at an X-ray.', ['x-ray']),
+      find('Then she helped a boy with his crutches.', ['crutches']),
+      find('Then she checked a heart. Look there!', ['heart-monitor']),
+      { type: 'write', prompt: 'Write what the doctor did, in order. Use first, then, after that.', minWords: 15,
+        require: [linkers(2), hospitalWords(2)], sample: 'First, the doctor checked…' },
+    ],
+    B1: [
+      find('She remembers changing the bag of medicine for a patient. Start there.', ['drip-stand']),
+      find('Then she dressed a wound on a patient’s arm.', ['bandage']),
+      find('Then she pushed a patient to the lift.', ['wheelchair']),
+      find('Found it — hanging on the back of the patient’s bed! Click the bed.', ['hospital-bed']),
+      { type: 'write', prompt: 'Write a short note to the doctor explaining where you found it and how.', minWords: 30,
+        require: [linkers(2), hospitalWords(2)], sample: 'First, I checked the drip stand, then…' },
+    ],
+    B2: [
+      find('Think logically: she last used it before reviewing a scan. Check the radiograph first.', ['x-ray']),
+      find('Rule out the place where only walking aids are kept.', ['crutches']),
+      find('Check the cart where clinical equipment is returned.', ['medical-trolley']),
+      find('Located — under the cardiac monitor. Click it.', ['heart-monitor']),
+      { type: 'write', prompt: 'Write a short email to ward staff proposing a system so shared equipment isn’t misplaced.', minWords: 40,
+        require: [linkers(1), advanced(1), hospitalWords(2)], sample: 'Although equipment goes missing only occasionally, …' },
+    ],
+  },
+};
+
+const fluSeason: MissionDefinition = {
+  id: 'flu-season', title: 'Flu Season', icon: '🤧', xp: 100,
+  intro: {
+    A1: 'Lots of people have the flu! Help the nurses.',
+    B1: 'It’s winter and the ward is full of flu patients. Help the nurses keep everyone safe and comfortable.',
+  },
+  steps: {
+    A1: [
+      find('Find the thermometer.', ['thermometer']),
+      find('Find the bed for the sick patient.', ['hospital-bed']),
+      { type: 'place', prompt: 'Put the thermometer on the medical trolley.', checks: [{ rel: 'onTop', a: 'thermometer', b: 'medical-trolley' }] },
+    ],
+    A2: [
+      find('Check a patient’s temperature.', ['thermometer']),
+      find('Give a patient medicine through the drip.', ['drip-stand']),
+      { type: 'place', prompt: 'Put the drip stand next to the bed and the bed near the window.',
+        checks: [{ rel: 'nextTo', a: 'drip-stand', b: 'hospital-bed' }, { rel: 'nearWindow', a: 'hospital-bed' }] },
+      { type: 'write', prompt: 'Write what you did to help the flu patients.', minWords: 15,
+        require: [hospitalWords(2), linkers(1)], sample: 'First, I checked the temperature…' },
+    ],
+    B1: [
+      { type: 'place', prompt: 'Fresh air helps: bed near the window, medical trolley next to it.',
+        checks: [{ rel: 'nearWindow', a: 'hospital-bed' }, { rel: 'nextTo', a: 'medical-trolley', b: 'hospital-bed' }] },
+      { type: 'choice', prompt: 'A visitor with a bad cough wants to see his grandmother. What do you say?', options: [
+        { text: 'I’m sorry, but you could make the patients ill. Could you call her instead today?', correct: true, feedback: 'Polite and protects the patients.' },
+        { text: 'Sure, go in!', correct: false, feedback: 'The patients could catch his illness.' },
+        { text: 'Get out!', correct: false, feedback: 'Much too rude.' },
+      ] },
+      { type: 'write', prompt: 'Write a short poster for the waiting room with three tips to stop flu spreading.', minWords: 30,
+        require: [hospitalWords(2), linkers(1)], sample: 'Stop the flu! First, wash your hands…' },
+    ],
+    B2: [
+      { type: 'place', prompt: 'Organise an isolation bay: bed near the window, drip stand beside it, wheelchair far from the bed.',
+        checks: [{ rel: 'nearWindow', a: 'hospital-bed' }, { rel: 'nextTo', a: 'drip-stand', b: 'hospital-bed' }, { rel: 'farFrom', a: 'wheelchair', b: 'hospital-bed' }] },
+      { type: 'write', prompt: 'Write a persuasive article for a local newspaper encouraging people to get a flu vaccine.', minWords: 45,
+        require: [advanced(1), hospitalWords(2)], sample: 'Although many people think flu is just a bad cold, …' },
+    ],
+  },
+};
+
+const scaredPatient: MissionDefinition = {
+  id: 'scared-patient', title: 'The Scared Patient', icon: '🧸', xp: 90,
+  intro: {
+    A1: 'A little girl is scared of the hospital. Help her feel better!',
+    B1: 'A seven-year-old girl is in hospital for the first time and very frightened. Show her around and explain things gently.',
+  },
+  steps: {
+    A1: [
+      { type: 'choice', prompt: 'The girl is crying. What do you say?', options: [
+        { text: 'Hello! Don’t be scared. The doctors are very kind.', correct: true, feedback: 'Kind and calm!' },
+        { text: 'Stop crying!', correct: false, feedback: 'That won’t help her.' },
+        { text: 'Goodbye!', correct: false, feedback: 'She needs you to stay.' },
+      ] },
+      find('Show her the bed where she can rest.', ['hospital-bed']),
+      find('Show her the chair with wheels — it’s like a car!', ['wheelchair']),
+    ],
+    A2: [
+      find('She asks what the beeping is. Show her.', ['heart-monitor']),
+      find('Show her the funny letters on the wall.', ['eye-chart']),
+      find('Show her what the doctor listens to her heart with.', ['stethoscope']),
+      { type: 'write', prompt: 'Write a little card for the girl to make her smile.', minWords: 15,
+        require: [hospitalWords(2)], sample: 'Dear Mia, the nurses here…' },
+    ],
+    B1: [
+      find('Explain what the bag of medicine is for.', ['drip-stand']),
+      find('Show her the picture of her arm and explain it isn’t scary.', ['x-ray']),
+      { type: 'choice', prompt: 'She asks: “Will the injection hurt?” What is the best answer?', options: [
+        { text: 'It might feel like a little scratch, but it’s very quick. You can hold my hand.', correct: true, feedback: 'Honest and comforting.' },
+        { text: 'No, it never hurts.', correct: false, feedback: 'She won’t trust you next time.' },
+        { text: 'Yes, it hurts a lot.', correct: false, feedback: 'That will scare her more.' },
+      ] },
+      { type: 'write', prompt: 'Write a short, simple guide “Your first day in hospital” for young children.', minWords: 30,
+        require: [linkers(2), hospitalWords(2)], sample: 'First, a nurse will say hello…' },
+    ],
+    B2: [
+      find('Show her parents where her treatment equipment is kept.', ['medical-trolley']),
+      find('Point out how the staff will monitor her during the night.', ['heart-monitor']),
+      { type: 'write', prompt: 'Write a reassuring letter to the girl’s parents explaining how the ward helps frightened children.', minWords: 45,
+        require: [advanced(1), hospitalWords(2)], sample: 'Although a hospital stay can be frightening, …' },
+    ],
+  },
+};
+
 export const SIDE_QUESTS: Record<string, MissionDefinition[]> = {
   bedroom: [lostPhone, sleepover, laundryDay],
   kitchen: [midnightSnack, recipeCard, inspector],
@@ -1239,4 +1367,5 @@ export const SIDE_QUESTS: Record<string, MissionDefinition[]> = {
   entrance: [missingParcel, gardenDay, newNeighbours],
   school: [lostHomework, scienceFair, newStudent],
   office: [lostLaptop, fireDrill, jobInterview],
+  hospital: [lostStethoscope, fluSeason, scaredPatient],
 };

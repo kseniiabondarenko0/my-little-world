@@ -26,6 +26,9 @@ import { schoolActivities } from './activities/school';
 import { officeWords } from './vocabulary/office';
 import { officeExtraWords } from './vocabulary/office-extra';
 import { officeActivities } from './activities/office';
+import { hospitalWords } from './vocabulary/hospital';
+import { hospitalExtraWords } from './vocabulary/hospital-extra';
+import { hospitalActivities } from './activities/hospital';
 import { FURNITURE } from './furniture';
 import { activitiesForCourse, wordsForCourse } from './courses';
 import { ACTIVE_COURSE } from '../courses/active';
@@ -35,8 +38,9 @@ export const ENGLISH_WORDS: VocabularyWord[] = [...bedroomWords, ...bedroomExtra
   ...livingRoomWords, ...livingRoomExtraWords, ...hallwayWords, ...hallwayExtraWords,
   ...basementWords, ...basementExtraWords, ...entranceWords, ...entranceExtraWords,
   ...schoolWords, ...schoolExtraWords,
-  ...officeWords, ...officeExtraWords];
-export const ENGLISH_ACTIVITIES: ActivityDefinition[] = [...bedroomActivities, ...kitchenActivities, ...bathroomActivities, ...livingRoomActivities, ...hallwayActivities, ...basementActivities, ...entranceActivities, ...schoolActivities, ...officeActivities];
+  ...officeWords, ...officeExtraWords,
+  ...hospitalWords, ...hospitalExtraWords];
+export const ENGLISH_ACTIVITIES: ActivityDefinition[] = [...bedroomActivities, ...kitchenActivities, ...bathroomActivities, ...livingRoomActivities, ...hallwayActivities, ...basementActivities, ...entranceActivities, ...schoolActivities, ...officeActivities, ...hospitalActivities];
 
 // The course being learned (English, German, Polish) decides the words and activities.
 // Other courses reuse the English word ids, so rooms and objects work the same.

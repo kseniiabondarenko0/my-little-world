@@ -72,4 +72,6 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     condition: { type: 'roomComplete', roomId: 'school' } },
   { id: 'office-complete', title: 'Employee of the Month', description: 'Complete the office chapter (final mission).', icon: '💼',
     condition: { type: 'roomComplete', roomId: 'office' } },
+  { id: 'hospital-complete', title: 'Junior Doctor', description: 'Complete the hospital chapter (final mission).', icon: '🩺',
+    condition: { type: 'roomComplete', roomId: 'hospital' } },
 ];
