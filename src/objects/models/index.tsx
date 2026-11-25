@@ -6,6 +6,7 @@ import { Armchair, Beanbag, Bookcase, CoffeeTable, Cushion, Fireplace, FloorLamp
 import { Bench, CoatStand, HallTable, KeyHook, Noticeboard, Runner, Scooter, ShoeRack, Stairs, Telephone, Torch, UmbrellaStand } from './hallway';
 import { Bicycle, Boiler, Broom, Bucket, CardboardBox, ChestFreezer, FuseBox, Ladder, PaintTin, Shelving, Toolbox, Workbench } from './basement';
 import { Doorbell, Doormat, Flowerpot, GardenBench, GardenGnome, HouseNumber, Letterbox, Parcel, PorchLight, WateringCan, Wellies, WheelieBin } from './entrance';
+import { Globe, Locker, Microscope, PencilCase, Projector, SchoolBag, SchoolDesk, TeachersDesk, Textbooks, Timetable, Whiteboard, WorldMap } from './school';
 
 // Procedural 3D models. Each model:
 //  - faces +z (its front),
@@ -330,6 +331,19 @@ export const MODELS: Record<string, ComponentType> = {
   wateringCan: WateringCan,
   wellies: Wellies,
   gardenGnome: GardenGnome,
+  // school
+  whiteboard: Whiteboard,
+  teachersDesk: TeachersDesk,
+  schoolDesk: SchoolDesk,
+  locker: Locker,
+  globe: Globe,
+  worldMap: WorldMap,
+  timetable: Timetable,
+  pencilCase: PencilCase,
+  schoolBag: SchoolBag,
+  projector: Projector,
+  textbooks: Textbooks,
+  microscope: Microscope,
 };
 
 export function FurnitureModel({ model }: { model: string }) {

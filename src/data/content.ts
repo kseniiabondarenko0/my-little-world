@@ -20,6 +20,9 @@ import { basementActivities } from './activities/basement';
 import { entranceWords } from './vocabulary/entrance';
 import { entranceExtraWords } from './vocabulary/entrance-extra';
 import { entranceActivities } from './activities/entrance';
+import { schoolWords } from './vocabulary/school';
+import { schoolExtraWords } from './vocabulary/school-extra';
+import { schoolActivities } from './activities/school';
 import { FURNITURE } from './furniture';
 import { activitiesForCourse, wordsForCourse } from './courses';
 import { ACTIVE_COURSE } from '../courses/active';
@@ -27,8 +30,9 @@ import { ACTIVE_COURSE } from '../courses/active';
 // All content in one place. When you add a new room's files, add them to these lists.
 export const ENGLISH_WORDS: VocabularyWord[] = [...bedroomWords, ...bedroomExtraWords, ...kitchenWords, ...kitchenExtraWords, ...bathroomWords, ...bathroomExtraWords,
   ...livingRoomWords, ...livingRoomExtraWords, ...hallwayWords, ...hallwayExtraWords,
-  ...basementWords, ...basementExtraWords, ...entranceWords, ...entranceExtraWords];
-export const ENGLISH_ACTIVITIES: ActivityDefinition[] = [...bedroomActivities, ...kitchenActivities, ...bathroomActivities, ...livingRoomActivities, ...hallwayActivities, ...basementActivities, ...entranceActivities];
+  ...basementWords, ...basementExtraWords, ...entranceWords, ...entranceExtraWords,
+  ...schoolWords, ...schoolExtraWords];
+export const ENGLISH_ACTIVITIES: ActivityDefinition[] = [...bedroomActivities, ...kitchenActivities, ...bathroomActivities, ...livingRoomActivities, ...hallwayActivities, ...basementActivities, ...entranceActivities, ...schoolActivities];
 
 // The course being learned (English, German, Polish) decides the words and activities.
 // Other courses reuse the English word ids, so rooms and objects work the same.
