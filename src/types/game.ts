@@ -149,6 +149,8 @@ export interface RoomDefinition {
     wallLower: string;
     trim: string;
     floor: [string, string];
+    /** How the floor is laid: wooden planks (default), square tiles, or smooth concrete. */
+    floorStyle?: 'planks' | 'tiles' | 'concrete';
     base: string;
     curtain: string;
   };
