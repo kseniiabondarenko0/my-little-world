@@ -1485,6 +1485,130 @@ const newCashier: MissionDefinition = {
   },
 };
 
+// ── RESTAURANT ─────────────────────────────────────────────────────────────
+
+const RESTAURANT = ['restaurant', 'table', 'chair', 'high chair', 'counter', 'oven', 'pizza', 'menu', 'bill', 'tip', 'dessert', 'salt', 'pepper', 'waiter', 'order', 'food'];
+const restaurantWordsQ = room(RESTAURANT, 'restaurant words');
+
+const familyDinner: MissionDefinition = {
+  id: 'family-dinner', title: 'Family Dinner', icon: '👨‍👩‍👧', xp: 90,
+  intro: {
+    A1: 'A family with a baby comes to the restaurant. Help them!',
+    B1: 'A family with a small baby arrives for dinner. Make them comfortable and take their order.',
+  },
+  steps: {
+    A1: [
+      find('The family needs a table.', ['table-for-two']),
+      find('The baby needs a special chair.', ['high-chair']),
+      find('Give them the menu.', ['menu']),
+      find('They want pizza!', ['pizza']),
+    ],
+    A2: [
+      find('Show the family the menu.', ['menu']),
+      find('Get a chair for the baby.', ['high-chair']),
+      find('The pizza is cooking. Where?', ['pizza-oven']),
+      { type: 'write', prompt: 'Write what the family orders. Use “would like”.', minWords: 15,
+        require: [restaurantWordsQ(2)], sample: 'The mum would like a…' },
+    ],
+    B1: [
+      find('Tell them about today’s specials.', ['specials-board']),
+      find('The child wants something sweet after dinner.', ['dessert-trolley']),
+      { type: 'choice', prompt: 'The dad asks if the pizza has nuts — his son is allergic. What do you say?', options: [
+        { text: 'Let me check with the chef to be sure.', correct: true, feedback: 'Safe and professional.' },
+        { text: 'Probably not.', correct: false, feedback: 'Never guess about allergies!' },
+        { text: 'Just eat around them.', correct: false, feedback: 'That could be dangerous.' },
+      ] },
+      { type: 'write', prompt: 'Write a short review of the evening from the mum’s point of view.', minWords: 30,
+        require: [linkers(1), restaurantWordsQ(2)], sample: 'First, the waiter brought a high chair…' },
+    ],
+    B2: [
+      { type: 'place', prompt: 'Make the dining area family-friendly: the high chair next to the table, the table near the window.',
+        checks: [{ rel: 'nextTo', a: 'high-chair', b: 'table-for-two' }, { rel: 'nearWindow', a: 'table-for-two' }] },
+      { type: 'write', prompt: 'Write a short proposal for a children’s menu, explaining why it would bring in more families.', minWords: 45,
+        require: [advanced(1), restaurantWordsQ(2)], sample: 'Although our pizzas are popular, …' },
+    ],
+  },
+};
+
+const wrongBill: MissionDefinition = {
+  id: 'wrong-bill', title: 'The Wrong Bill', icon: '🧾', xp: 90,
+  intro: {
+    A1: 'A customer says the bill is wrong. Help find the problem!',
+    B1: 'A customer has been charged for three pizzas but only ate one. Sort it out politely.',
+  },
+  steps: {
+    A1: [
+      find('Look at the bill.', ['bill']),
+      find('Look at the menu prices.', ['menu']),
+      find('Ask at the counter.', ['counter']),
+    ],
+    A2: [
+      find('Check the bill first.', ['bill']),
+      find('How many pizzas did they eat?', ['pizza']),
+      find('Check the price of the special.', ['specials-board']),
+      { type: 'write', prompt: 'Write what the customer says about the bill.', minWords: 15,
+        require: [restaurantWordsQ(2)], sample: 'Excuse me, I think the bill…' },
+    ],
+    B1: [
+      find('Compare the bill with the order.', ['bill']),
+      find('Ask the cook how many pizzas came out of the oven.', ['pizza-oven']),
+      { type: 'choice', prompt: 'You find the mistake. What do you say?', options: [
+        { text: 'I’m so sorry, you’re right. Here is the correct bill.', correct: true, feedback: 'Honest and polite.' },
+        { text: 'The computer did it, not me.', correct: false, feedback: 'Blaming the machine isn’t helpful.' },
+        { text: 'Just pay it, it’s fine.', correct: false, feedback: 'That’s not fair to the customer.' },
+      ] },
+      { type: 'write', prompt: 'Write a short apology note to the customer and offer them something.', minWords: 30,
+        require: [linkers(1), restaurantWordsQ(2)], sample: 'Dear customer, I’m sorry that…' },
+    ],
+    B2: [
+      find('Check what the customer left in the tip jar after the apology.', ['tip-jar']),
+      find('Check the counter where the bills are printed.', ['counter']),
+      { type: 'write', prompt: 'Write an email to the manager suggesting how to avoid mistakes on bills.', minWords: 45,
+        require: [advanced(1), restaurantWordsQ(2)], sample: 'Although mistakes are rare, …' },
+    ],
+  },
+};
+
+const pizzaNight: MissionDefinition = {
+  id: 'pizza-night', title: 'Pizza Night', icon: '🍕', xp: 100,
+  intro: {
+    A1: 'It’s pizza night! Help the chef in the kitchen.',
+    B1: 'The restaurant is hosting a pizza night with a guest chef. Help everything run smoothly.',
+  },
+  steps: {
+    A1: [
+      find('Turn on the oven.', ['pizza-oven']),
+      find('Here is a pizza.', ['pizza']),
+      find('Put salt and pepper on the table.', ['salt-and-pepper']),
+      find('Turn on the sign. We are open!', ['open-sign']),
+    ],
+    A2: [
+      find('Write “Pizza Night” on the board.', ['specials-board']),
+      find('Is the oven hot?', ['pizza-oven']),
+      find('Show customers we are open.', ['open-sign']),
+      { type: 'write', prompt: 'Write a sign for pizza night. Say what is special and the price.', minWords: 15,
+        require: [restaurantWordsQ(2)], sample: 'Pizza night tonight! Every pizza…' },
+    ],
+    B1: [
+      find('The guest chef needs space to work.', ['counter']),
+      find('Desserts are free tonight. Bring them out.', ['dessert-trolley']),
+      { type: 'choice', prompt: 'The oven breaks in the middle of the evening. What is the best thing to do?', options: [
+        { text: 'Tell the guests honestly and offer them a free dessert.', correct: true, feedback: 'Honest and generous.' },
+        { text: 'Hide in the kitchen.', correct: false, feedback: 'The guests will still be waiting.' },
+        { text: 'Serve cold pizza and say nothing.', correct: false, feedback: 'They will notice!' },
+      ] },
+      { type: 'write', prompt: 'Write a social media post about pizza night.', minWords: 30,
+        require: [linkers(1), restaurantWordsQ(2)], sample: 'Last night was our first pizza night…' },
+    ],
+    B2: [
+      { type: 'place', prompt: 'Set up for the event: the pizza on the counter, the specials board above the counter.',
+        checks: [{ rel: 'onTop', a: 'pizza', b: 'counter' }, { rel: 'above', a: 'specials-board', b: 'counter' }] },
+      { type: 'write', prompt: 'Write a short report for the owner on whether pizza night should become a weekly event.', minWords: 45,
+        require: [advanced(1), restaurantWordsQ(2)], sample: 'Although the oven broke, …' },
+    ],
+  },
+};
+
 export const SIDE_QUESTS: Record<string, MissionDefinition[]> = {
   bedroom: [lostPhone, sleepover, laundryDay],
   kitchen: [midnightSnack, recipeCard, inspector],
@@ -1497,4 +1621,5 @@ export const SIDE_QUESTS: Record<string, MissionDefinition[]> = {
   office: [lostLaptop, fireDrill, jobInterview],
   hospital: [lostStethoscope, fluSeason, scaredPatient],
   supermarket: [lostChild, partyShopping, newCashier],
+  restaurant: [familyDinner, wrongBill, pizzaNight],
 };

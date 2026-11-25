@@ -10,6 +10,7 @@ import { Globe, Locker, Microscope, PencilCase, Projector, SchoolBag, SchoolDesk
 import { Computer, FilingCabinet, FireExtinguisher, Laptop, MeetingTable, OfficeChair, Printer, SalesChart, Shredder, Stapler, StickyNotes, WaterCooler } from './office';
 import { Bandage, Crutches, DripStand, EyeChart, HeartMonitor, HospitalBed, MedicalTrolley, Stethoscope, Syringe, Thermometer, Wheelchair, XRay } from './hospital';
 import { BarcodeScanner, BreadRack, CashRegister, Checkout, DrinksFridge, FruitStand, OpeningHours, ShoppingBag, ShoppingBasket, ShoppingTrolley, SpecialOffer, Watermelon } from './supermarket';
+import { Bill, Counter, DessertTrolley, HighChair, Menu, OpenSign, Pizza, PizzaOven, SaltAndPepper, SpecialsBoard, TableForTwo, TipJar } from './restaurant';
 
 // Procedural 3D models. Each model:
 //  - faces +z (its front),
@@ -386,6 +387,19 @@ export const MODELS: Record<string, ComponentType> = {
   shoppingBag: ShoppingBag,
   specialOffer: SpecialOffer,
   openingHours: OpeningHours,
+  // restaurant
+  tableForTwo: TableForTwo,
+  highChair: HighChair,
+  counter: Counter,
+  pizzaOven: PizzaOven,
+  dessertTrolley: DessertTrolley,
+  menu: Menu,
+  pizza: Pizza,
+  bill: Bill,
+  tipJar: TipJar,
+  saltAndPepper: SaltAndPepper,
+  specialsBoard: SpecialsBoard,
+  openSign: OpenSign,
 };
 
 export function FurnitureModel({ model }: { model: string }) {
