@@ -4,6 +4,7 @@ import { Bin, Calendar, Cooker, Cupboard, Dishwasher, Fridge, Kettle, KitchenTab
 import { Bath, BathCabinet, BathMat, Hairdryer, Scales, Shower, Soap, Toilet, Toothbrush, TowelRail, WashingMachine, Washbasin } from './bathroom';
 import { Armchair, Beanbag, Bookcase, CoffeeTable, Cushion, Fireplace, FloorLamp, Piano, RemoteControl, Sofa, Television, WallClock } from './livingroom';
 import { Bench, CoatStand, HallTable, KeyHook, Noticeboard, Runner, Scooter, ShoeRack, Stairs, Telephone, Torch, UmbrellaStand } from './hallway';
+import { Bicycle, Boiler, Broom, Bucket, CardboardBox, ChestFreezer, FuseBox, Ladder, PaintTin, Shelving, Toolbox, Workbench } from './basement';
 
 // Procedural 3D models. Each model:
 //  - faces +z (its front),
@@ -302,6 +303,19 @@ export const MODELS: Record<string, ComponentType> = {
   telephone: Telephone,
   torch: Torch,
   scooter: Scooter,
+  // basement
+  workbench: Workbench,
+  shelving: Shelving,
+  boiler: Boiler,
+  chestFreezer: ChestFreezer,
+  toolbox: Toolbox,
+  ladder: Ladder,
+  bicycle: Bicycle,
+  cardboardBox: CardboardBox,
+  broom: Broom,
+  bucket: Bucket,
+  paintTin: PaintTin,
+  fuseBox: FuseBox,
 };
 
 export function FurnitureModel({ model }: { model: string }) {

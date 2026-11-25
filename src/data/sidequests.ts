@@ -719,10 +719,135 @@ const rainyWalk: MissionDefinition = {
   },
 };
 
+// ── BASEMENT ───────────────────────────────────────────────────────────────
+
+const BASEMENT = ['workbench', 'shelves', 'shelf', 'boiler', 'freezer', 'toolbox', 'hammer', 'ladder', 'bicycle', 'bike', 'box', 'boxes', 'broom', 'bucket', 'paint', 'fuse box'];
+const basementWords = room(BASEMENT, 'basement words');
+
+const strangeNoise: MissionDefinition = {
+  id: 'strange-noise', title: 'The Strange Noise', icon: '👻', xp: 90,
+  intro: {
+    A1: 'There is a strange noise in the basement! Be brave and find it.',
+    B1: 'Every night you hear knocking from the basement. Investigate and solve the mystery.',
+  },
+  steps: {
+    A1: [
+      find('Is it the big machine with pipes? Click it.', ['boiler']),
+      find('No. Is it behind the boxes?', ['cardboard-box']),
+      find('No. Is it under the strong table?', ['workbench']),
+      find('There it is! A little mouse on the shelves!', ['shelving']),
+    ],
+    A2: [
+      find('The noise comes from something that makes hot water.', ['boiler']),
+      find('Then you hear a sound from the cold box with food.', ['chest-freezer']),
+      find('Then something falls. Was it the thing you climb?', ['ladder']),
+      find('It was the cat, playing in the boxes!', ['cardboard-box']),
+      { type: 'write', prompt: 'Write what you did, in order. Use first, then, after that.', minWords: 15,
+        require: [linkers(2), basementWords(2)], sample: 'First, I checked the boiler…' },
+    ],
+    B1: [
+      find('The knocking is loudest when the heating comes on. Check there.', ['boiler']),
+      find('Check the pipes along the wall near the power controls.', ['fuse-box']),
+      find('A loose thing could be rattling on the metal shelves.', ['shelving']),
+      find('Mystery solved: a loose tool was vibrating on the workbench!', ['workbench']),
+      { type: 'write', prompt: 'Write a short report for your parents explaining the noise and how you fixed it.', minWords: 30,
+        require: [linkers(2), basementWords(2)], sample: 'The noise came from the workbench because…' },
+    ],
+    B2: [
+      find('Start with the appliance whose pipes expand when they heat up.', ['boiler']),
+      find('Rule out the appliance with a motor that switches on and off.', ['chest-freezer']),
+      find('Check anything metal that could resonate.', ['shelving', 'ladder']),
+      find('The culprit: a loose spanner on the work surface.', ['workbench']),
+      { type: 'write', prompt: 'Write a short, atmospheric story about the night you solved the mystery.', minWords: 40,
+        require: [linkers(1), advanced(1), basementWords(2)], sample: 'Although I was terrified, I crept down the stairs…' },
+    ],
+  },
+};
+
+const bikeRepair: MissionDefinition = {
+  id: 'bike-repair', title: 'Bike Repair', icon: '🚲', xp: 100,
+  intro: {
+    A1: 'Your bike is broken and there’s a bike ride tomorrow! Fix it in the basement.',
+    B1: 'Your bike has a puncture and a rusty chain, and the school cycling trip is tomorrow.',
+  },
+  steps: {
+    A1: [
+      find('Find your bike.', ['bicycle']),
+      find('Find the tools.', ['toolbox']),
+      find('Find where you can work.', ['workbench']),
+      { type: 'place', prompt: 'Put the toolbox on the workbench.', checks: [{ rel: 'onTop', a: 'toolbox', b: 'workbench' }] },
+    ],
+    A2: [
+      find('Find the bike with the flat tyre.', ['bicycle']),
+      find('You need a bucket of water to find the hole. Click it.', ['bucket']),
+      { type: 'place', prompt: 'Put the toolbox on the workbench and the bicycle next to it.',
+        checks: [{ rel: 'onTop', a: 'toolbox', b: 'workbench' }, { rel: 'nextTo', a: 'bicycle', b: 'workbench' }] },
+      { type: 'write', prompt: 'Write how you fixed your bike. Use first and then.', minWords: 15,
+        require: [linkers(2), basementWords(2)], sample: 'First, I found the hole…' },
+    ],
+    B1: [
+      { type: 'place', prompt: 'Set up a repair station: bicycle next to the workbench, toolbox on top.',
+        checks: [{ rel: 'nextTo', a: 'bicycle', b: 'workbench' }, { rel: 'onTop', a: 'toolbox', b: 'workbench' }] },
+      find('You need water to find the puncture.', ['bucket']),
+      { type: 'choice', prompt: 'Your dad offers to fix the bike for you. What do you say?', options: [
+        { text: 'Thanks! Could you show me how, so I can do it myself next time?', correct: true, feedback: 'Polite, and you’ll learn something.' },
+        { text: 'No, go away, I can do it.', correct: false, feedback: 'A bit rude — and help is useful.' },
+        { text: 'Yes, and can you clean my room too?', correct: false, feedback: 'That’s pushing your luck!' },
+      ] },
+      { type: 'write', prompt: 'Write instructions for fixing a puncture.', minWords: 30,
+        require: [linkers(3), basementWords(1)], sample: 'First, take the wheel off. Then…' },
+    ],
+    B2: [
+      { type: 'place', prompt: 'Organise the workspace: bicycle beside the workbench, paint well away from the boiler.',
+        checks: [{ rel: 'nextTo', a: 'bicycle', b: 'workbench' }, { rel: 'farFrom', a: 'paint', b: 'boiler' }] },
+      { type: 'write', prompt: 'Write a short guide for younger students on looking after a bike over winter.', minWords: 45,
+        require: [advanced(1), linkers(2), basementWords(1)], sample: 'Although it’s tempting to leave your bike outside, …' },
+    ],
+  },
+};
+
+const timeCapsule: MissionDefinition = {
+  id: 'time-capsule', title: 'Grandma’s Treasure', icon: '🗝️', xp: 90,
+  intro: {
+    A1: 'Grandma hid a box of old photos in the basement years ago. Find it!',
+    B1: 'Grandma remembers hiding a treasure box in the basement in 1985. Follow her memories.',
+  },
+  steps: {
+    A1: [
+      find('Grandma says: “It is high up. I used the …” Click it.', ['ladder']),
+      find('“I put it next to the old boxes on the tall shelves.”', ['shelving']),
+      find('Found it! In the brown box!', ['cardboard-box']),
+    ],
+    A2: [
+      find('“I climbed up on something to reach it.”', ['ladder']),
+      find('“It wasn’t near the hot machine, it was too warm there.”', ['boiler']),
+      find('“I put a red box with tools in front of it.”', ['toolbox']),
+      find('Here it is, in the old cardboard box!', ['cardboard-box']),
+      { type: 'write', prompt: 'Write what Grandma did with the box, in order.', minWords: 15,
+        require: [linkers(2), basementWords(2)], sample: 'First, she climbed the ladder…' },
+    ],
+    B1: [
+      find('“I needed something to reach the top.”', ['ladder']),
+      find('“I kept it somewhere cool and dry, not near the heating.”', ['shelving']),
+      find('“I wrote my name on the lid of a brown box.”', ['cardboard-box']),
+      { type: 'write', prompt: 'Imagine what is in the box. Write a message to Grandma about what you found.', minWords: 30,
+        require: [linkers(1), basementWords(2)], sample: 'Grandma, we found the box on the shelves, and inside…' },
+    ],
+    B2: [
+      find('“It had to be out of reach of the children.”', ['shelving']),
+      find('“I needed to stand on something to reach it.”', ['ladder']),
+      find('Click the box.', ['cardboard-box']),
+      { type: 'write', prompt: 'Write a letter to a future family member to put in a new time capsule. What would you include and why?', minWords: 45,
+        require: [advanced(1), linkers(1)], sample: 'Although you may find this strange, I decided to include…' },
+    ],
+  },
+};
+
 export const SIDE_QUESTS: Record<string, MissionDefinition[]> = {
   bedroom: [lostPhone, sleepover, laundryDay],
   kitchen: [midnightSnack, recipeCard, inspector],
   bathroom: [lostRing, spaDay, plumber],
   'living-room': [lostRemote, pianoConcert, winterEvening],
   hallway: [lostKeys, powerCut, rainyWalk],
+  basement: [strangeNoise, bikeRepair, timeCapsule],
 };
