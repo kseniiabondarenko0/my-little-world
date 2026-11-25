@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import { Ball, Box, Cyl, Legs } from './parts';
 import { Bin, Calendar, Cooker, Cupboard, Dishwasher, Fridge, Kettle, KitchenTable, Microwave, Sink, Stool, Toaster } from './kitchen';
+import { Bath, BathCabinet, BathMat, Hairdryer, Scales, Shower, Soap, Toilet, Toothbrush, TowelRail, WashingMachine, Washbasin } from './bathroom';
 
 // Procedural 3D models. Each model:
 //  - faces +z (its front),
@@ -260,6 +261,19 @@ export const MODELS: Record<string, ComponentType> = {
   calendar: Calendar,
   bin: Bin,
   dishwasher: Dishwasher,
+  // bathroom
+  bath: Bath,
+  washbasin: Washbasin,
+  toilet: Toilet,
+  shower: Shower,
+  towelRail: TowelRail,
+  bathCabinet: BathCabinet,
+  washingMachine: WashingMachine,
+  bathMat: BathMat,
+  toothbrush: Toothbrush,
+  soap: Soap,
+  hairdryer: Hairdryer,
+  scales: Scales,
 };
 
 export function FurnitureModel({ model }: { model: string }) {

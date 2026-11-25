@@ -58,4 +58,6 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     condition: { type: 'roomComplete', roomId: 'bedroom' } },
   { id: 'kitchen-complete', title: 'Master Chef', description: 'Complete the kitchen chapter (final mission).', icon: '👩‍🍳',
     condition: { type: 'roomComplete', roomId: 'kitchen' } },
+  { id: 'bathroom-complete', title: 'Squeaky Clean', description: 'Complete the bathroom chapter (final mission).', icon: '🫧',
+    condition: { type: 'roomComplete', roomId: 'bathroom' } },
 ];

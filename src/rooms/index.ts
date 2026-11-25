@@ -1,6 +1,7 @@
 import type { RoomDefinition } from '../types/game';
 import { bedroom } from './bedroom';
 import { kitchen } from './kitchen';
+import { bathroom } from './bathroom';
 
 // The map of the world. A location with a `room` can be played;
 // the others appear as "coming soon" in the navigation menu.
@@ -16,7 +17,7 @@ export interface LocationEntry {
 export const LOCATIONS: LocationEntry[] = [
   { id: 'bedroom', name: 'Bedroom', icon: '🛏️', area: 'house', room: bedroom },
   { id: 'kitchen', name: 'Kitchen', icon: '🍳', area: 'house', room: kitchen },
-  { id: 'bathroom', name: 'Bathroom', icon: '🛁', area: 'house' },
+  { id: 'bathroom', name: 'Bathroom', icon: '🛁', area: 'house', room: bathroom },
   { id: 'living-room', name: 'Living room', icon: '🛋️', area: 'house' },
   { id: 'hallway', name: 'Hallway', icon: '🧥', area: 'house' },
   { id: 'basement', name: 'Basement', icon: '📦', area: 'house' },

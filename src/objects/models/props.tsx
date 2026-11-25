@@ -91,6 +91,13 @@ export function PropModel({ look, color = '#a9c9f2' }: { look: PropLook; color?:
           <Ball radius={0.065} position={[0.01, 0.065, -0.09]} color="#f4a259" />
         </group>
       );
+    case 'bottle':
+      return (
+        <group>
+          <Cyl top={0.05} bottom={0.055} height={0.18} position={[0, 0.09, 0]} color={color} segments={16} />
+          <Cyl top={0.025} height={0.04} position={[0, 0.2, 0]} color="#ffffff" segments={12} />
+        </group>
+      );
     case 'toy':
       return (
         <group>
