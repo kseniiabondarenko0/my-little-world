@@ -2,11 +2,14 @@ import type { ActivityDefinition, FurnitureDefinition, Level, VocabularyWord } f
 import { bedroomWords } from './vocabulary/bedroom';
 import { bedroomExtraWords } from './vocabulary/bedroom-extra';
 import { bedroomActivities } from './activities/bedroom';
+import { kitchenWords } from './vocabulary/kitchen';
+import { kitchenExtraWords } from './vocabulary/kitchen-extra';
+import { kitchenActivities } from './activities/kitchen';
 import { FURNITURE } from './furniture';
 
 // All content in one place. When you add a new room's files, add them to these lists.
-export const ALL_WORDS: VocabularyWord[] = [...bedroomWords, ...bedroomExtraWords];
-export const ALL_ACTIVITIES: ActivityDefinition[] = [...bedroomActivities];
+export const ALL_WORDS: VocabularyWord[] = [...bedroomWords, ...bedroomExtraWords, ...kitchenWords, ...kitchenExtraWords];
+export const ALL_ACTIVITIES: ActivityDefinition[] = [...bedroomActivities, ...kitchenActivities];
 
 const wordMap = new Map(ALL_WORDS.map((w) => [w.id, w]));
 const furnitureMap = new Map(FURNITURE.map((f) => [f.id, f]));

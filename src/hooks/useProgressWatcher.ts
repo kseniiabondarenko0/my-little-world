@@ -32,7 +32,7 @@ export function useProgressWatcher() {
         if (!progress.completedRooms.includes(room.id) && stages.every((s) => s.done)) {
           progress.completeRoom(room.id);
           const next = LOCATIONS.find((l) => l.id === room.nextRoom);
-          toast({ icon: '🏆', title: `${room.name} complete!`, text: next ? `The ${next.name.toLowerCase()} is next — coming soon!` : 'Amazing work!', tone: 'success', avatar: true });
+          toast({ icon: '🏆', title: `${room.name} complete!`, text: next ? (next.room ? `The ${next.name.toLowerCase()} is open! Find it on the map.` : `The ${next.name.toLowerCase()} is next — coming soon!`) : 'Amazing work!', tone: 'success', avatar: true });
         }
 
         const stagesDone = currentStages().filter((s) => s.done).length;

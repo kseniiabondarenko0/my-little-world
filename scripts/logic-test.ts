@@ -3,6 +3,7 @@
 
 import type { Level, NativeLanguage, PlacedItem } from '../src/types/game';
 import { bedroom } from '../src/rooms/bedroom';
+import { LOCATIONS, isRoomOpen } from '../src/rooms';
 import { FURNITURE } from '../src/data/furniture';
 import { ALL_WORDS, getFurniture, wordsForRoom } from '../src/data/content';
 import { CHAPTERS } from '../src/data/chapters';
@@ -17,6 +18,8 @@ import { buildStages, chapterPercent, choosePicks } from '../src/chapter/stages'
 import { MINIGAMES } from '../src/minigames/registry';
 import { hiddenObjectsMission, interiorDesignerMission } from '../src/minigames/missions';
 import { checkNickname } from '../src/player/playerService';
+
+const getRoomOf = (objectId: string) => LOCATIONS.find((l) => l.room?.objects.includes(objectId))?.id;
 
 let passed = 0;
 const failures: string[] = [];
@@ -56,15 +59,27 @@ const item = (objectId: string, x: number, z: number, extra: Partial<PlacedItem>
 }
 
 // ── 2. Automatic placement in an empty room ────────────────────
-{
+const PLAYABLE = LOCATIONS.flatMap((l) => (l.room ? [l.room] : []));
+for (const room of PLAYABLE) {
   const placed: PlacedItem[] = [];
-  for (const def of FURNITURE) {
-    const spot = findFreeSpot(def, placed, bedroom, def.id);
-    check(`auto-place ${def.id}`, !!spot);
+  for (const id of room.objects) {
+    const def = getFurniture(id);
+    const spot = findFreeSpot(def, placed, room, def.id);
+    check(`auto-place ${room.id}/${def.id}`, !!spot);
     if (spot) {
-      check(`auto-place ${def.id} is valid`, isPlacementValid(spot, placed, bedroom));
+      check(`auto-place ${room.id}/${def.id} is valid`, isPlacementValid(spot, placed, room));
       placed.push(spot);
     }
+  }
+}
+check('every furniture belongs to exactly one room', FURNITURE.every((f) => PLAYABLE.filter((r) => r.objects.includes(f.id)).length === 1));
+check('kitchen is locked until the bedroom is complete', !isRoomOpen('kitchen', []) && isRoomOpen('kitchen', ['bedroom']) && isRoomOpen('bedroom', []));
+{
+  const placed: PlacedItem[] = [];
+  for (const id of bedroom.objects) {
+    const def = getFurniture(id);
+    const spot = findFreeSpot(def, placed, bedroom, def.id);
+    if (spot) placed.push(spot);
   }
   const bed = placed.find((p) => p.objectId === 'bed')!;
   const win = bedroom.window!;
@@ -123,18 +138,18 @@ check('word ids are unique', new Set(ALL_WORDS.map((w) => w.id)).size === ALL_WO
 check('every word has uk and ru translations', ALL_WORDS.every((w) => w.translations?.uk && w.translations?.ru), ALL_WORDS.filter((w) => !w.translations?.uk || !w.translations?.ru).map((w) => w.id).join(','));
 
 // ── 4. Questions for every level, language and format ──────────
-for (const level of LEVELS) {
+for (const roomId of Object.keys(CHAPTERS)) for (const level of LEVELS) {
   for (const language of LANGS) {
     const ctx = { level, language };
     for (let run = 0; run < 15; run++) {
       let qs;
       try {
-        qs = buildTraining('bedroom', ctx, {}, 0);
+        qs = buildTraining(roomId, ctx, {}, 0);
       } catch (e) {
-        check(`training builds (${level}/${language})`, false, String(e));
+        check(`training builds (${roomId}/${level}/${language})`, false, String(e));
         continue;
       }
-      check(`training has questions (${level}/${language})`, qs.length >= 8);
+      check(`training has questions (${roomId}/${level}/${language})`, qs.length >= 8);
       for (const q of qs) {
         if (q.options.length) check(`options include the answer (${q.type})`, q.options.includes(q.answer), `${q.word.id}: ${q.options.join('|')}`);
         if (q.type === 'match') check('match has 4 pairs', (q.pairs ?? []).length === 4, String(q.pairs?.length));
@@ -143,18 +158,18 @@ for (const level of LEVELS) {
         if (q.type === 'typing' && q.mode === 'recall') check('recall shows a translation', !!q.native);
       }
     }
-    for (const w of wordsForRoom('bedroom', level)) {
+    for (const w of wordsForRoom(roomId, level)) {
       for (const f of ALL_FORMATS) {
         if (!supports(w, f, ctx)) continue;
         try {
-          makeQuestion(w, f, ctx, wordsForRoom('bedroom', level));
+          makeQuestion(w, f, ctx, wordsForRoom(roomId, level));
         } catch (e) {
           check(`question ${f} for "${w.word}"`, false, String(e));
         }
       }
     }
-    check(`practice deck builds (${level}/${language})`, buildDeck(wordsForRoom('bedroom', level), ['image', 'letters', 'recall'], ctx, {}, 0, 10).length === 10);
-    for (const f of FURNITURE) {
+    check(`practice deck builds (${roomId}/${level}/${language})`, buildDeck(wordsForRoom(roomId, level), ['image', 'letters', 'recall'], ctx, {}, 0, 10).length === 10);
+    for (const f of FURNITURE.filter((d) => getRoomOf(d.id) === roomId)) {
       check(`lesson for ${f.id} has 3 questions`, buildSession(f.id, 'lesson', ctx).length === 3);
       check(`practice for ${f.id} has questions`, buildSession(f.id, 'practice', ctx).length >= 3);
     }
@@ -185,9 +200,9 @@ for (const level of LEVELS) {
 }
 
 // ── 7. Chapter stages ──────────────────────────────────────────
-{
-  const chapter = CHAPTERS.bedroom;
-  const base = { chapter, room: bedroom, level: 'A1' as Level, unlocked: [], items: [], words: {} };
+for (const [roomId, chapter] of Object.entries(CHAPTERS)) {
+  const room = LOCATIONS.find((l) => l.id === roomId)!.room!;
+  const base = { chapter, room, level: 'A1' as Level, unlocked: [], items: [], words: {} };
   const empty = buildStages({ ...base, state: { done: [], picks: [], inspected: [], writings: [] } });
   check('only the first stage is open at the start', empty.filter((s) => s.unlocked).length === 1);
   check('a new chapter is 0%', chapterPercent(empty) === 0);
