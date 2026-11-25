@@ -5,6 +5,7 @@ import { bathroom } from './bathroom';
 import { livingRoom } from './livingroom';
 import { hallway } from './hallway';
 import { basement } from './basement';
+import { entrance } from './entrance';
 
 // The map of the world. A location with a `room` can be played;
 // the others appear as "coming soon" in the navigation menu.
@@ -24,7 +25,7 @@ export const LOCATIONS: LocationEntry[] = [
   { id: 'living-room', name: 'Living room', icon: '🛋️', area: 'house', room: livingRoom },
   { id: 'hallway', name: 'Hallway', icon: '🧥', area: 'house', room: hallway },
   { id: 'basement', name: 'Basement', icon: '📦', area: 'house', room: basement },
-  { id: 'entrance', name: 'Entrance', icon: '🚪', area: 'house' },
+  { id: 'entrance', name: 'Entrance', icon: '🚪', area: 'house', room: entrance },
   { id: 'school', name: 'School', icon: '🏫', area: 'city' },
   { id: 'office', name: 'Office', icon: '💼', area: 'city' },
   { id: 'hospital', name: 'Hospital', icon: '🏥', area: 'city' },

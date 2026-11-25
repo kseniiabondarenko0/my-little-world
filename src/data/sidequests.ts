@@ -843,6 +843,136 @@ const timeCapsule: MissionDefinition = {
   },
 };
 
+// ── ENTRANCE ───────────────────────────────────────────────────────────────
+
+const ENTRANCE = ['door', 'front door', 'doormat', 'letterbox', 'doorbell', 'bench', 'flowerpot', 'flowers', 'bin', 'wheelie bin', 'porch light', 'light', 'house number', 'parcel', 'watering can', 'wellies', 'gnome'];
+const entranceWords = room(ENTRANCE, 'entrance words');
+
+const missingParcel: MissionDefinition = {
+  id: 'missing-parcel', title: 'The Missing Parcel', icon: '📦', xp: 90,
+  intro: {
+    A1: 'Your new book was delivered, but where is it? Follow the clues.',
+    B1: 'The delivery app says “left in a safe place”. Work out where the driver hid your parcel.',
+  },
+  steps: {
+    A1: [
+      find('Is it in the box for letters? Click it.', ['letterbox']),
+      find('No. Is it on the mat?', ['doormat']),
+      find('No. Is it behind the flowers?', ['flowerpot']),
+      find('Found it! It is on the bench.', ['garden-bench']),
+    ],
+    A2: [
+      find('The driver rang this first.', ['doorbell']),
+      find('Then he looked for the number of the house.', ['house-number']),
+      find('Then he looked for a dry place, not near the rubbish.', ['wheelie-bin']),
+      find('There it is, next to the little man with the red hat!', ['garden-gnome']),
+      { type: 'write', prompt: 'Write what the driver did, in order. Use first, then, after that.', minWords: 15,
+        require: [linkers(2), entranceWords(2)], sample: 'First, the driver rang the…' },
+    ],
+    B1: [
+      find('“A safe place” isn’t on the wet ground. Start with the seat.', ['garden-bench']),
+      find('Perhaps he hid it behind something big and green.', ['wheelie-bin']),
+      find('Or behind something with flowers in it.', ['flowerpot']),
+      find('Found it — behind the gnome! Click the parcel.', ['parcel']),
+      { type: 'write', prompt: 'Write a review of the delivery for the app: what went well and what didn’t.', minWords: 30,
+        require: [linkers(2), entranceWords(2)], sample: 'The parcel arrived on time, but…' },
+    ],
+    B2: [
+      find('Check the most obvious hiding place first: somewhere off the ground and out of sight from the street.', ['garden-bench']),
+      find('Rule out the receptacle that’s far too small for a parcel.', ['letterbox']),
+      find('Check behind the large object on wheels.', ['wheelie-bin']),
+      find('Located. Click the parcel.', ['parcel']),
+      { type: 'write', prompt: 'Write a polite complaint to the delivery company about where the parcel was left, and suggest a better option.', minWords: 40,
+        require: [linkers(1), advanced(1), entranceWords(2)], sample: 'Although the parcel arrived safely, …' },
+    ],
+  },
+};
+
+const gardenDay: MissionDefinition = {
+  id: 'garden-day', title: 'Front Garden Day', icon: '🌻', xp: 100,
+  intro: {
+    A1: 'It’s sunny! Make the front of the house beautiful.',
+    B1: 'Your street is having a “best front garden” competition. Make your entrance the most beautiful one.',
+  },
+  steps: {
+    A1: [
+      find('Find the flowers.', ['flowerpot']),
+      find('Find what you water them with.', ['watering-can']),
+      { type: 'place', prompt: 'Put the flowerpot next to the garden bench.', checks: [{ rel: 'nextTo', a: 'flowerpot', b: 'garden-bench' }] },
+    ],
+    A2: [
+      find('Put on your boots for the garden. Click them.', ['wellies']),
+      find('Water the flowers.', ['watering-can']),
+      { type: 'place', prompt: 'Put the gnome next to the flowerpot and the bin in the corner.',
+        checks: [{ rel: 'nextTo', a: 'garden-gnome', b: 'flowerpot' }, { rel: 'inCorner', a: 'wheelie-bin' }] },
+      { type: 'write', prompt: 'Write what you did in the garden today.', minWords: 15,
+        require: [entranceWords(2), linkers(1)], sample: 'First, I put on my wellies…' },
+    ],
+    B1: [
+      { type: 'place', prompt: 'Judges love tidy entrances: bin in a corner, far from the bench.',
+        checks: [{ rel: 'inCorner', a: 'wheelie-bin' }, { rel: 'farFrom', a: 'wheelie-bin', b: 'garden-bench' }] },
+      { type: 'place', prompt: 'Add colour: flowerpot next to the bench and the gnome beside the flowers.',
+        checks: [{ rel: 'nextTo', a: 'flowerpot', b: 'garden-bench' }, { rel: 'nextTo', a: 'garden-gnome', b: 'flowerpot' }] },
+      { type: 'choice', prompt: 'Your neighbour says your gnome is “a bit silly”. What do you say?', options: [
+        { text: 'I think it’s fun! Everyone has different taste.', correct: true, feedback: 'Friendly and confident.' },
+        { text: 'Your garden is ugly!', correct: false, feedback: 'That will start an argument.' },
+        { text: 'Throw the gnome away.', correct: false, feedback: 'You like it — keep it!' },
+      ] },
+      { type: 'write', prompt: 'Write a short description of your entrance for the competition judges.', minWords: 30,
+        require: [entranceWords(3), prep(1)], sample: 'Our entrance is colourful because…' },
+    ],
+    B2: [
+      { type: 'place', prompt: 'Create a striking first impression: bench against the wall, porch light above it, flowers beside it.',
+        checks: [{ rel: 'againstWall', a: 'garden-bench' }, { rel: 'above', a: 'porch-light', b: 'garden-bench' }, { rel: 'nextTo', a: 'flowerpot', b: 'garden-bench' }] },
+      { type: 'write', prompt: 'Write a persuasive paragraph for the judges explaining why your entrance deserves to win.', minWords: 45,
+        require: [advanced(1), entranceWords(3)], sample: 'Although our porch is small, it…' },
+    ],
+  },
+};
+
+const newNeighbours: MissionDefinition = {
+  id: 'new-neighbours', title: 'New Neighbours', icon: '👋', xp: 90,
+  intro: {
+    A1: 'A new family moved in next door. Say hello and help them!',
+    B1: 'A family from another country has moved in next door. Make them feel welcome and explain how things work on your street.',
+  },
+  steps: {
+    A1: [
+      { type: 'choice', prompt: 'You meet the new girl next door. What do you say?', options: [
+        { text: 'Hello! I’m your neighbour. Welcome!', correct: true, feedback: 'Friendly!' },
+        { text: 'Go away.', correct: false, feedback: 'Not very kind.' },
+        { text: 'Goodbye!', correct: false, feedback: 'You’ve just met!' },
+      ] },
+      find('Show them where the post goes.', ['letterbox']),
+      find('Show them the bin for rubbish.', ['wheelie-bin']),
+    ],
+    A2: [
+      find('They ask how to call you. Show them your doorbell.', ['doorbell']),
+      find('Tell them your house number.', ['house-number']),
+      find('Show them the bin. Rubbish day is Monday.', ['wheelie-bin']),
+      { type: 'write', prompt: 'Write a welcome card for your new neighbours.', minWords: 15,
+        require: [entranceWords(2)], sample: 'Welcome! We live at number…' },
+    ],
+    B1: [
+      find('Explain where the post arrives every morning.', ['letterbox']),
+      find('Explain which day the rubbish is collected — show them.', ['wheelie-bin']),
+      { type: 'choice', prompt: 'They don’t speak much English yet. What is the best way to help?', options: [
+        { text: 'Speak slowly, use simple words and show them things.', correct: true, feedback: 'Patient and practical.' },
+        { text: 'Speak louder.', correct: false, feedback: 'Louder isn’t clearer!' },
+        { text: 'Don’t talk to them until they learn English.', correct: false, feedback: 'They need help now.' },
+      ] },
+      { type: 'write', prompt: 'Write a short guide to “life on our street” for the new family.', minWords: 30,
+        require: [linkers(2), entranceWords(2)], sample: 'First, the rubbish goes out on Monday…' },
+    ],
+    B2: [
+      find('Show them where parcels are usually left when nobody is home.', ['garden-bench']),
+      find('Point out how visitors find the house after dark.', ['porch-light', 'house-number']),
+      { type: 'write', prompt: 'Write a warm welcome letter to the new family, offering help and explaining a few useful things about the neighbourhood.', minWords: 45,
+        require: [advanced(1), entranceWords(2)], sample: 'Although moving to a new country can be difficult, …' },
+    ],
+  },
+};
+
 export const SIDE_QUESTS: Record<string, MissionDefinition[]> = {
   bedroom: [lostPhone, sleepover, laundryDay],
   kitchen: [midnightSnack, recipeCard, inspector],
@@ -850,4 +980,5 @@ export const SIDE_QUESTS: Record<string, MissionDefinition[]> = {
   'living-room': [lostRemote, pianoConcert, winterEvening],
   hallway: [lostKeys, powerCut, rainyWalk],
   basement: [strangeNoise, bikeRepair, timeCapsule],
+  entrance: [missingParcel, gardenDay, newNeighbours],
 };
