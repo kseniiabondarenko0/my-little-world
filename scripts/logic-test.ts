@@ -91,6 +91,7 @@ check('living room is locked until the bathroom is complete', !isRoomOpen('livin
 check('hallway is locked until the living room is complete', !isRoomOpen('hallway', ['bedroom', 'kitchen', 'bathroom']) && isRoomOpen('hallway', ['bedroom', 'kitchen', 'bathroom', 'living-room']));
 check('basement is locked until the hallway is complete', !isRoomOpen('basement', ['bedroom', 'kitchen', 'bathroom', 'living-room']) && isRoomOpen('basement', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway']));
 check('entrance is locked until the basement is complete', !isRoomOpen('entrance', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway']) && isRoomOpen('entrance', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway', 'basement']));
+check('school is locked until the entrance is complete', !isRoomOpen('school', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway', 'basement']) && isRoomOpen('school', ['bedroom', 'kitchen', 'bathroom', 'living-room', 'hallway', 'basement', 'entrance']));
 {
   const placed: PlacedItem[] = [];
   for (const id of bedroom.objects) {

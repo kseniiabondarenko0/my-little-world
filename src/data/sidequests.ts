@@ -973,6 +973,134 @@ const newNeighbours: MissionDefinition = {
   },
 };
 
+// ── SCHOOL ─────────────────────────────────────────────────────────────────
+
+const SCHOOL = ['school', 'classroom', 'teacher', 'whiteboard', 'board', 'desk', 'locker', 'globe', 'map', 'timetable', 'pencil case', 'bag', 'projector', 'textbook', 'textbooks', 'microscope', 'homework', 'lesson'];
+const schoolWords = room(SCHOOL, 'school words');
+
+const lostHomework: MissionDefinition = {
+  id: 'lost-homework', title: 'The Lost Homework', icon: '📄', xp: 90,
+  intro: {
+    A1: 'You did your homework, but now you can’t find it! Look around the classroom.',
+    B1: 'Your essay is due in five minutes and it has vanished. Retrace your steps around the classroom.',
+  },
+  steps: {
+    A1: [
+      find('Is it in your bag? Click it.', ['school-bag']),
+      find('No. Is it in your locker?', ['locker']),
+      find('No. Is it with your books?', ['textbooks']),
+      find('Found it! It is on the teacher’s desk.', ['teachers-desk']),
+    ],
+    A2: [
+      find('You had it this morning in the lesson on the timetable. Check the timetable — first lesson was maths.', ['timetable']),
+      find('In maths you sat at your desk.', ['school-desk']),
+      find('Then you put your pens away.', ['pencil-case']),
+      find('Then you went to get your PE kit.', ['locker']),
+      { type: 'write', prompt: 'Write what you did this morning, in order. Use first, then, after that.', minWords: 15,
+        require: [linkers(2), schoolWords(2)], sample: 'First, I sat at my…' },
+    ],
+    B1: [
+      find('You last saw it when the teacher was showing slides. Start there.', ['projector']),
+      find('Then you looked something up in your course book.', ['textbooks']),
+      find('Then you checked a country on the round model of the Earth.', ['globe']),
+      find('Found it — tucked under the globe on the teacher’s desk! Click the desk.', ['teachers-desk']),
+      { type: 'write', prompt: 'Write a short apology to your teacher explaining why your homework was almost late.', minWords: 30,
+        require: [linkers(2), schoolWords(2)], sample: 'I’m sorry because my homework…' },
+    ],
+    B2: [
+      find('Think logically: where would a stray sheet most likely end up after a geography lesson? Check the wall chart first.', ['world-map']),
+      find('Rule out the place where you only keep sports kit.', ['locker']),
+      find('Check the place where papers are handed in.', ['teachers-desk']),
+      find('Located — it slipped inside a course book. Click the textbooks.', ['textbooks']),
+      { type: 'write', prompt: 'Write a short email to your teacher suggesting a better system for handing in homework, so nothing gets lost.', minWords: 40,
+        require: [linkers(1), advanced(1), schoolWords(2)], sample: 'Although our current system works, …' },
+    ],
+  },
+};
+
+const scienceFair: MissionDefinition = {
+  id: 'science-fair', title: 'Science Fair', icon: '🧪', xp: 100,
+  intro: {
+    A1: 'It’s the science fair! Get your project ready.',
+    B1: 'Your class is entering the school science fair. Prepare your stand and present your experiment.',
+  },
+  steps: {
+    A1: [
+      find('Find the thing that makes small things big.', ['microscope']),
+      find('Find your books.', ['textbooks']),
+      { type: 'place', prompt: 'Put the microscope on the school desk.', checks: [{ rel: 'onTop', a: 'microscope', b: 'school-desk' }] },
+    ],
+    A2: [
+      find('Check the timetable: when is the fair?', ['timetable']),
+      find('Show your slides with this machine.', ['projector']),
+      { type: 'place', prompt: 'Put the projector on the teacher’s desk and the microscope on the school desk.',
+        checks: [{ rel: 'onTop', a: 'projector', b: 'teachers-desk' }, { rel: 'onTop', a: 'microscope', b: 'school-desk' }] },
+      { type: 'write', prompt: 'Write what you did to get your stand ready.', minWords: 15,
+        require: [schoolWords(2), linkers(1)], sample: 'First, I put the microscope…' },
+    ],
+    B1: [
+      { type: 'place', prompt: 'Visitors need good light to see your slides: school desk near the window with the microscope on it.',
+        checks: [{ rel: 'nearWindow', a: 'school-desk' }, { rel: 'onTop', a: 'microscope', b: 'school-desk' }] },
+      { type: 'choice', prompt: 'A judge asks a question and you don’t know the answer. What do you say?', options: [
+        { text: 'That’s a good question. I’m not sure, but I can find out.', correct: true, feedback: 'Honest and confident.' },
+        { text: 'That’s a stupid question.', correct: false, feedback: 'Very rude to a judge!' },
+        { text: 'Say nothing and walk away.', correct: false, feedback: 'You can still answer politely.' },
+      ] },
+      { type: 'write', prompt: 'Describe your experiment for the judges: what you did and what happened.', minWords: 30,
+        require: [schoolWords(2), linkers(2)], sample: 'First, we put a leaf under…' },
+    ],
+    B2: [
+      { type: 'place', prompt: 'Set up a professional stand: teacher’s desk against a wall, whiteboard above it, projector on it.',
+        checks: [{ rel: 'againstWall', a: 'teachers-desk' }, { rel: 'above', a: 'whiteboard', b: 'teachers-desk' }, { rel: 'onTop', a: 'projector', b: 'teachers-desk' }] },
+      { type: 'write', prompt: 'Write a persuasive summary of your project explaining why it deserves first prize.', minWords: 45,
+        require: [advanced(1), schoolWords(3)], sample: 'Although our experiment was simple, it…' },
+    ],
+  },
+};
+
+const newStudent: MissionDefinition = {
+  id: 'new-student', title: 'The New Student', icon: '👋', xp: 90,
+  intro: {
+    A1: 'A new student joins your class today. Say hello and help him!',
+    B1: 'A student from another country has joined your class. Show him around and explain how things work.',
+  },
+  steps: {
+    A1: [
+      { type: 'choice', prompt: 'You meet the new boy. What do you say?', options: [
+        { text: 'Hi! I’m Anna. Welcome to our class!', correct: true, feedback: 'Friendly!' },
+        { text: 'You’re in my seat.', correct: false, feedback: 'Not very welcoming.' },
+        { text: 'Goodbye!', correct: false, feedback: 'You’ve just met!' },
+      ] },
+      find('Show him his desk.', ['school-desk']),
+      find('Show him where to keep his things.', ['locker']),
+    ],
+    A2: [
+      find('He asks what lesson is next. Show him.', ['timetable']),
+      find('He needs a pen. Show him your pencil case.', ['pencil-case']),
+      find('Show him where to put his homework.', ['teachers-desk']),
+      { type: 'write', prompt: 'Write a welcome card for the new student.', minWords: 15,
+        require: [schoolWords(2)], sample: 'Welcome to our school! Your locker…' },
+    ],
+    B1: [
+      find('Show him where he can find his home country.', ['world-map', 'globe']),
+      find('Explain where homework is handed in.', ['teachers-desk']),
+      { type: 'choice', prompt: 'He doesn’t speak much English yet. What is the best way to help?', options: [
+        { text: 'Speak slowly, use simple words and show him things.', correct: true, feedback: 'Patient and practical.' },
+        { text: 'Speak louder.', correct: false, feedback: 'Louder isn’t clearer!' },
+        { text: 'Leave him alone until he learns English.', correct: false, feedback: 'He needs help now.' },
+      ] },
+      { type: 'write', prompt: 'Write a short guide to “a day in our school” for the new student.', minWords: 30,
+        require: [linkers(2), schoolWords(2)], sample: 'First, we meet in the classroom…' },
+    ],
+    B2: [
+      find('Show him where the weekly schedule is displayed.', ['timetable']),
+      find('Point out where he can store valuables securely.', ['locker']),
+      { type: 'write', prompt: 'Write a warm welcome letter to the new student, offering help and explaining a few things that surprised you when you started at this school.', minWords: 45,
+        require: [advanced(1), schoolWords(2)], sample: 'Although starting a new school can be scary, …' },
+    ],
+  },
+};
+
 export const SIDE_QUESTS: Record<string, MissionDefinition[]> = {
   bedroom: [lostPhone, sleepover, laundryDay],
   kitchen: [midnightSnack, recipeCard, inspector],
@@ -981,4 +1109,5 @@ export const SIDE_QUESTS: Record<string, MissionDefinition[]> = {
   hallway: [lostKeys, powerCut, rainyWalk],
   basement: [strangeNoise, bikeRepair, timeCapsule],
   entrance: [missingParcel, gardenDay, newNeighbours],
+  school: [lostHomework, scienceFair, newStudent],
 };

@@ -6,6 +6,7 @@ import { livingRoomChapter } from './livingroom';
 import { hallwayChapter } from './hallway';
 import { basementChapter } from './basement';
 import { entranceChapter } from './entrance';
+import { schoolChapter } from './school';
 import { COURSE_CONTENT } from '../courses';
 import { ACTIVE_COURSE } from '../../courses/active';
 
@@ -18,6 +19,7 @@ export const CHAPTERS: Record<string, ChapterDefinition> = {
   hallway: hallwayChapter,
   basement: basementChapter,
   entrance: entranceChapter,
+  school: schoolChapter,
 };
 
 /** German / Polish chapters replace the English one where they exist (see src/data/courses). */
