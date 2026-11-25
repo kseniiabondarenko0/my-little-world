@@ -1357,6 +1357,134 @@ const scaredPatient: MissionDefinition = {
   },
 };
 
+// ── SUPERMARKET ────────────────────────────────────────────────────────────
+
+const SUPERMARKET = ['supermarket', 'shop', 'trolley', 'checkout', 'cash register', 'fruit', 'fruit stand', 'bread', 'fridge', 'basket', 'scanner', 'watermelon', 'bag', 'special offer', 'price', 'money'];
+const supermarketWords = room(SUPERMARKET, 'supermarket words');
+
+const lostChild: MissionDefinition = {
+  id: 'lost-child', title: 'Where’s Little Max?', icon: '🧒', xp: 90,
+  intro: {
+    A1: 'Little Max is lost in the supermarket! Help his mum find him.',
+    B1: 'A worried mum can’t find her four-year-old son, Max. Think about what a small child would like and search the shop.',
+  },
+  steps: {
+    A1: [
+      find('Is he near the fruit? Click it.', ['fruit-stand']),
+      find('No. Is he near the bread?', ['bread-rack']),
+      find('No. Is he near the cold drinks?', ['drinks-fridge']),
+      find('Found him! He is in the shopping trolley.', ['shopping-trolley']),
+    ],
+    A2: [
+      find('Max loves bread rolls. Look there first.', ['bread-rack']),
+      find('Then he wanted a cold drink.', ['drinks-fridge']),
+      find('Then he looked at the big green fruit.', ['watermelon']),
+      find('Then he went to the place that goes “beep”!', ['barcode-scanner']),
+      { type: 'write', prompt: 'Write where Max went, in order. Use first, then, after that.', minWords: 15,
+        require: [linkers(2), supermarketWords(2)], sample: 'First, Max went to the…' },
+    ],
+    B1: [
+      find('Children love sweet things on offer. Check the sign with today’s deals.', ['special-offer']),
+      find('Then he may have followed the trolleys.', ['shopping-trolley']),
+      find('Ask the cashier at the till.', ['cash-register']),
+      find('Found him — hiding behind the fruit stand! Click it.', ['fruit-stand']),
+      { type: 'write', prompt: 'Write a short announcement for the shop’s loudspeaker describing the lost boy.', minWords: 30,
+        require: [linkers(1), supermarketWords(2)], sample: 'Attention, please! A little boy called Max…' },
+    ],
+    B2: [
+      find('Be logical: check the exit route first — the checkout.', ['checkout']),
+      find('Rule out the cold cabinet; a child wouldn’t stay there long.', ['drinks-fridge']),
+      find('Check the area with the most colourful display.', ['fruit-stand']),
+      find('Located — sitting in an empty trolley. Click it.', ['shopping-trolley']),
+      { type: 'write', prompt: 'Write a short email to the manager suggesting how the shop could handle lost children better.', minWords: 40,
+        require: [linkers(1), advanced(1), supermarketWords(2)], sample: 'Although Max was found quickly, …' },
+    ],
+  },
+};
+
+const partyShopping: MissionDefinition = {
+  id: 'party-shopping', title: 'Party Shopping', icon: '🎂', xp: 100,
+  intro: {
+    A1: 'You are shopping for a birthday party! Find the things you need.',
+    B1: 'You’re buying everything for your best friend’s surprise party, with a list and a strict budget.',
+  },
+  steps: {
+    A1: [
+      find('Take a basket.', ['shopping-basket']),
+      find('Find the fruit.', ['fruit-stand']),
+      find('Find the cold drinks.', ['drinks-fridge']),
+      find('Pay here.', ['checkout']),
+    ],
+    A2: [
+      find('It’s a big party — take a trolley.', ['shopping-trolley']),
+      find('Buy a big fruit for everyone.', ['watermelon']),
+      find('Buy some bread rolls.', ['bread-rack']),
+      { type: 'write', prompt: 'Write your shopping list for the party.', minWords: 15,
+        require: [supermarketWords(2)], sample: 'I need a watermelon and…' },
+    ],
+    B1: [
+      find('Check the special offers first to save money.', ['special-offer']),
+      find('Get lemonade from the cold cabinet.', ['drinks-fridge']),
+      { type: 'choice', prompt: 'At the till you have 3 euros too little. What do you say?', options: [
+        { text: 'Sorry, could you take the watermelon off, please?', correct: true, feedback: 'Polite and practical.' },
+        { text: 'Can I pay next week?', correct: false, feedback: 'Shops don’t usually do that.' },
+        { text: 'Just give it to me.', correct: false, feedback: 'That’s not how shops work!' },
+      ] },
+      { type: 'write', prompt: 'Write a message to a friend explaining what you bought for the party and why.', minWords: 30,
+        require: [supermarketWords(2), linkers(1)], sample: 'I bought lemonade because…' },
+    ],
+    B2: [
+      { type: 'place', prompt: 'Help the shop prepare for weekend parties: fruit stand by the window with the offer sign above it.',
+        checks: [{ rel: 'nearWindow', a: 'fruit-stand' }, { rel: 'above', a: 'special-offer', b: 'fruit-stand' }] },
+      { type: 'write', prompt: 'Write a short guide “How to shop for a party on a budget” for your school magazine.', minWords: 45,
+        require: [advanced(1), supermarketWords(2)], sample: 'Although parties can be expensive, …' },
+    ],
+  },
+};
+
+const newCashier: MissionDefinition = {
+  id: 'new-cashier', title: 'First Day at the Till', icon: '🧾', xp: 90,
+  intro: {
+    A1: 'Today you work at the checkout! Help the customers.',
+    B1: 'It’s your first shift as a cashier. Learn the till and serve your first customers politely.',
+  },
+  steps: {
+    A1: [
+      { type: 'choice', prompt: 'A customer comes to the checkout. What do you say?', options: [
+        { text: 'Hello! Do you need a bag?', correct: true, feedback: 'Friendly!' },
+        { text: 'What do you want?', correct: false, feedback: 'Not very polite.' },
+        { text: 'Goodbye!', correct: false, feedback: 'They just arrived!' },
+      ] },
+      find('Scan the food.', ['barcode-scanner']),
+      find('Put the money in here.', ['cash-register']),
+    ],
+    A2: [
+      find('A customer wants a bag. Give her one.', ['shopping-bag']),
+      find('Scan her milk.', ['barcode-scanner']),
+      find('Give her the change from here.', ['cash-register']),
+      { type: 'write', prompt: 'Write three things a cashier says to customers.', minWords: 15,
+        require: [supermarketWords(1)], sample: 'Hello! Would you like a bag? …' },
+    ],
+    B1: [
+      find('The scanner says the bread costs 50 euros! Check the shelf price.', ['bread-rack']),
+      find('Tell the customer about today’s deal.', ['special-offer']),
+      { type: 'choice', prompt: 'A customer is rude because the queue is long. What is the best answer?', options: [
+        { text: 'I’m sorry for the wait. I’ll be as quick as I can.', correct: true, feedback: 'Calm and professional.' },
+        { text: 'It’s not my fault!', correct: false, feedback: 'That makes things worse.' },
+        { text: 'Say nothing and look angry.', correct: false, feedback: 'A friendly word helps.' },
+      ] },
+      { type: 'write', prompt: 'Write a short diary entry about your first day as a cashier.', minWords: 30,
+        require: [linkers(2), supermarketWords(2)], sample: 'First, I learned how to use the…' },
+    ],
+    B2: [
+      find('At closing time, check the money in the till.', ['cash-register']),
+      find('Then check the closing time customers can see.', ['opening-hours']),
+      { type: 'write', prompt: 'Write an email to your manager suggesting one change that would make the checkout faster.', minWords: 45,
+        require: [advanced(1), supermarketWords(2)], sample: 'Although the new scanners work well, …' },
+    ],
+  },
+};
+
 export const SIDE_QUESTS: Record<string, MissionDefinition[]> = {
   bedroom: [lostPhone, sleepover, laundryDay],
   kitchen: [midnightSnack, recipeCard, inspector],
@@ -1368,4 +1496,5 @@ export const SIDE_QUESTS: Record<string, MissionDefinition[]> = {
   school: [lostHomework, scienceFair, newStudent],
   office: [lostLaptop, fireDrill, jobInterview],
   hospital: [lostStethoscope, fluSeason, scaredPatient],
+  supermarket: [lostChild, partyShopping, newCashier],
 };
