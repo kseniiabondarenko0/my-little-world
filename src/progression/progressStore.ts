@@ -34,6 +34,7 @@ interface ProgressActions {
   addPerfectSession: () => void;
   unlockAchievement: (id: string) => void;
   completeRoom: (id: string) => void;
+  setRoom: (id: string) => void;
   setSeenIntro: () => void;
   setLanguage: (language: NativeLanguage) => void;
   setLevel: (level: Level) => void;
@@ -75,6 +76,7 @@ export const useProgress = create<ProgressData & ProgressActions>()(
       addPerfectSession: () => set((s) => ({ perfectSessions: s.perfectSessions + 1 })),
       unlockAchievement: (id) => set((s) => ({ achievements: addUnique(s.achievements, id) })),
       completeRoom: (id) => set((s) => ({ completedRooms: addUnique(s.completedRooms, id) })),
+      setRoom: (id) => set({ currentRoomId: id }),
       setSeenIntro: () => set({ seenIntro: true }),
       setLanguage: (language) => set({ language }),
       setLevel: (level) => set({ level }),
