@@ -13,7 +13,7 @@ export interface SpatialCheck {
   b?: string;
 }
 
-export type PropLook = 'box' | 'clothes' | 'socks' | 'book' | 'shoes' | 'pillow' | 'blanket' | 'suitcase' | 'cup' | 'phone' | 'toy' | 'plate' | 'fruit';
+export type PropLook = 'box' | 'clothes' | 'socks' | 'book' | 'shoes' | 'pillow' | 'blanket' | 'suitcase' | 'cup' | 'phone' | 'toy' | 'plate' | 'fruit' | 'bottle';
 
 /** A loose thing on the floor during a mission. Click it, then click where it belongs. */
 export interface PropDef {

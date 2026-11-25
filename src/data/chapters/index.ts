@@ -1,6 +1,7 @@
 import type { ChapterDefinition } from '../../chapter/types';
 import { bedroomChapter } from './bedroom';
 import { kitchenChapter } from './kitchen';
+import { bathroomChapter } from './bathroom';
 import { COURSE_CONTENT } from '../courses';
 import { ACTIVE_COURSE } from '../../courses/active';
 
@@ -8,6 +9,7 @@ import { ACTIVE_COURSE } from '../../courses/active';
 export const CHAPTERS: Record<string, ChapterDefinition> = {
   bedroom: bedroomChapter,
   kitchen: kitchenChapter,
+  bathroom: bathroomChapter,
 };
 
 /** German / Polish chapters replace the English one where they exist (see src/data/courses). */

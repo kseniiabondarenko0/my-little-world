@@ -24,6 +24,8 @@ const advanced = (count: number): WordRequirement => ({ label: 'advanced linking
 const room = (words: string[], label: string) => (count: number): WordRequirement => ({ label, words, count });
 const bedroomWords = room(BEDROOM, 'bedroom words');
 const kitchenWords = room(KITCHEN, 'kitchen words');
+const BATHROOM = ['bath', 'shower', 'toilet', 'washbasin', 'basin', 'towel', 'cabinet', 'washing machine', 'bath mat', 'toothbrush', 'toothpaste', 'soap', 'shampoo', 'hairdryer', 'scales', 'mirror', 'tap'];
+const bathroomWords = room(BATHROOM, 'bathroom words');
 
 const find = (prompt: string, targets: string[], hint?: string): MissionStep => ({ type: 'find', prompt, targets, hint });
 const item = (id: string, label: string, look: PropDef['look'], color: string, accept: string[], instruction: string): PropDef =>
@@ -295,7 +297,143 @@ const inspector: MissionDefinition = {
   },
 };
 
+// ── BATHROOM ───────────────────────────────────────────────────────────────
+
+const lostRing: MissionDefinition = {
+  id: 'lost-ring', title: 'Mum’s Lost Ring', icon: '💍', xp: 90,
+  intro: {
+    A1: 'Mum can’t find her ring! Follow the clues and click the right places.',
+    B1: 'Mum took her ring off before her shower and now it’s gone. Retrace her steps.',
+  },
+  steps: {
+    A1: [
+      find('Mum washed her hands. Look there first.', ['washbasin']),
+      find('Then she had a shower.', ['shower']),
+      find('She dried her hair with…', ['hairdryer']),
+      find('Found it! It was in the box with the medicine.', ['cabinet']),
+    ],
+    A2: [
+      find('Mum took the ring off to wash her face. Where?', ['washbasin']),
+      find('Then she got clean all over, quickly.', ['shower']),
+      find('She dried herself with something soft from the rail.', ['towel']),
+      find('The ring is safe behind the mirror door!', ['cabinet']),
+      { type: 'write', prompt: 'Write what Mum did, in order. Use first, then, after that.', minWords: 15,
+        require: [linkers(2), bathroomWords(2)], sample: 'First, Mum washed her face at the…' },
+    ],
+    B1: [
+      find('She always takes her ring off before touching soap. Where would that be?', ['washbasin', 'soap']),
+      find('She didn’t have time for a bath, so she…', ['shower']),
+      find('She hung up something wet before leaving.', ['towel']),
+      find('She keeps small valuable things behind a mirror.', ['cabinet']),
+      { type: 'write', prompt: 'Explain to Mum where the ring was and suggest how she can stop losing it.', minWords: 30,
+        require: [linkers(2), bathroomWords(2)], sample: 'Your ring was in the cabinet because…' },
+    ],
+    B2: [
+      find('Start where jewellery is most at risk of going down the drain.', ['washbasin']),
+      find('Check the fitting where she spent ten minutes this morning.', ['shower']),
+      find('Check the appliance she used last, near the plug socket.', ['hairdryer']),
+      find('The safest place for valuables in this room.', ['cabinet']),
+      { type: 'write', prompt: 'Write Mum a short note: where the ring was, and one sensible habit to avoid losing it again.', minWords: 40,
+        require: [linkers(1), advanced(1), bathroomWords(2)], sample: 'Although it gave us a fright, the ring was…' },
+    ],
+  },
+};
+
+const spaDay: MissionDefinition = {
+  id: 'spa-day', title: 'Spa Day', icon: '🧖', xp: 90,
+  intro: {
+    A1: 'Make the bathroom a relaxing spa for Grandma’s birthday!',
+    B1: 'Turn the bathroom into a home spa as a birthday surprise for Grandma.',
+  },
+  steps: {
+    A1: [
+      { type: 'sort', prompt: 'Put the spa things in the right places.', props: [
+        item('sp1', 'bubble bath', 'bottle', '#f7b2d0', ['bath'], 'Put the bubble bath next to the bath.'),
+        item('sp2', 'a soft towel', 'clothes', '#ffffff', ['towel'], 'Put a soft towel on the rail.'),
+        item('sp3', 'a candle', 'cup', '#ffe9a8', ['washbasin', 'cabinet'], 'Put a candle on the washbasin.'),
+      ] },
+      { type: 'place', prompt: 'Put the bath mat in front of the bath.', checks: [{ rel: 'inFrontOf', a: 'bath-mat', b: 'bath' }] },
+    ],
+    A2: [
+      { type: 'sort', prompt: 'Get the spa ready.', props: [
+        item('sp1', 'bubble bath', 'bottle', '#f7b2d0', ['bath'], 'Put the bubble bath by the bath.'),
+        item('sp2', 'two warm towels', 'clothes', '#ffffff', ['towel'], 'Hang the towels on the rail.'),
+        item('sp3', 'a candle', 'cup', '#ffe9a8', ['washbasin', 'cabinet'], 'Put the candle on the washbasin.'),
+        item('sp4', 'the dirty laundry', 'clothes', '#a8d0f0', ['washing-machine'], 'Hide the dirty laundry in the washing machine.'),
+      ] },
+      { type: 'place', prompt: 'Keep the hairdryer far from the bath.', checks: [{ rel: 'farFrom', a: 'hairdryer', b: 'bath' }] },
+      { type: 'write', prompt: 'Write a birthday card inviting Grandma to her spa.', minWords: 15,
+        require: [bathroomWords(2), prep(1)], sample: 'Happy birthday, Grandma! There is a warm towel on…' },
+    ],
+    B1: [
+      { type: 'sort', prompt: 'Create a calm, tidy spa.', props: [
+        item('sp1', 'lavender bath salts', 'bottle', '#c9b6e4', ['bath'], 'Something relaxing for her soak.'),
+        item('sp2', 'fluffy towels', 'clothes', '#ffffff', ['towel'], 'She’ll want something warm afterwards.'),
+        item('sp3', 'a scented candle', 'cup', '#ffe9a8', ['washbasin', 'cabinet'], 'Somewhere safe, away from towels.'),
+        item('sp4', 'everyone’s dirty socks', 'socks', '#a8d0f0', ['washing-machine'], 'Nothing ruins a spa like dirty socks.'),
+      ] },
+      { type: 'place', prompt: 'Make it safe: bath mat in front of the bath, hairdryer far from it.',
+        checks: [{ rel: 'inFrontOf', a: 'bath-mat', b: 'bath' }, { rel: 'farFrom', a: 'hairdryer', b: 'bath' }] },
+      { type: 'write', prompt: 'Write Grandma an invitation describing her spa and why you chose each thing.', minWords: 30,
+        require: [bathroomWords(2), linkers(1)], sample: 'Dear Grandma, I’ve made the bathroom into a spa because…' },
+    ],
+  },
+};
+
+const plumber: MissionDefinition = {
+  id: 'plumber-visit', title: 'The Plumber’s Visit', icon: '🔧', xp: 100,
+  intro: {
+    A1: 'Water is on the floor! Help the plumber find the problem.',
+    B1: 'There’s a leak somewhere in the bathroom. Help the plumber find it and explain what happened.',
+  },
+  steps: {
+    A1: [
+      { type: 'choice', prompt: 'There is water on the floor. What do you do first?', options: [
+        { text: 'Turn off the tap.', correct: true, feedback: 'Yes! Stop the water first.' },
+        { text: 'Use the hairdryer.', correct: false, feedback: 'No! Electricity and water are dangerous.' },
+        { text: 'Have a bath.', correct: false, feedback: 'Not now!' },
+      ] },
+      find('The plumber asks: where do you wash your hands?', ['washbasin']),
+      find('Where does the water go when you flush?', ['toilet']),
+      find('Which machine uses water for clothes?', ['washing-machine']),
+    ],
+    A2: [
+      { type: 'choice', prompt: 'Water is coming from under the washing machine. What do you say to the plumber?', options: [
+        { text: 'There’s water under the washing machine.', correct: true, feedback: 'Clear and useful.' },
+        { text: 'The washing machine is white.', correct: false, feedback: 'True, but it doesn’t help.' },
+        { text: 'I like water.', correct: false, feedback: 'Tell the plumber WHERE the water is.' },
+      ] },
+      find('Show the plumber the washing machine.', ['washing-machine']),
+      find('He wants to check the other things with water too. Show him the washbasin.', ['washbasin']),
+      { type: 'write', prompt: 'Write a message to your landlord: what happened and where.', minWords: 15,
+        require: [bathroomWords(2), prep(1)], sample: 'There is water on the floor next to…' },
+    ],
+    B1: [
+      { type: 'choice', prompt: 'The plumber asks when you first noticed the leak. What’s the most helpful answer?', options: [
+        { text: 'This morning, after the washing machine finished its cycle.', correct: true, feedback: 'Precise — it points to the cause.' },
+        { text: 'I don’t know, it’s just wet.', correct: false, feedback: 'He needs more information.' },
+        { text: 'Last year, I think.', correct: false, feedback: 'Then it would be much worse by now!' },
+      ] },
+      find('Show him the appliance you suspect.', ['washing-machine']),
+      find('He wants to test the water pressure at the fittings. Show him one.', ['washbasin', 'bath', 'shower']),
+      { type: 'write', prompt: 'Write an email to your landlord explaining what happened and what the plumber did.', minWords: 35,
+        require: [bathroomWords(2), linkers(2)], sample: 'This morning I noticed water under the washing machine, so…' },
+    ],
+    B2: [
+      { type: 'choice', prompt: 'The repair will cost a lot. Your landlord says it’s your fault. What’s the most reasonable response?', options: [
+        { text: 'Politely explain that the hose was worn out from age, and ask for the plumber’s report as evidence.', correct: true, feedback: 'Calm, factual and backed by evidence.' },
+        { text: 'Refuse to pay and stop answering his messages.', correct: false, feedback: 'Ignoring the problem only makes it worse.' },
+        { text: 'Pay immediately without asking anything.', correct: false, feedback: 'You may be paying for something that isn’t your fault.' },
+      ] },
+      find('Show the plumber where the worn hose is.', ['washing-machine']),
+      { type: 'write', prompt: 'Write a polite but firm email to your landlord explaining why you shouldn’t pay for the repair.', minWords: 50,
+        require: [bathroomWords(2), advanced(1)], sample: 'Although I understand your concern, the plumber confirmed that…' },
+    ],
+  },
+};
+
 export const SIDE_QUESTS: Record<string, MissionDefinition[]> = {
   bedroom: [lostPhone, sleepover, laundryDay],
   kitchen: [midnightSnack, recipeCard, inspector],
+  bathroom: [lostRing, spaDay, plumber],
 };
