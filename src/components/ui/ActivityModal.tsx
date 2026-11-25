@@ -4,6 +4,7 @@ import { useUI, type ActivityRequest } from '../../hooks/useUIStore';
 import { useProgress } from '../../progression/progressStore';
 import { getFurniture } from '../../data/content';
 import { buildSession } from '../../activities/engine';
+import { buildLesson } from '../../activities/lesson';
 import { addObjectToRoom, finishSession } from '../../progression/actions';
 import { SessionRunner, type SessionResult } from './SessionRunner';
 
@@ -24,7 +25,7 @@ function Session({ request }: { request: ActivityRequest }) {
   const close = useUI((s) => s.closeActivity);
   const language = useProgress((s) => s.language);
   const level = useProgress((s) => s.level);
-  const questions = useMemo(() => buildSession(objectId, stage, { language, level }), [objectId, stage, language, level]);
+  const questions = useMemo(() => (stage === 'lesson' ? buildLesson(objectId, { language, level }) : buildSession(objectId, stage, { language, level })), [objectId, stage, language, level]);
 
   return (
     <SessionRunner

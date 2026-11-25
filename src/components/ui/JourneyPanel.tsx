@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import { useChapterView } from '../../hooks/useChapterView';
 import { ensurePicks, startTask } from '../../progression/actions';
 import { useMission } from '../../missions/missionStore';
-import type { Stage } from '../../chapter/stages';
+import type { Stage, Task } from '../../chapter/stages';
 
 // The chapter journey: 7 stages that open one after another, each with its tasks.
 
 export function JourneyPanel() {
-  const { stages } = useChapterView();
+  const { stages, side } = useChapterView();
   const missionActive = useMission((s) => s.run !== null);
   const current = stages.find((s) => s.unlocked && !s.done) ?? stages[stages.length - 1];
   const [openId, setOpenId] = useState(current.id);
@@ -37,6 +37,7 @@ export function JourneyPanel() {
           onToggle={() => setOpenId(openId === stage.id ? '' : stage.id)}
         />
       ))}
+      {side.tasks.length > 0 && <SideQuests open={side.open} tasks={side.tasks} disabled={missionActive} />}
       <p className="muted small journey-foot">About {total} minutes in total · progress saves automatically</p>
     </div>
   );
@@ -87,6 +88,42 @@ function StageCard({ stage, index, open, current, disabled, onToggle }: {
             </ul>
           ) : (
             <p className="locked-note">🔒 Locked</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SideQuests({ open, tasks, disabled }: { open: boolean; tasks: Task[]; disabled: boolean }) {
+  const [expanded, setExpanded] = useState(false);
+  const doneCount = tasks.filter((t) => t.done).length;
+  return (
+    <div className={`stage side-quests ${open ? 'stage-open' : 'stage-locked'}`}>
+      <button className="stage-head" onClick={() => setExpanded(!expanded)} aria-expanded={expanded}>
+        <span className="stage-num">{open ? '★' : '🔒'}</span>
+        <span className="stage-title">
+          <b>🗺️ Side Quests</b>
+          <span className="muted small">{open ? `Optional · ${doneCount}/${tasks.length} · extra XP` : 'Finish “Move In” to open'}</span>
+        </span>
+      </button>
+      {expanded && (
+        <div className="stage-body">
+          <p className="muted small">Extra adventures in your room. They are harder than the main tasks and give bonus XP.</p>
+          {open ? (
+            <ul className="tasks">
+              {tasks.map((t) => (
+                <li key={t.id} className={`task ${t.done ? 'done' : ''}`}>
+                  <span className="task-icon">{t.done ? '✅' : t.icon}</span>
+                  <span className="task-title">{t.title} <span className="muted small">· +{t.xp} XP</span></span>
+                  <button className={`btn ${t.done ? 'btn-soft' : 'btn-primary'} btn-small`} disabled={disabled} onClick={() => startTask(t)}>
+                    {t.done ? 'Replay' : 'Start'}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="locked-note">🔒 Put all the furniture in your room first.</p>
           )}
         </div>
       )}
