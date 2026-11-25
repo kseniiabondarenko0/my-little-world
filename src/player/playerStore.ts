@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import type { AvatarConfig, PlayerProfile } from './types';
-import { ACTIVE_PLAYER_ID, adoptLegacySave, deletePlayerSave, readJSON, setActivePlayer, writeJSON } from '../save/storage';
+import type { Course } from '../types/game';
+import { ACTIVE_PLAYER_ID, adoptLegacySave, deletePlayerSave, readJSON, seedCourseSave, setActivePlayer, writeJSON } from '../save/storage';
+import { DEFAULT_COURSE } from '../courses/courses';
 
 // All player profiles on this device, and which one is playing.
 // Profiles are stored once per device (not per player save).
@@ -23,8 +25,10 @@ interface PlayerState {
   players: PlayerProfile[];
   /** The profile currently playing, or null before the first profile is made. */
   current: PlayerProfile | null;
-  create: (nickname: string, avatar: AvatarConfig) => PlayerProfile;
+  create: (nickname: string, avatar: AvatarConfig, course?: Course) => PlayerProfile;
   update: (patch: Partial<Pick<PlayerProfile, 'nickname' | 'avatar'>>) => void;
+  /** Switches the language this player learns. Each course has its own save; the page reloads. */
+  setCourse: (course: Course, homeLanguage: string) => void;
   switchTo: (id: string | null) => void;
   remove: (id: string) => void;
 }
@@ -35,13 +39,13 @@ export const usePlayer = create<PlayerState>()((set, get) => ({
   players: initialPlayers,
   current: initialPlayers.find((p) => p.id === ACTIVE_PLAYER_ID) ?? null,
 
-  create: (nickname, avatar) => {
-    const profile: PlayerProfile = { id: newId(), nickname: nickname.trim(), avatar, createdAt: Date.now() };
+  create: (nickname, avatar, course = DEFAULT_COURSE) => {
+    const profile: PlayerProfile = { id: newId(), nickname: nickname.trim(), avatar, createdAt: Date.now(), course };
     const players = [...get().players, profile];
     writeJSON(KEY, players);
     // Progress made before this profile existed (v0.1 saves, or the language/level
     // chosen during sign-up) moves into the new player's own save.
-    adoptLegacySave(profile.id);
+    adoptLegacySave(profile.id, course);
     setActivePlayer(profile.id);
     set({ players });
     return profile;
@@ -54,6 +58,15 @@ export const usePlayer = create<PlayerState>()((set, get) => ({
     const players = get().players.map((p) => (p.id === current.id ? updated : p));
     writeJSON(KEY, players);
     set({ players, current: updated });
+  },
+
+  setCourse: (course, homeLanguage) => {
+    const current = get().current;
+    if (!current || (current.course ?? DEFAULT_COURSE) === course) return;
+    seedCourseSave(current.id, course, homeLanguage);
+    const players = get().players.map((p) => (p.id === current.id ? { ...p, course } : p));
+    writeJSON(KEY, players);
+    window.location.reload();
   },
 
   switchTo: (id) => {

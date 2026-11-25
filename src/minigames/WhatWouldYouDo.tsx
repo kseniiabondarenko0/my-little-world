@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { COURSE } from '../courses/active';
 import type { MiniGameProps } from './components';
 import type { Level } from '../types/game';
 import { shuffle } from '../activities/engine';
@@ -104,7 +105,7 @@ export function WhatWouldYouDo({ chapter, level, onComplete }: MiniGameProps) {
       {phase === 'write' && s.write && (
         <div className="write-box">
           <p className="activity-prompt">{s.write.prompt}</p>
-          <textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} placeholder="Write your answer in English…" />
+          <textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} placeholder={`Write your answer in ${COURSE.name}…`} />
           {writing && <WritingChecklist result={writing} />}
           <button
             className="btn btn-primary"

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { COURSE } from '../../courses/active';
 import { useUI, type ActivityRequest } from '../../hooks/useUIStore';
 import { useProgress } from '../../progression/progressStore';
 import { getFurniture } from '../../data/content';
@@ -14,6 +15,9 @@ export function ActivityModal() {
   return <Session key={`${request.objectId}-${request.stage}-${request.nonce}`} request={request} />;
 }
 
+// English: "the bed". Other courses show the word as taught: "das Bett", "łóżko".
+const theName = (name: string) => (COURSE.id === 'en' ? `the ${name.toLowerCase()}` : name);
+
 function Session({ request }: { request: ActivityRequest }) {
   const { objectId, stage } = request;
   const def = getFurniture(objectId);
@@ -25,7 +29,7 @@ function Session({ request }: { request: ActivityRequest }) {
   return (
     <SessionRunner
       questions={questions}
-      eyebrow={stage === 'lesson' ? `Lesson · unlock the ${def.name.toLowerCase()}` : `Practice · ${def.name}`}
+      eyebrow={stage === 'lesson' ? `Lesson · unlock ${theName(def.name)}` : `Practice · ${def.name}`}
       onClose={close}
       onFinish={(r) => finishSession(objectId, stage, r.perfect)}
       renderSummary={(r) => <Summary request={request} result={r} />}
@@ -40,7 +44,7 @@ function Summary({ request, result }: { request: ActivityRequest; result: Sessio
   return (
     <div className="summary">
       <div className="summary-burst">{lesson ? '🎉' : result.perfect ? '🌟' : '👏'}</div>
-      <h2>{lesson ? `You unlocked the ${def.name.toLowerCase()}!` : 'Practice complete!'}</h2>
+      <h2>{lesson ? `You unlocked ${theName(def.name)}!` : 'Practice complete!'}</h2>
       <p className="summary-stars">
         +{result.stars} <span className="star-icon">★</span> <span className="muted">({result.stars}/{result.total} first try)</span>
       </p>

@@ -3,13 +3,22 @@ import { bedroomWords } from './vocabulary/bedroom';
 import { bedroomExtraWords } from './vocabulary/bedroom-extra';
 import { bedroomActivities } from './activities/bedroom';
 import { FURNITURE } from './furniture';
+import { activitiesForCourse, wordsForCourse } from './courses';
+import { ACTIVE_COURSE } from '../courses/active';
 
 // All content in one place. When you add a new room's files, add them to these lists.
-export const ALL_WORDS: VocabularyWord[] = [...bedroomWords, ...bedroomExtraWords];
-export const ALL_ACTIVITIES: ActivityDefinition[] = [...bedroomActivities];
+export const ENGLISH_WORDS: VocabularyWord[] = [...bedroomWords, ...bedroomExtraWords];
+export const ENGLISH_ACTIVITIES: ActivityDefinition[] = [...bedroomActivities];
+
+// The course being learned (English, German, Polish) decides the words and activities.
+// Other courses reuse the English word ids, so rooms and objects work the same.
+const objectWordIdSet = new Set(FURNITURE.map((f) => f.wordId));
+export const ALL_WORDS: VocabularyWord[] = wordsForCourse(ENGLISH_WORDS, ACTIVE_COURSE, objectWordIdSet);
+export const ALL_ACTIVITIES: ActivityDefinition[] = activitiesForCourse(ENGLISH_ACTIVITIES, ACTIVE_COURSE);
 
 const wordMap = new Map(ALL_WORDS.map((w) => [w.id, w]));
-const furnitureMap = new Map(FURNITURE.map((f) => [f.id, f]));
+// Furniture names follow the course, so the catalogue shows "das Bett" or "łóżko".
+const furnitureMap = new Map(FURNITURE.map((f) => [f.id, ACTIVE_COURSE === 'en' ? f : { ...f, name: wordMap.get(f.wordId)?.word ?? f.name }]));
 
 export function getWord(id: string): VocabularyWord {
   const word = wordMap.get(id);
@@ -44,7 +53,7 @@ export function getLinkedWords(objectId: string, mainWordId: string, maxLevel: L
 
 export const LEVELS = LEVEL_ORDER;
 
-const objectWordIds = new Set(FURNITURE.map((f) => f.wordId));
+const objectWordIds = objectWordIdSet;
 
 /** True for the main word of a 3D object (it has a model to show). */
 export function isObjectWord(w: VocabularyWord): boolean {
