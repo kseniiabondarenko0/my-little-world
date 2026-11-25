@@ -10,6 +10,7 @@ import { school } from './school';
 import { office } from './office';
 import { hospital } from './hospital';
 import { supermarket } from './supermarket';
+import { restaurant } from './restaurant';
 
 // The map of the world. A location with a `room` can be played;
 // the others appear as "coming soon" in the navigation menu.
@@ -34,7 +35,7 @@ export const LOCATIONS: LocationEntry[] = [
   { id: 'office', name: 'Office', icon: '💼', area: 'city', room: office },
   { id: 'hospital', name: 'Hospital', icon: '🏥', area: 'city', room: hospital },
   { id: 'supermarket', name: 'Supermarket', icon: '🛒', area: 'city', room: supermarket },
-  { id: 'restaurant', name: 'Restaurant', icon: '🍝', area: 'city' },
+  { id: 'restaurant', name: 'Restaurant', icon: '🍝', area: 'city', room: restaurant },
   { id: 'city', name: 'City', icon: '🏙️', area: 'city' },
 ];
 
